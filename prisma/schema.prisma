@@ -1,0 +1,133 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  userid       Int         @id @default(autoincrement())
+  name         String      @db.VarChar(255)
+  password     String      @db.VarChar(255)
+  email        String      @unique @db.VarChar(255)
+  cellphone    String?     @db.VarChar(20)
+  departmentid Int?
+  department   department? @relation(fields: [departmentid], references: [departmentid], onDelete: Cascade)
+  manager      manager?
+  student      student?
+  teacher      teacher?
+}
+
+model classroom {
+  classroomid     Int               @id @default(autoincrement())
+  location        String            @db.VarChar(255)
+  buildingid      Int?
+  courseclassroom courseclassroom[]
+}
+
+model collectcourse {
+  coursetableid Int
+  courseid      Int
+  course        course      @relation(fields: [courseid], references: [courseid], onDelete: Cascade)
+  coursetable   coursetable @relation(fields: [coursetableid], references: [coursetableid], onDelete: Cascade)
+
+  @@id([coursetableid, courseid])
+}
+
+model course {
+  courseid            Int                   @id @default(autoincrement())
+  coursename          String                @db.VarChar(255)
+  credit              Int?
+  studentquota        Int?
+  syllabusurl         String?               @db.VarChar(255)
+  isenglishtaught     Boolean?
+  enrollmentnum       Int?
+  teacherid           Int?
+  departmentid        Int?
+  collectcourse       collectcourse[]
+  department          department?           @relation(fields: [departmentid], references: [departmentid], onDelete: Cascade)
+  teacher             teacher?              @relation(fields: [teacherid], references: [teacherid], onDelete: Cascade)
+  courseclassroom     courseclassroom[]
+  participationcourse participationcourse[]
+  schedule            schedule[]
+  unassignedcourse    unassignedcourse[]
+}
+
+model courseclassroom {
+  courseid    Int
+  classroomid Int
+  classroom   classroom @relation(fields: [classroomid], references: [classroomid], onDelete: Cascade)
+  course      course    @relation(fields: [courseid], references: [courseid], onDelete: Cascade)
+
+  @@id([courseid, classroomid])
+}
+
+model coursetable {
+  coursetableid       Int                   @id @default(autoincrement())
+  semester            String?               @db.VarChar(255)
+  studentid           Int?
+  collectcourse       collectcourse[]
+  student             student?              @relation(fields: [studentid], references: [studentid], onDelete: Cascade)
+  participationcourse participationcourse[]
+}
+
+model department {
+  departmentid   Int      @id @default(autoincrement())
+  departmentname String   @db.VarChar(255)
+  email          String?  @db.VarChar(255)
+  phone          String?  @db.VarChar(20)
+  User           User[]
+  course         course[]
+}
+
+model manager {
+  managerid Int  @id
+  User      User @relation(fields: [managerid], references: [userid], onDelete: Cascade)
+}
+
+model participationcourse {
+  coursetableid Int
+  courseid      Int
+  course        course      @relation(fields: [courseid], references: [courseid], onDelete: Cascade)
+  coursetable   coursetable @relation(fields: [coursetableid], references: [coursetableid], onDelete: Cascade)
+
+  @@id([coursetableid, courseid])
+}
+
+model schedule {
+  weekday   String    @db.VarChar(3)
+  starttime DateTime  @db.Time(6)
+  endtime   DateTime? @db.Time(6)
+  courseid  Int
+  course    course    @relation(fields: [courseid], references: [courseid], onDelete: Cascade)
+
+  @@id([courseid, weekday, starttime])
+}
+
+model student {
+  studentid        Int                @id
+  class            String?            @db.VarChar(50)
+  coursetable      coursetable[]
+  User             User               @relation(fields: [studentid], references: [userid], onDelete: Cascade)
+  unassignedcourse unassignedcourse[]
+}
+
+model teacher {
+  teacherid Int      @id
+  office    String?  @db.VarChar(50)
+  web       String?  @db.VarChar(255)
+  info      String?
+  course    course[]
+  User      User     @relation(fields: [teacherid], references: [userid], onDelete: Cascade)
+}
+
+model unassignedcourse {
+  studentid Int
+  courseid  Int
+  course    course  @relation(fields: [courseid], references: [courseid], onDelete: Cascade)
+  student   student @relation(fields: [studentid], references: [studentid], onDelete: Cascade)
+
+  @@id([studentid, courseid])
+}
