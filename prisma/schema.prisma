@@ -66,10 +66,10 @@ model courseclassroom {
 
 model coursetable {
   coursetableid       Int                   @id @default(autoincrement())
-  semester            String?               @db.VarChar(255)
-  studentid           Int?
+  semester            String                @db.VarChar(255)
+  studentid           Int
   collectcourse       collectcourse[]
-  student             student?              @relation(fields: [studentid], references: [studentid], onDelete: Cascade)
+  student             student               @relation(fields: [studentid], references: [studentid], onDelete: Cascade)
   participationcourse participationcourse[]
 }
 
