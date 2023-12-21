@@ -5,7 +5,6 @@ interface CourseTableType{
 }
 
 interface StudentType{
-    studentid: number
     class?: string
 }
 
@@ -15,14 +14,9 @@ interface CreateStudentType{
 }
 
 interface CreateTeacherType{
-    teacherid: number
     office?: string
     web?: string
     info?: string
-}
-
-interface CreateManagerType{
-    managerid: number
 }
 
 export class AssignUserRoleCase {
@@ -45,7 +39,10 @@ export class AssignUserRoleCase {
     async AssignStudentRole(userId: number, role: CreateStudentType) {
         const { coursetable, student } = role;
         const menber = await prisma.student.create({
-            data: student
+            data: {
+                studentid: userId,
+                ...student
+            }
         })
 
         await prisma.coursetable.create({
@@ -58,7 +55,7 @@ export class AssignUserRoleCase {
         const user = await prisma.User.updata({
             where: {userid: userId},
             data: {
-                student: { connect: { studentid: student.studentid } },
+                student: { connect: { studentid:  menber.studentid } },
             },
         });
 
@@ -67,7 +64,10 @@ export class AssignUserRoleCase {
 
     async AssignTeacherRole(userId: number, role: CreateTeacherType) {
         const teacher = await prisma.teacher.create({
-            data: role
+            data: {
+                teacherid: userId,
+                ...role
+            }
         })
 
         const user = await prisma.User.updata({
@@ -80,9 +80,11 @@ export class AssignUserRoleCase {
         return user
     }
 
-    async AssignManagerRole(userId: number, role: CreateManagerType) {
+    async AssignManagerRole(userId: number) {
         const manager = await prisma.manager.create({
-            data: role
+            data: {
+                managerid: userId,
+            }
         })
         
         const user = await prisma.User.update({

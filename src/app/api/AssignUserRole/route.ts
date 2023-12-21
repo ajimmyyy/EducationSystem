@@ -40,7 +40,7 @@ export async function POST(request: Request) {
             }
         case 'manager':
             try {
-                const user = await assignUserRoleCase.AssignManagerRole(body.userid, body.body);
+                const user = await assignUserRoleCase.AssignManagerRole(body.userid);
                 return Response.json({ success: true, user })
             }
             catch (error) {
