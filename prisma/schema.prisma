@@ -39,11 +39,10 @@ model collectcourse {
 model course {
   courseid            Int                   @id @default(autoincrement())
   coursename          String                @db.VarChar(255)
-  credit              Int?
-  studentquota        Int?
+  credit              Int
+  studentquota        Int
   syllabusurl         String?               @db.VarChar(255)
-  isenglishtaught     Boolean?
-  enrollmentnum       Int?
+  isenglishtaught     Boolean               @default(false)
   teacherid           Int?
   departmentid        Int?
   collectcourse       collectcourse[]
@@ -124,10 +123,13 @@ model teacher {
 }
 
 model unassignedcourse {
-  studentid Int
-  courseid  Int
-  course    course  @relation(fields: [courseid], references: [courseid], onDelete: Cascade)
-  student   student @relation(fields: [studentid], references: [studentid], onDelete: Cascade)
+  studentid   Int
+  courseid    Int
+  requesttime  DateTime @default(now())
+  reason      String?
+  state       String   @db.VarChar(5) @default("wait")
+  course      course  @relation(fields: [courseid], references: [courseid], onDelete: Cascade)
+  student     student @relation(fields: [studentid], references: [studentid], onDelete: Cascade)
 
   @@id([studentid, courseid])
 }
