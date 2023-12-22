@@ -9,6 +9,7 @@ interface CourseType {
 }
 
 interface ScheduleType {
+    semester: string
     weekday: string
     starttime: string
     endtime: string
@@ -87,6 +88,7 @@ export class ManageCourseCase {
         await Promise.all(scheduleData.map(schedule => {
             return prisma.schedule.create({
                 data:{
+                    semester: schedule.semester,
                     weekday: schedule.weekday,
                     starttime: this.buildDateObject(schedule.starttime),
                     endtime: this.buildDateObject(schedule.endtime),
