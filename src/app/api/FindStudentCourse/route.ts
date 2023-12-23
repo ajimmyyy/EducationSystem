@@ -22,11 +22,16 @@ export async function POST(request: Request) {
     );
     const courseTableId = courseTable.coursetableid;
     if (courseTableId != null) {
-      const participationCourse =
+      const participationCourseIdList =
         await findStudentCourseTable.FindStudentParticipationCourseId(
           courseTableId
         );
-      return Response.json({ success: true, participationCourse });
+      const courseDetails =
+        await findStudentCourseTable.FindAllStudentParticipationCourse(
+          participationCourseIdList,
+          semester
+        );
+      return Response.json({ success: true, courseDetails });
     } else {
       return Response.json({ success: false, courseTable });
     }

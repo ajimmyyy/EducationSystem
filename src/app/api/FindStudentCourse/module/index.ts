@@ -26,14 +26,24 @@ export class FindStudentCourseCase {
         courseid: true,
       },
     });
-    return await this.FindAllStudentParticipationCourse(member);
+    return member;
   }
-  async FindAllStudentParticipationCourse(courseList: CourseIdRequestBody[]) {
+  async FindAllStudentParticipationCourse(
+    courseList: CourseIdRequestBody[],
+    semester: string
+  ) {
     const participationCourseDetails = await Promise.all(
       courseList.map(async (course) => {
         const courseInfo = await prisma.course.findUnique({
           where: {
             courseid: course.courseid,
+          },
+          include: {
+            schedule: {
+              where: {
+                semester: semester,
+              },
+            },
           },
         });
         return courseInfo;
