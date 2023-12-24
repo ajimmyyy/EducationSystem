@@ -44,6 +44,15 @@ export class FindStudentCourseCase {
                 semester: semester,
               },
             },
+            courseclassroom: {
+              select: {
+                classroom: {
+                  select: {
+                    location: true,
+                  },
+                },
+              },
+            },
           },
         });
         return courseInfo;
