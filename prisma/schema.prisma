@@ -65,10 +65,10 @@ model courseclassroom {
 
 model coursetable {
   coursetableid       Int                   @id @default(autoincrement())
-  semester            String?               @db.VarChar(255)
-  studentid           Int?
+  semester            String                @db.VarChar(255)
+  studentid           Int
   collectcourse       collectcourse[]
-  student             student?              @relation(fields: [studentid], references: [studentid], onDelete: Cascade)
+  student             student               @relation(fields: [studentid], references: [studentid], onDelete: Cascade)
   participationcourse participationcourse[]
 }
 
@@ -96,13 +96,13 @@ model participationcourse {
 }
 
 model schedule {
-  weekday   String    @db.VarChar(3)
-  starttime DateTime  @db.Time(6)
-  endtime   DateTime? @db.Time(6)
-  courseid  Int
-  course    course    @relation(fields: [courseid], references: [courseid], onDelete: Cascade)
-
-  @@id([courseid, weekday, starttime])
+  scheduleid  Int       @id @default(autoincrement())
+  semester    String    @db.VarChar(255)
+  weekday     String    @db.VarChar(3)
+  starttime   DateTime  @db.Time(6)
+  endtime     DateTime  @db.Time(6)
+  courseid    Int
+  course      course    @relation(fields: [courseid], references: [courseid], onDelete: Cascade)
 }
 
 model student {
