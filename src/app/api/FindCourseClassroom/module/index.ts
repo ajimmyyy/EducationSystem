@@ -2,7 +2,7 @@ import prisma from "@/utils/prisma";
 
 export class FindCourseClassroomCase {
   async FindClassroom(courseId: number) {
-    const classroom = await prisma.courseclassroom.findFirst({
+    const classroom = await prisma.courseclassroom.findMany({
       where: {
         courseid: courseId,
       },

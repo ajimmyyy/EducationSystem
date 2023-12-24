@@ -16,25 +16,30 @@ export async function POST(request: Request) {
     });
   }
   try {
+    // 找到courseTable資料
     const courseTable = await findStudentCourseTable.FindStudentTableId(
       studentId,
       semester
     );
     const courseTableId = courseTable.coursetableid;
     if (courseTableId != null) {
+      // 找到學生參與課程的ID
       const participationCourseIdList =
         await findStudentCourseTable.FindStudentParticipationCourseId(
           courseTableId
         );
+      // 從課程ID去找詳細資料
       const courseDetails =
         await findStudentCourseTable.FindAllStudentParticipationCourse(
           participationCourseIdList,
           semester
         );
       return Response.json({ success: true, courseDetails });
-    } else {
-      return Response.json({ success: false, courseTable });
     }
+    return Response.json({
+      success: false,
+      error: "Not found participation table",
+    });
   } catch (error) {
     return Response.json({ success: false, error });
   }

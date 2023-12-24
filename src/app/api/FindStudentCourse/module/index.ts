@@ -5,6 +5,7 @@ interface CourseIdRequestBody {
 }
 
 export class FindStudentCourseCase {
+  // 找到tableID
   async FindStudentTableId(studentId: number, semester: string) {
     const member = await prisma.coursetable.findFirst({
       where: {
@@ -17,6 +18,7 @@ export class FindStudentCourseCase {
     });
     return member;
   }
+  //只有找到課程ID
   async FindStudentParticipationCourseId(coursetableId: number) {
     const member = await prisma.participationcourse.findMany({
       where: {
@@ -28,6 +30,7 @@ export class FindStudentCourseCase {
     });
     return member;
   }
+  // 從參與的課程ID找到課程資料
   async FindAllStudentParticipationCourse(
     courseList: CourseIdRequestBody[],
     semester: string
@@ -37,22 +40,6 @@ export class FindStudentCourseCase {
         const courseInfo = await prisma.course.findUnique({
           where: {
             courseid: course.courseid,
-          },
-          include: {
-            schedule: {
-              where: {
-                semester: semester,
-              },
-            },
-            courseclassroom: {
-              select: {
-                classroom: {
-                  select: {
-                    location: true,
-                  },
-                },
-              },
-            },
           },
         });
         return courseInfo;
