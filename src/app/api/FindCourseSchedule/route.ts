@@ -1,12 +1,12 @@
 import { findCourseSchedule } from "./module";
 
-interface courseScheduleRequest {
+interface CourseScheduleRequest {
   semester: string;
   courseid: number;
 }
 
 export async function POST(request: Request) {
-  const body: courseScheduleRequest = await request.json();
+  const body: CourseScheduleRequest = await request.json();
   const semester = body.semester;
   const courseId = body.courseid;
   if (!courseId || !semester) {

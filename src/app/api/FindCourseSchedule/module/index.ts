@@ -1,6 +1,6 @@
 import prisma from "@/utils/prisma";
 
-export class FindCourseSchedule {
+export class FindCourseScheduleCase {
   async FindSchedule(semester: string, courseId: number) {
     const schedule = await prisma.schedule.findMany({
       where: {
@@ -11,4 +11,4 @@ export class FindCourseSchedule {
     return schedule;
   }
 }
-export const findCourseSchedule = new FindCourseSchedule();
+export const findCourseSchedule = new FindCourseScheduleCase();
