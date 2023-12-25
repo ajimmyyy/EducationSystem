@@ -10,8 +10,8 @@ export async function POST(request: Request) {
         return new Response(JSON.stringify({ success: true, addedCourse }), {
             headers: { 'Content-Type': 'application/json' }
         });
-    } catch (error) {
-        return new Response(JSON.stringify({ success: false, error}), {
+    } catch (error: any) {
+        return new Response(JSON.stringify({ success: false, error: error.message}), {
             headers: { 'Content-Type': 'application/json' }
         });
     }
