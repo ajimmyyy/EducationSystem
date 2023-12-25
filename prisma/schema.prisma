@@ -28,12 +28,12 @@ model classroom {
 }
 
 model collectcourse {
-  coursetableid Int
-  courseid      Int
-  course        course      @relation(fields: [courseid], references: [courseid], onDelete: Cascade)
-  coursetable   coursetable @relation(fields: [coursetableid], references: [coursetableid], onDelete: Cascade)
+  studentid Int
+  courseid  Int
+  course    course  @relation(fields: [courseid], references: [courseid], onDelete: Cascade)
+  student   student @relation(fields: [studentid], references: [studentid], onDelete: Cascade)
 
-  @@id([coursetableid, courseid])
+  @@id([studentid, courseid])
 }
 
 model course {
@@ -67,7 +67,7 @@ model coursetable {
   coursetableid       Int                   @id @default(autoincrement())
   semester            String                @db.VarChar(255)
   studentid           Int
-  collectcourse       collectcourse[]
+  unassignedcourse    unassignedcourse[]
   student             student               @relation(fields: [studentid], references: [studentid], onDelete: Cascade)
   participationcourse participationcourse[]
 }
@@ -96,21 +96,21 @@ model participationcourse {
 }
 
 model schedule {
-  scheduleid  Int       @id @default(autoincrement())
-  semester    String    @db.VarChar(255)
-  weekday     String    @db.VarChar(3)
-  starttime   DateTime  @db.Time(6)
-  endtime     DateTime  @db.Time(6)
-  courseid    Int
-  course      course    @relation(fields: [courseid], references: [courseid], onDelete: Cascade)
+  scheduleid Int      @id @default(autoincrement())
+  semester   String   @db.VarChar(255)
+  weekday    String   @db.VarChar(3)
+  starttime  DateTime @db.Time(6)
+  endtime    DateTime @db.Time(6)
+  courseid   Int
+  course     course   @relation(fields: [courseid], references: [courseid], onDelete: Cascade)
 }
 
 model student {
-  studentid        Int                @id
-  class            String?            @db.VarChar(50)
-  coursetable      coursetable[]
-  User             User               @relation(fields: [studentid], references: [userid], onDelete: Cascade)
-  unassignedcourse unassignedcourse[]
+  studentid     Int             @id
+  class         String?         @db.VarChar(50)
+  coursetable   coursetable[]
+  User          User            @relation(fields: [studentid], references: [userid], onDelete: Cascade)
+  collectcourse collectcourse[]
 }
 
 model teacher {
@@ -123,13 +123,13 @@ model teacher {
 }
 
 model unassignedcourse {
-  studentid   Int
-  courseid    Int
-  requesttime  DateTime @default(now())
-  reason      String?
-  state       String   @db.VarChar(5) @default("wait")
-  course      course  @relation(fields: [courseid], references: [courseid], onDelete: Cascade)
-  student     student @relation(fields: [studentid], references: [studentid], onDelete: Cascade)
+  coursetableid Int
+  courseid      Int
+  requesttime   DateTime    @default(now())
+  reason        String?
+  state         String      @default("wait") @db.VarChar(5)
+  course        course      @relation(fields: [courseid], references: [courseid], onDelete: Cascade)
+  coursetable   coursetable @relation(fields: [coursetableid], references: [coursetableid], onDelete: Cascade)
 
-  @@id([studentid, courseid])
+  @@id([coursetableid, courseid])
 }
