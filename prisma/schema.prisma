@@ -7,129 +7,168 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Classroom {
+  id         Int        @id @default(autoincrement())
+  location   String     @db.VarChar(255)
+  buildingid Int?
+  Schedule   Schedule[]
+}
+
+model Course {
+  // 課程 id(給資料庫做唯一辨識使用)
+  id                  Int                   @id @default(autoincrement())
+  // 課程 code (給學生選課使用)
+  code                String                @unique @db.VarChar(255)
+  // 課程名稱
+  name                String                @db.VarChar(255)
+  // 學分
+  credit              Int
+  // 階段
+  phase               Int
+  // 時數
+  hours               Int
+  // 限修人數
+  studentQuota        Int
+  // 教學大綱
+  syllabus            String?               @db.VarChar(2048)
+  // 課程進度
+  progress            String?               @db.VarChar(2048)
+  // 評分方式
+  grading             String?               @db.VarChar(2048)
+  // 使用教材
+  textbook            String?               @db.VarChar(2048)
+  // 備註
+  note                String?               @db.VarChar(2048)
+  // 備註2
+  note2               String?               @db.VarChar(2048)
+  // 英文授課
+  isEnglishTaught     Boolean               @default(false)
+  // 教師
+  teacherId           Int?
+  teacher             Teacher?              @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  // 開課系所
+  departmentId        Int?
+  department          Department?           @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  // 課表
+  schedule            Schedule[]
+  // 加選資料
+  collectCourse       CollectCourse[]
+  // 參與名單
+  participationCourse ParticipationCourse[]
+  // 加選名單
+  unassignedCourse    UnassignedCourse[]
+}
+
+model CourseTable {
+  id                  Int                   @id @default(autoincrement())
+  semester            String                @db.VarChar(255)
+  studentId           Int
+  student             Student               @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  participationCourse ParticipationCourse[]
+  unassignedCourse    UnassignedCourse[]
+}
+
+model Department {
+  id     Int      @id @default(autoincrement())
+  name   String   @db.VarChar(255)
+  email  String?  @db.VarChar(255)
+  phone  String?  @db.VarChar(20)
+  user   User[]
+  course Course[]
+}
+
+// 時間段
+model Schedule {
+  // 1~7
+  weekday   Int
+  // ex: ['7','8','A']
+  intervals String[]
+
+  courseId Int
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  Classroom   Classroom? @relation(fields: [classroomId], references: [id])
+  classroomId Int?
+
+  createdAt DateTime @default(now())
+
+  @@id([courseId, weekday])
+}
+
 model User {
-  userid       Int         @id @default(autoincrement())
+  id           Int         @id @default(autoincrement())
   name         String      @db.VarChar(255)
   password     String      @db.VarChar(255)
   email        String      @unique @db.VarChar(255)
   cellphone    String?     @db.VarChar(20)
-  departmentid Int?
-  department   department? @relation(fields: [departmentid], references: [departmentid], onDelete: Cascade)
-  manager      manager?
-  student      student?
-  teacher      teacher?
+  departmentId Int?
+  department   Department? @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  manager      Manager?
+  student      Student?
+  teacher      Teacher?
 }
 
-model classroom {
-  classroomid     Int               @id @default(autoincrement())
-  location        String            @db.VarChar(255)
-  buildingid      Int?
-  courseclassroom courseclassroom[]
+// 管理員
+model Manager {
+  id   Int  @id
+  user User @relation(fields: [id], references: [id], onDelete: Cascade)
 }
 
-model collectcourse {
-  studentid Int
-  courseid  Int
-  course    course  @relation(fields: [courseid], references: [courseid], onDelete: Cascade)
-  student   student @relation(fields: [studentid], references: [studentid], onDelete: Cascade)
-
-  @@id([studentid, courseid])
-}
-
-model course {
-  courseid            Int                   @id @default(autoincrement())
-  coursename          String                @db.VarChar(255)
-  credit              Int
-  studentquota        Int
-  syllabusurl         String?               @db.VarChar(255)
-  isenglishtaught     Boolean               @default(false)
-  teacherid           Int?
-  departmentid        Int?
-  collectcourse       collectcourse[]
-  department          department?           @relation(fields: [departmentid], references: [departmentid], onDelete: Cascade)
-  teacher             teacher?              @relation(fields: [teacherid], references: [teacherid], onDelete: Cascade)
-  courseclassroom     courseclassroom[]
-  participationcourse participationcourse[]
-  schedule            schedule[]
-  unassignedcourse    unassignedcourse[]
-}
-
-model courseclassroom {
-  courseid    Int
-  classroomid Int
-  classroom   classroom @relation(fields: [classroomid], references: [classroomid], onDelete: Cascade)
-  course      course    @relation(fields: [courseid], references: [courseid], onDelete: Cascade)
-
-  @@id([courseid, classroomid])
-}
-
-model coursetable {
-  coursetableid       Int                   @id @default(autoincrement())
-  semester            String                @db.VarChar(255)
-  studentid           Int
-  unassignedcourse    unassignedcourse[]
-  student             student               @relation(fields: [studentid], references: [studentid], onDelete: Cascade)
-  participationcourse participationcourse[]
-}
-
-model department {
-  departmentid   Int      @id @default(autoincrement())
-  departmentname String   @db.VarChar(255)
-  email          String?  @db.VarChar(255)
-  phone          String?  @db.VarChar(20)
-  User           User[]
-  course         course[]
-}
-
-model manager {
-  managerid Int  @id
-  User      User @relation(fields: [managerid], references: [userid], onDelete: Cascade)
-}
-
-model participationcourse {
-  coursetableid Int
-  courseid      Int
-  course        course      @relation(fields: [courseid], references: [courseid], onDelete: Cascade)
-  coursetable   coursetable @relation(fields: [coursetableid], references: [coursetableid], onDelete: Cascade)
-
-  @@id([coursetableid, courseid])
-}
-
-model schedule {
-  scheduleid Int      @id @default(autoincrement())
-  semester   String   @db.VarChar(255)
-  weekday    String   @db.VarChar(3)
-  starttime  DateTime @db.Time(6)
-  endtime    DateTime @db.Time(6)
-  courseid   Int
-  course     course   @relation(fields: [courseid], references: [courseid], onDelete: Cascade)
-}
-
-model student {
-  studentid     Int             @id
+// 學生
+model Student {
+  id            Int             @id
   class         String?         @db.VarChar(50)
-  coursetable   coursetable[]
-  User          User            @relation(fields: [studentid], references: [userid], onDelete: Cascade)
-  collectcourse collectcourse[]
+  courseTable   CourseTable[]
+  user          User            @relation(fields: [id], references: [id], onDelete: Cascade)
+  collectCourse CollectCourse[]
 }
 
-model teacher {
-  teacherid Int      @id
-  office    String?  @db.VarChar(50)
-  web       String?  @db.VarChar(255)
-  info      String?
-  course    course[]
-  User      User     @relation(fields: [teacherid], references: [userid], onDelete: Cascade)
+// 教師
+model Teacher {
+  id     Int      @id
+  office String?  @db.VarChar(50)
+  web    String?  @db.VarChar(255)
+  info   String?
+  course Course[]
+  user   User     @relation(fields: [id], references: [id], onDelete: Cascade)
 }
 
-model unassignedcourse {
-  coursetableid Int
-  courseid      Int
-  requesttime   DateTime    @default(now())
+// 收藏課程
+model CollectCourse {
+  studentId Int
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  courseId  Int
+  course    Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@id([studentId, courseId])
+}
+
+// 課程參與者
+model ParticipationCourse {
+  courseId      Int
+  course        Course      @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseTableId Int
+  courseTable   CourseTable @relation(fields: [courseTableId], references: [id], onDelete: Cascade)
+
+  @@id([courseTableId, courseId])
+}
+
+// 課程加選請求
+model UnassignedCourse {
+  // 綁定於某個人的某個課表
+  courseTableId Int
+  courseTable   CourseTable         @relation(fields: [courseTableId], references: [id], onDelete: Cascade)
+  courseId      Int
+  course        Course              @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  requestTime   DateTime            @default(now())
   reason        String?
-  state         String      @default("wait") @db.VarChar(5)
-  course        course      @relation(fields: [courseid], references: [courseid], onDelete: Cascade)
-  coursetable   coursetable @relation(fields: [coursetableid], references: [coursetableid], onDelete: Cascade)
+  state         CoueseAssignedState @default(wait)
 
-  @@id([coursetableid, courseid])
+  @@id([courseTableId, courseId])
+}
+
+enum CoueseAssignedState {
+  wait
+  success
+  fail
 }
