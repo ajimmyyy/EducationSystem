@@ -11,7 +11,7 @@ model Classroom {
   id         Int        @id @default(autoincrement())
   location   String     @db.VarChar(255)
   buildingid Int?
-  Schedule   Schedule[]
+  schedule   Schedule[]
 }
 
 model Course {
@@ -30,17 +30,19 @@ model Course {
   // 限修人數
   studentQuota        Int
   // 教學大綱
-  syllabus            String?               @db.VarChar(2048)
+  syllabus            String?               @db.VarChar(8192)
   // 課程進度
-  progress            String?               @db.VarChar(2048)
+  progress            String?               @db.VarChar(8192)
   // 評分方式
-  grading             String?               @db.VarChar(2048)
+  grading             String?               @db.VarChar(8192)
   // 使用教材
-  textbook            String?               @db.VarChar(2048)
+  textbook            String?               @db.VarChar(8192)
   // 備註
-  note                String?               @db.VarChar(2048)
-  // 備註2
-  note2               String?               @db.VarChar(2048)
+  note                String?               @db.VarChar(8192)
+  // 備註2，我不知道為什麼北科有兩個備註欄位
+  note2               String?               @db.VarChar(8192)
+  // 學期
+  semester            String                @db.VarChar(5)
   // 英文授課
   isEnglishTaught     Boolean               @default(false)
   // 教師
@@ -87,8 +89,8 @@ model Schedule {
   courseId Int
   course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
-  Classroom   Classroom? @relation(fields: [classroomId], references: [id])
   classroomId Int?
+  classroom   Classroom? @relation(fields: [classroomId], references: [id])
 
   createdAt DateTime @default(now())
 
@@ -99,7 +101,7 @@ model User {
   id           Int         @id @default(autoincrement())
   name         String      @db.VarChar(255)
   password     String      @db.VarChar(255)
-  email        String      @unique @db.VarChar(255)
+  email        String      @db.VarChar(255)
   cellphone    String?     @db.VarChar(20)
   departmentId Int?
   department   Department? @relation(fields: [departmentId], references: [id], onDelete: Cascade)

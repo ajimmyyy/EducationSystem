@@ -2,13 +2,7 @@ import puppeteer, { Page } from "puppeteer";
 import { load } from "cheerio";
 import { URL } from "url";
 import fs from "fs";
-import { Course } from "@prisma/client";
-
-type RawCourse = Omit<Course, "id" | "teacherId" | "departmentId"> & {
-  schedule: string[][];
-  teacherName: string;
-  classroom: string;
-};
+import { RawCourse } from "@/types/course";
 
 export async function fetchCourseData() {
   const url = "https://aps.ntut.edu.tw/course/tw/";
