@@ -13,10 +13,10 @@ export async function fetchCourseData(year: string, semester: string) {
   await page.goto(`${url}${subjStart}`, { waitUntil: "networkidle2" });
 
   const links = await getLinks(page);
-  const data = await processLinks(links, page, url);
+  const data = await processLinks(links, page, url, `${year}-${semester}`);
 
   await browser.close();
-  saveDataToFile(data);
+  saveDataToFile(data, year, semester);
   return data;
 }
 
@@ -45,7 +45,8 @@ async function getLinks(page: Page): Promise<string[]> {
 async function processLinks(
   links: string[],
   page: Page,
-  baseUrl: string
+  baseUrl: string,
+  semester: string
 ): Promise<RawCourse[]> {
   let data: RawCourse[] = [];
   console.log("共有: ", links.length, "個系所");
@@ -56,7 +57,7 @@ async function processLinks(
       waitUntil: "networkidle2",
     });
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    data.push(...(await processSubPage(page, link, baseUrl)));
+    data.push(...(await processSubPage(page, link, baseUrl, semester)));
   }
   return data;
 }
@@ -64,7 +65,8 @@ async function processLinks(
 async function processSubPage(
   page: Page,
   link: string,
-  baseUrl: string
+  baseUrl: string,
+  semester: string
 ): Promise<RawCourse[]> {
   const content = await page.content();
   const $ = load(content);
@@ -165,6 +167,7 @@ async function processSubPage(
         classroom: tdArray[14],
         note: tdArray[19],
         note2: tdArray[19],
+        semester,
         ...syllabus,
       });
     }
@@ -214,8 +217,8 @@ async function fetchCourseSyllabus(page: Page, link: string, baseUrl: string) {
   return courseDetail;
 }
 
-function saveDataToFile(data: RawCourse[]) {
-  const jsonFileName = "courses.json";
+function saveDataToFile(data: RawCourse[], year: string, semester: string) {
+  const jsonFileName = `./src/data/courses-${year}-${semester}.json`;
   fs.writeFileSync(jsonFileName, JSON.stringify(data, null, 2), "utf-8");
 }
 
