@@ -18,12 +18,6 @@ function ReactQueryProvider({ children }: PropsWithChildren) {
       new QueryClient({
         queryCache: new QueryCache({
           onError: (error) => {
-            if (error.message === "Unauthenticated.") {
-              toast.error("請先登入");
-              router.push("/login");
-              return;
-            }
-
             console.error(error.message);
             toast.error("檢測到一個錯誤，請檢查控制台");
           },

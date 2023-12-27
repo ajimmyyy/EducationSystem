@@ -1,12 +1,25 @@
-import { RawCourse } from "@/types/course";
 import prisma from "@/utils/prisma";
-import { z } from "zod";
+import { Prisma } from "@prisma/client";
 
-interface SearchCourseParams {
+export interface SearchCourseParams {
   keyword: string;
   semester: string;
   page: number;
   perPage: number;
+}
+export interface SearchCourseResult {
+  courses: Prisma.CourseGetPayload<{
+    include: {
+      schedule: {
+        include: {
+          classroom: true;
+        };
+      };
+      teacher: true;
+      department: true;
+    };
+  }>[];
+  courseCount: number;
 }
 
 async function searchCourse({
@@ -14,7 +27,7 @@ async function searchCourse({
   semester,
   page,
   perPage,
-}: SearchCourseParams) {
+}: SearchCourseParams): Promise<SearchCourseResult> {
   const keywords = keyword.split(/\s+/); // 使用正則表達式分割關鍵字
 
   const searchConditions = keywords.map((kw) => ({
@@ -43,6 +56,15 @@ async function searchCourse({
         },
       ],
     },
+    include: {
+      schedule: {
+        include: {
+          classroom: true,
+        },
+      },
+      teacher: true,
+      department: true,
+    },
     skip: page * perPage,
     take: perPage,
     orderBy: {
@@ -54,7 +76,21 @@ async function searchCourse({
     },
   });
 
-  return result;
+  const courseCount = await prisma.course.count({
+    where: {
+      AND: [
+        ...(searchConditions as any),
+        {
+          semester: semester,
+        },
+      ],
+    },
+  });
+
+  return {
+    courses: result,
+    courseCount,
+  };
 }
 
 export default {

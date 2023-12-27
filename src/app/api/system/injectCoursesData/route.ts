@@ -1,4 +1,4 @@
-import { injectCoursesData } from "@/utils/injectCourse";
+import { injectCoursesData } from "@/utils/inject-course";
 import * as data from "@/data/courses-112-2.json" assert { type: "json" };
 
 export async function GET() {
