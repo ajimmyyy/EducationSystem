@@ -1,16 +1,14 @@
 import { GetCourseDetail } from "./module";
+import { NextRequest } from "next/server";
 
-interface Body {
-    courseID: number;
-}
-
-export async function POST(request: Request) {
-    const body: Body = await request.json();
-    if (!body.courseID) {
+export async function GET(request: NextRequest) {
+    const params = request.nextUrl.searchParams;
+    const courseID = params.get("courseID") || {};
+    if (!courseID) {
         return Response.json({ success: false, error: 'Invalid request. Missing courseID' });
     }
     try {
-        const course = await GetCourseDetail(body.courseID);
+        const course = await GetCourseDetail(Number(courseID));
         return Response.json({ success: true, course });
     } catch (error) {
         return Response.json({ success: false, error })
