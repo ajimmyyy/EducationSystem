@@ -85,7 +85,7 @@ model Schedule {
   // 0~6
   weekday   Int
   // ex: ['7','8','A']
-  intervals String[]
+  intervals Interval[]
 
   courseId Int
   course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
@@ -96,6 +96,15 @@ model Schedule {
   createdAt DateTime @default(now())
 
   @@id([courseId, weekday])
+}
+
+model Interval {
+  weekday  Int
+  time     String   @db.VarChar(1)
+  courseId Int
+  schedule Schedule @relation(fields: [courseId, weekday], references: [courseId, weekday])
+
+  @@id([courseId, weekday, time])
 }
 
 model User {
