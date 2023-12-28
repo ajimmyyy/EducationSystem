@@ -51,6 +51,7 @@ export async function injectCoursesData(
   });
 
   // Batch insert courses
+  console.log("Injecting courses... Time", new Date());
   await prisma.course.createMany({ data: coursesData });
   const courses = await prisma.course.findMany({
     where: { semester },
@@ -68,56 +69,51 @@ export async function injectCoursesData(
       }
 
       return rawCourse.schedule
-        .filter((intervals) => intervals.length > 0)
-        .map((intervals, weekday) => {
-          console.log(
-            "weekday",
-            intervals.map((time) => ({
-              time,
-            }))
-          );
-          return {
-            weekday: Number(weekday),
-            intervals: {
-              createMany: {
-                data: intervals.map((time) => ({
-                  time,
-                })),
-              },
-            },
-            courseId: course?.id,
-            classroomId: classroom ? classroom.id : null,
-          };
-        });
+        .filter(intervals => intervals.length > 0)
+        .map((intervals, weekday) => ({
+          weekday: Number(weekday),
+          courseId: course?.id,
+          classroomId: classroom ? classroom.id : null,
+        }))
     }),
   });
 
-  // await prisma.interval.createMany({
-  //   data: rawCourses.flatMap((rawCourse, i) => {
-  //     const course = courses.find((c) => c.code === rawCourse.code);
-  //     if (!course) {
-  //       return [];
-  //     }
+  await prisma.interval.createMany({
+    data: rawCourses.flatMap((rawCourse, i) => {
+      const course = courses.find((c) => c.code === rawCourse.code);
+      if (!course) {
+        return [];
+      }
 
-  //     return rawCourse.schedule
-  //     .filter(intervals => intervals.length > 0)
-  //     .flatMap((intervals, weekday) => 
-  //         intervals.map(time => ({
-  //           time: time,
-  //           courseId: course.id,
-  //           weekday: weekday,
-  //         }))
-  //       );
-  //   }),
-  // });
+      return rawCourse.schedule
+      .filter(intervals => intervals.length > 0)
+      .flatMap((intervals, weekday) => 
+          intervals.map(time => ({
+            time: time,
+            courseId: course.id,
+            weekday: weekday,
+          }))
+        );
+    }),
+  });
+
+  console.log("Courses injected. Time", new Date());
+
+  console.log(`Courses injected for semester ${semester}`);
   isInjecting = false;
 }
 
 async function findOrCreateTeachers(names: string[]) {
+  console.log("Finding or creating teachers...");
   const batchSize = 20;
   const teachers = [];
+  console.log(`Total ${names.length} teachers`);
+  console.log(`Batch size ${batchSize}`);
 
   for (let i = 0; i < names.length; i += batchSize) {
+    console.log(
+      `Batch ${i / batchSize + 1} / ${Math.ceil(names.length / batchSize)}`
+    );
     const batch = names.slice(i, i + batchSize);
     const batchTeachers = await Promise.all(
       batch.map((name) => findOrCreateTeacher(name))
@@ -151,10 +147,15 @@ async function findOrCreateTeacher(name: string) {
 }
 
 async function findOrCreateClassrooms(locations: string[]) {
+  console.log("Finding or creating classrooms...");
+  console.log(`Total ${locations.length} classrooms`);
   const batchSize = 20;
   const classrooms = [];
 
   for (let i = 0; i < locations.length; i += batchSize) {
+    console.log(
+      `Batch ${i / batchSize + 1} / ${Math.ceil(locations.length / batchSize)}`
+    );
     const batch = locations.slice(i, i + batchSize);
     const batchTeachers = await Promise.all(
       batch.map((name) => findOrCreateClassroom(name))
