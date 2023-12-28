@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     });
   }
   try {
-    const courseRequests = await GetCourseRequest(teacherID);
+    const courseRequests = await GetCourseRequest(Number(teacherID));
     return Response.json({ success: true, courseRequests });
   } catch (error) {
     return Response.json({ success: false, error });
