@@ -22,12 +22,18 @@ export interface SearchCourseResult {
   courseCount: number;
 }
 
+const searchCache = new Map<string, SearchCourseResult>();
+
 async function searchCourse({
   keyword,
   semester,
   page,
   perPage,
 }: SearchCourseParams): Promise<SearchCourseResult> {
+  const cacheKey = `${keyword}-${semester}-${page}-${perPage}`;
+  if (searchCache.has(cacheKey)) {
+    return searchCache.get(cacheKey)!;
+  }
   const keywords = keyword.split(/\s+/); // 使用正則表達式分割關鍵字
 
   const searchConditions = keywords.map((kw) => ({
@@ -60,6 +66,7 @@ async function searchCourse({
       schedule: {
         include: {
           classroom: true,
+          intervals: true,
         },
       },
       teacher: true,
@@ -85,6 +92,11 @@ async function searchCourse({
         },
       ],
     },
+  });
+
+  searchCache.set(cacheKey, {
+    courses: result,
+    courseCount,
   });
 
   return {

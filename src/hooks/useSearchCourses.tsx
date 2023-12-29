@@ -2,7 +2,7 @@ import { useSearchParams } from "next/navigation";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import apiFetcher from "@/utils/api-fetcher";
 import { useQueryParams } from "./useQueryParams";
-import { SearchCourseResult } from "@/services/courseService";
+import type { SearchCourseResult } from "@/services/courseService";
 
 const BATCH_SIZE = 20;
 
@@ -18,7 +18,6 @@ export const useSearchCourses = () => {
         page: pageParam,
         perPage: BATCH_SIZE,
       });
-      console;
       const data = await apiFetcher(`/api/course/search`, {
         method: "POST",
         body: {
@@ -31,7 +30,7 @@ export const useSearchCourses = () => {
     },
     initialPageParam: 0,
     getNextPageParam: (lastPage, allPages) => {
-      const { courses, courseCount } = lastPage;
+      const { courseCount } = lastPage;
       const isLastPage = allPages.length * BATCH_SIZE >= courseCount;
       if (isLastPage) return undefined;
       return allPages.length;
