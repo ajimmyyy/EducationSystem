@@ -9,8 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.11.3",
+    "@emotion/styled": "^11.11.0",
     "@material-tailwind/react": "^2.1.6",
-    "@prisma/client": "^5.7.0",
+    "@mui/material": "^5.15.2",
+    "@prisma/client": "^5.7.1",
     "@tanstack/react-query": "^5.15.0",
     "@tanstack/react-query-devtools": "^5.15.0",
     "cheerio": "^1.0.0-rc.12",
