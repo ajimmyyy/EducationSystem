@@ -1,11 +1,6 @@
 import { GetStudentCourse } from "./module";
 import { NextRequest } from "next/server";
 
-interface FindTableIdRequestBody {
-  studentid: number;
-  semester: string;
-}
-
 export async function GET(request: NextRequest) {
   const params = request.nextUrl.searchParams;
   const studentId = params.get("studentId") || {};

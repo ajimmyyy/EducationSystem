@@ -15,7 +15,7 @@ import prisma from "@/utils/prisma";
 // }
 
 export async function GetStudentCourse(studentId: number, semester: string) {
-  const member = await prisma.courseTable.findFirst({
+  const member = await prisma.courseTable.findMany({
     where: {
       studentId: studentId,
       semester: semester,

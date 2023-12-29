@@ -2,6 +2,9 @@
 
 import { Paper, Stack } from "@mui/material";
 import { TimetableRow } from "./timetable-row";
+import { useState } from "react";
+import useGetStudentCourse from "@/hooks/useGetStudentCourse";
+import StudentTableItem from "./student-table-item";
 
 const intervals: Record<string, { start: string; end: string }> = {
   "1": { start: "08:10", end: "09:00" },
@@ -20,7 +23,13 @@ const intervals: Record<string, { start: string; end: string }> = {
   D: { start: "21:10", end: "22:00" },
 };
 
+const studentId = 736;
+const semester = "112-1";
+
 export default function StudentTable() {
+  //const [semester, setSemester] = useState("112-1");
+  const { data } = useGetStudentCourse(studentId, semester);
+
   return (
     <div className="pb-4 pt-2 md:px-4">
       <table
@@ -55,6 +64,13 @@ export default function StudentTable() {
                   </span>
                 </Stack>
               </td>
+              {"012345".split("").map((day) => (
+                <td key={day + interval}>
+                  <StudentTableItem
+                    courseItem={data[`${day}-${interval}` as string]}
+                  ></StudentTableItem>
+                </td>
+              ))}
             </TimetableRow>
           ))}
         </tbody>
