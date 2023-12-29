@@ -1,11 +1,16 @@
 import prisma from "@/utils/prisma";
+import { PrismaClient, User as PrismaUser, Manager, Student, Teacher } from "@prisma/client";
 
 interface CreateMenberParams {
     name: string
     password: string
     email: string
     cellphone?: string
-    department?: string
+    departmentId?: number
+    schoolClass?: string
+    office?: string
+    web?: string
+    info?: string
 }
 
 interface DeleteMenberType {
@@ -15,14 +20,34 @@ interface DeleteMenberType {
 interface UpdateMenberType {
     email?: string
     cellphone?: string
-    departmentid?: number
+    departmentId?: number
     class?: string
     office?: string
     web?: string
     info?: string
 }
 
-export interface SearchMemberResult {
+interface SearchMemberResult {
+    userid: number
+    name: string
+    email: string
+    cellphone: string
+    departmentId: number
+    schoolClass?: string
+    office?: string
+    web?: string
+    info?: string
+}
+
+interface CreateStudentType{
+    schoolClass?: string
+    semester: string
+}
+
+interface CreateTeacherType{
+    office?: string
+    web?: string
+    info?: string
 }
 
 export class ManageUserCase {
@@ -31,19 +56,18 @@ export class ManageUserCase {
         password,
         email,
         cellphone,
-        department
-    }: CreateMenberParams) {
+        departmentId
+    }: CreateMenberParams): Promise<PrismaUser> {
         const departmentData = await prisma.department.findFirst({
             where: {
-                name: department,
+                id: departmentId,
             },
             select: {
                 id: true,
             },
         });
-        const departmentId = departmentData?.id || null;
 
-        if (!departmentId) throw new Error('Department not found');
+        if (!departmentData) throw new Error('Department not found');
 
         const member = await prisma.user.create({
             data: {
@@ -61,30 +85,133 @@ export class ManageUserCase {
 
         return member;
     }
+    async AssignStudentRole(userId: number, role: CreateStudentType) {
+        const { schoolClass, semester } = role;
+        const menber = await prisma.student.create({
+            data: {
+                id: userId,
+                class: schoolClass,
+            }
+        })
 
-    async SearchMember(userType: string) {
+        await prisma.courseTable.create({
+            data: {
+                semester: semester,
+                student: { connect: { id: menber.id } },
+            }
+        })
+
+        const user = await prisma.user.update({
+            where: {id: userId},
+            data: {
+                student: { connect: { id: menber.id } },
+            },
+        });
+
+        return user
+    }
+
+    async AssignTeacherRole(userId: number, role: CreateTeacherType) {
+        const teacher = await prisma.teacher.create({
+            data: {
+                id: userId,
+                ...role,
+            }
+        })
+
+        const user = await prisma.user.update({
+            where: {id: userId},
+            data: {
+                teacher: { connect: { id: teacher.id } },
+            },
+        });
+
+        return user
+    }
+
+    async AssignManagerRole(userId: number) {
+        const manager = await prisma.manager.create({
+            data: {
+                id: userId,
+            }
+        })
+        
+        const user = await prisma.user.update({
+            where: {id: userId},
+            data: {
+                manager: { connect: { id: manager.id } },
+            },
+        });
+
+        return user
+    }
+
+    async SearchMember(userType: string): Promise<SearchMemberResult[]>{
+        let result: SearchMemberResult[] = [];
+
         if (userType === 'manager') {
-            return prisma.manager.findMany({
+            const managers = await prisma.manager.findMany({
                 include: {
                     user: true,
                 },
             });
-        } else if (userType === 'teacher') {
-            return prisma.teacher.findMany({
+            result = managers.map((manager) => this.mapManagerToSearchMemberResult(manager));
+        } 
+        else if (userType === 'teacher') {
+            const teachers = await prisma.teacher.findMany({
                 include: {
                     user: true,
                 },
             });
-        } else if (userType === 'student') {
-            return prisma.student.findMany({
+            result = teachers.map((teacher) => this.mapTeacherToSearchMemberResult(teacher));
+        } 
+        else if (userType === 'student') {
+            const students = await prisma.student.findMany({
                 include: {
                     user: true,
                 },
             });
-        }
+            result = students.map((student) => this.mapStudentToSearchMemberResult(student));
+        } 
         else {
             throw new Error('userType must be "student", "teacher", or "manager"');
         }
+
+        return result;
+    }
+
+    private mapManagerToSearchMemberResult(manager: Manager & { user: PrismaUser }): SearchMemberResult {
+        return {
+            userid: manager.user.id,
+            name: manager.user.name,
+            email: manager.user.email,
+            cellphone: manager.user.cellphone || '',
+            departmentId: manager.user.departmentId || 0,
+        };
+    }
+    
+    private mapTeacherToSearchMemberResult(teacher: Teacher & { user: PrismaUser }): SearchMemberResult {
+        return {
+            userid: teacher.user.id,
+            name: teacher.user.name,
+            email: teacher.user.email,
+            cellphone: teacher.user.cellphone || '',
+            departmentId: teacher.user.departmentId || 0,
+            office: teacher.office || '',
+            web: teacher.web || '',
+            info: teacher.info || '',
+        };
+    }
+    
+    private mapStudentToSearchMemberResult(student: Student & { user: PrismaUser }): SearchMemberResult {
+        return {
+            userid: student.user.id,
+            name: student.user.name,
+            email: student.user.email,
+            cellphone: student.user.cellphone || '',
+            departmentId: student.user.departmentId || 0,
+            schoolClass: student.class || '',
+        };
     }
 
     // async DeleteMember(memberData: DeleteMenberType) {

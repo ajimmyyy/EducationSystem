@@ -80,8 +80,9 @@ model Department {
   course Course[]
 }
 
-// 時間段
+// 日程表
 model Schedule {
+  // 0~6
   weekday     Int
   // 多個時間段
   intervals   Interval[]

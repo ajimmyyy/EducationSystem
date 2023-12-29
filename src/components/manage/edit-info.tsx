@@ -1,23 +1,15 @@
-import { 
+import {
   Chip,
-  Card, 
-  Typography 
-} 
+  Card,
+  Typography,
+  Button,
+}
 from "@material-tailwind/react";
+import { useState, useEffect, use } from "react";
+import { useSearchUser } from "@/hooks/useSearchUser";
+import AddInfoButton from "./dialog-box";
 
-const TABLE_HEAD = ["uuid", "name", "email", "cellphone", "department", "class", ""];
-
-const TABLE_ROWS = [
-  {
-    uuid: 1,
-    name: "John Michael",
-    email: "tmp@gmail.com",
-    cellphone: "0912345678",
-    department: "資工系",
-    schoolClass: "資工三",
-  },
-];
-
+//表格元素
 const TableCell = ({ classes, value }: { classes: string; value: string }) => (
   <td className={classes}>
     <Typography placeholder variant="small" color="blue-gray" className="font-normal">
@@ -26,75 +18,107 @@ const TableCell = ({ classes, value }: { classes: string; value: string }) => (
   </td>
 );
 
-const TableRow = ({ classes, uuid, name, email, cellphone, department, schoolClass }:{
+//表格行
+const TableRow = ({ classes, id, name, email, cellphone, departmentId, schoolClass, office, web, info }: {
   classes: string;
-  uuid: number;
+  id: number;
   name: string;
   email: string;
   cellphone: string;
-  department: string;
-  schoolClass: string;
+  departmentId: number;
+  schoolClass?: string;
+  office?: string;
+  web?: string;
+  info?: string;
 }) => {
   return (
-    <tr key={uuid}>
-      {Object.values({ uuid, name, email, cellphone, department, schoolClass }).map((value, index) => (
-      <TableCell key={index} classes={classes} value={String(value)} />
-      ))}
+    <tr key={id}>
+      {Object.values({ id, name, email, cellphone, departmentId, schoolClass, office, web, info })
+        .filter((value) => value !== undefined)
+        .map((value, index) => (
+          <TableCell key={index} classes={classes} value={String(value)} />
+        ))}
       <td className={classes}>
-        <Typography
+        <Button
           placeholder
-          as="a"
-          href="#"
-          variant="small"
-          color="blue-gray"
-          className="font-medium"
+          className="rounded-full bg-gray-700"
+          size="sm"
         >
           Edit
-        </Typography>
+        </Button>
       </td>
     </tr>
   );
 };
 
-export function EditStudentInfo() {
+//表格列元素
+const TableHeader = ({ head, width }: { head: string, width: number }) => (
+  <th
+    className="border-b border-blue-gray-100 bg-blue-gray-50 p-4"
+    style={{ width: `${width}%` }}
+  >
+    <Typography
+      placeholder
+      variant="small"
+      color="blue-gray"
+      className="font-normal leading-none opacity-70"
+    >
+      {head}
+    </Typography>
+  </th>
+);
+
+// 資料庫資料表格
+export function EditUserInfo({ userType }: { userType: string }) {
+  // 表格列名稱(最後""保留給Edit按鈕)
+  const userTypeMappings = {
+    "student": { tableName: "學生列表", tableHead: ["id", "name", "email", "cellphone", "department", "class", ""] },
+    "teacher": { tableName: "教師列表", tableHead: ["id", "name", "email", "cellphone", "department", "office", "web", "info", ""]},
+    "manager": { tableName: "管理員列表", tableHead: ["id", "name", "email", "cellphone", "department", ""]},
+  };
+  const { tableName, tableHead } = (
+    userTypeMappings as {
+      [key: string]: { tableName: string; tableHead: string[] }
+    })[userType] || userTypeMappings.manager;
+
+  //api要取表格資料
+  const [tableRows, setTableRows] = useState([]);
+  const { users } = useSearchUser(userType);
+  useEffect(() => {
+    setTableRows(users);
+  }, [users]);
+
   return (
-    <div className="w-[calc(100vw-18rem)] mt-2">
-      <Chip value="學生列表" className="text-base"/>
-      <Card placeholder className="overflow-scroll">
+    <div className="w-[calc(100vw-305px)] mt-2">
+      <div className="flex gap-2">
+        <Chip value={tableName} className="text-base flex-grow" />
+        <AddInfoButton parameter={tableHead.slice(2, -1)} role={userType}/>
+      </div>
+      <Card placeholder className="overflow-scroll max-h-[calc(100vh-175px)]">
         <table className="table-auto text-left">
           <thead>
             <tr>
-              {TABLE_HEAD.map((head) => (
-                <th
-                  key={head}
-                  className="border-b border-blue-gray-100 bg-blue-gray-50 p-4"
-                >
-                  <Typography
-                    placeholder
-                    variant="small"
-                    color="blue-gray"
-                    className="font-normal leading-none opacity-70"
-                  >
-                    {head}
-                  </Typography>
-                </th>
+              {tableHead.map((head) => (
+                <TableHeader head={head} width={100 / (tableHead.length - 1)} />
               ))}
             </tr>
           </thead>
           <tbody>
-            {TABLE_ROWS.map(({ uuid, name, email, cellphone, department, schoolClass }, index) => {
-              const isLast = index === TABLE_ROWS.length - 1;
+            {tableRows.map(({ id, name, email, cellphone, departmentId, schoolClass, office, web, info }, index) => {
+              const isLast = index === tableRows.length - 1;
               const classes = isLast ? "p-4" : "p-4 border-b border-blue-gray-50";
-
               return (
                 <TableRow
                   classes={classes}
-                  uuid={uuid}
+                  id={id}
                   name={name}
                   email={email}
                   cellphone={cellphone}
-                  department={department}
+                  departmentId={departmentId}
                   schoolClass={schoolClass}
+                  office={office}
+                  web={web}
+                  info={info}
                 />
               );
             })}

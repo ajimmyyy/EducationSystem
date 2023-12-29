@@ -1,7 +1,7 @@
 import prisma from "@/utils/prisma";
 
 interface CreateDepartmentType {
-    departmentname: string
+    name: string
     email?: string
     phone?: string
 }
@@ -22,7 +22,7 @@ export class ManageDepartmentCase {
     async DeleteDepartment(departmentData: DeleteDepartmentType) {
         const department = await prisma.department.delete({
             where: {
-                departmentid: departmentData.departmentid
+                id: departmentData.departmentid
             }
         });
 
@@ -32,7 +32,7 @@ export class ManageDepartmentCase {
     async IsDepartmentExist(departmentData: CreateDepartmentType): Promise<boolean> {
         const department = await prisma.department.findFirst({
             where: {
-                departmentname: departmentData.departmentname,
+                name: departmentData.name,
             }
         });
 
