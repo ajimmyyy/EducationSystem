@@ -12,7 +12,15 @@ export async function injectCoursesData(
   }
   isInjecting = true;
   // Delete old course data
+  await prisma.interval.deleteMany({
+    where: {
+      schedule: {
+        course: { semester },
+      },
+    },
+  });
   await prisma.schedule.deleteMany({ where: { course: { semester } } });
+
   await prisma.course.deleteMany({ where: { semester } });
 
   // Extract unique teacher names and classroom locations

@@ -15,7 +15,11 @@ export interface SearchCourseResult {
           classroom: true;
         };
       };
-      teacher: true;
+      teacher: {
+        include: {
+          user: true;
+        };
+      };
       department: true;
     };
   }>[];
@@ -69,7 +73,11 @@ async function searchCourse({
           intervals: true,
         },
       },
-      teacher: true,
+      teacher: {
+        include: {
+          user: true,
+        },
+      },
       department: true,
     },
     skip: page * perPage,
