@@ -57,6 +57,8 @@ export async function injectCoursesData(
     where: { semester },
     select: { id: true, code: true },
   });
+
+  // Batch insert schedules
   await prisma.schedule.createMany({
     data: rawCourses.flatMap((rawCourse, i) => {
       const course = courses.find((c) => c.code === rawCourse.code);
@@ -71,11 +73,34 @@ export async function injectCoursesData(
       return rawCourse.schedule
         .map((intervals, weekday) => ({
           weekday: Number(weekday),
-          intervals,
           courseId: course?.id,
           classroomId: classroom ? classroom.id : null,
         }))
-        .filter((schedule) => schedule.intervals.length > 0);
+        .filter(courseData => {
+          const intervals = rawCourse.schedule[courseData.weekday];
+          return intervals && intervals.length > 0;
+        });// 过滤掉没有课的时间
+    }),
+  });
+
+  // Batch insert intervals
+  await prisma.interval.createMany({
+    data: rawCourses.flatMap((rawCourse, i) => {
+      const course = courses.find((c) => c.code === rawCourse.code);
+      if (!course) {
+        return [];
+      }
+
+      return rawCourse.schedule
+      .flatMap((intervals, weekday) => 
+        intervals
+          .filter(time => time.length > 0)
+          .map(time => ({
+            time: time,
+            courseId: course.id,
+            weekday: weekday,
+          }))
+      );
     }),
   });
 
