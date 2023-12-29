@@ -4,10 +4,6 @@ import { EditStudentInfo } from "@/components/manage/edit-info";
 import { Search } from "@/components/manage/search";
 import { Menu } from "@/components/manage/menu";
 
-const MenuStyle = {
-
-}
-
 export default function Home() {
     return (
       <main className="flex">
