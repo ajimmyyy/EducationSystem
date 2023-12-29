@@ -24,25 +24,19 @@ const intervals: Record<string, { start: string; end: string }> = {
 
 // 在等登入功能完成前，先寫死老師ID
 const teacherID = 4;
+const defaultSemester = "112-2";
 
 // 產生老師課表的畫面
 export default function TeacherTable() {
-  const [data, setData] = useState<CourseTable>({});
-  const [semester, setSemester] = useState("112-1");
-
-  useEffect(() => {
-    async function setTeacherCourseData() {
-      const data = await useGetTeacherCourse(teacherID, semester);
-      setData(data);
-    }
-    setTeacherCourseData();
-  }, [teacherID, semester]);
+  const [semester, setSemester] = useState(defaultSemester);
+  const { data } = useGetTeacherCourse(teacherID, semester);
 
   return (
     <>
     <div className="mt-4">
         <Select label="學期" placeholder={undefined}
           onChange={(e) => {setSemester(e as string)}}
+          value={defaultSemester}
         >
           <Option value="111-1">111-1</Option>
           <Option value="111-2">111-2</Option>
