@@ -1,16 +1,15 @@
 import {getTeacherCourseTable} from "./module";
+import { NextRequest } from "next/server";
 
-interface Body {
-    teacherID: number
-}
+export async function GET(request: NextRequest){
+    const params = await request.nextUrl.searchParams;
+    const teacherID = params.get("teacherID") || {};
 
-export async function POST(request: Request){
-    const body: Body = await request.json();
-    if (!body.teacherID) {
-        return Response.json({ success: false, error: 'Invalid request. Missing teacherID.' });
+    if (!teacherID) {
+        return Response.json({ success: false, error: 'Invalid request. Missing teacherID. ' + teacherID });
     }
     try{
-        const courseTable = await getTeacherCourseTable(body.teacherID);
+        const courseTable = await getTeacherCourseTable(Number(teacherID as string));
         return Response.json({ success: true, courseTable });
     }catch(error){
         return Response.json({ success: false, error })
