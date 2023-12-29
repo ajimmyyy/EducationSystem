@@ -82,20 +82,26 @@ model Department {
 
 // 時間段
 model Schedule {
-  // 0~6
-  weekday   Int
-  // ex: ['7','8','A']
-  intervals String[]
-
-  courseId Int
-  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
-
+  weekday     Int
+  // 多個時間段
+  intervals   Interval[]
+  courseId    Int
+  course      Course     @relation(fields: [courseId], references: [id], onDelete: Cascade)
   classroomId Int?
   classroom   Classroom? @relation(fields: [classroomId], references: [id])
-
-  createdAt DateTime @default(now())
+  createdAt   DateTime   @default(now())
 
   @@id([courseId, weekday])
+}
+
+// 時間段
+model Interval {
+  weekday  Int
+  time     String   @db.VarChar(1)
+  courseId Int
+  schedule Schedule @relation(fields: [courseId, weekday], references: [courseId, weekday])
+
+  @@id([courseId, weekday, time])
 }
 
 model User {
