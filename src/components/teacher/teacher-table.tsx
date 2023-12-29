@@ -1,6 +1,6 @@
 import TeacherTableItem from "./teacher-table-item";
 import getTeacherCourse from "@/hooks/useGetTeacherCourse";
-// import teacherCourses from "@/hooks/useGetTeacherCourse";
+import { CourseTable } from "@/hooks/useGetTeacherCourse";
 import { use, useEffect, useState } from "react";
 
 const intervals: Record<string, { start: string; end: string }> = {
@@ -22,7 +22,7 @@ const intervals: Record<string, { start: string; end: string }> = {
 
 export default function TeacherTable() {
   // const {data, getData} = teacherCourses;
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<CourseTable>({});
   useEffect(() => {
     getTeacherCourse(setData);
   }, []);
@@ -64,7 +64,7 @@ export default function TeacherTable() {
               </td>
               {"123456".split("").map((day) => (
                 <td key={day + interval}>
-                  <TeacherTableItem day={day} interval={interval} />
+                  <TeacherTableItem name= {data[`${day}-${interval}` as string]?.name}/>
                 </td>
               ))}
             </tr>
