@@ -6,15 +6,11 @@ interface CreateMenberParams {
     password: string
     email: string
     cellphone?: string
-    departmentId?: number
+    department?: string
     schoolClass?: string
     office?: string
     web?: string
     info?: string
-}
-
-interface DeleteMenberType {
-    userid: number
 }
 
 interface UpdateMenberType {
@@ -28,7 +24,7 @@ interface UpdateMenberType {
 }
 
 interface SearchMemberResult {
-    userid: number
+    id: number
     name: string
     email: string
     cellphone: string
@@ -37,11 +33,6 @@ interface SearchMemberResult {
     office?: string
     web?: string
     info?: string
-}
-
-interface CreateStudentType{
-    schoolClass?: string
-    semester: string
 }
 
 interface CreateTeacherType{
@@ -56,18 +47,18 @@ export class ManageUserCase {
         password,
         email,
         cellphone,
-        departmentId
+        department
     }: CreateMenberParams): Promise<PrismaUser> {
         const departmentData = await prisma.department.findFirst({
             where: {
-                id: departmentId,
+                name: department,
             },
             select: {
                 id: true,
             },
         });
-
-        if (!departmentData) throw new Error('Department not found');
+        const departmentId = departmentData?.id;
+        if (!departmentId) throw new Error('Department not found');
 
         const member = await prisma.user.create({
             data: {
@@ -85,19 +76,11 @@ export class ManageUserCase {
 
         return member;
     }
-    async AssignStudentRole(userId: number, role: CreateStudentType) {
-        const { schoolClass, semester } = role;
+    async AssignStudentRole(userId: number, schoolClass?: string) {
         const menber = await prisma.student.create({
             data: {
                 id: userId,
                 class: schoolClass,
-            }
-        })
-
-        await prisma.courseTable.create({
-            data: {
-                semester: semester,
-                student: { connect: { id: menber.id } },
             }
         })
 
@@ -182,7 +165,7 @@ export class ManageUserCase {
 
     private mapManagerToSearchMemberResult(manager: Manager & { user: PrismaUser }): SearchMemberResult {
         return {
-            userid: manager.user.id,
+            id: manager.user.id,
             name: manager.user.name,
             email: manager.user.email,
             cellphone: manager.user.cellphone || '',
@@ -192,7 +175,7 @@ export class ManageUserCase {
     
     private mapTeacherToSearchMemberResult(teacher: Teacher & { user: PrismaUser }): SearchMemberResult {
         return {
-            userid: teacher.user.id,
+            id: teacher.user.id,
             name: teacher.user.name,
             email: teacher.user.email,
             cellphone: teacher.user.cellphone || '',
@@ -205,7 +188,7 @@ export class ManageUserCase {
     
     private mapStudentToSearchMemberResult(student: Student & { user: PrismaUser }): SearchMemberResult {
         return {
-            userid: student.user.id,
+            id: student.user.id,
             name: student.user.name,
             email: student.user.email,
             cellphone: student.user.cellphone || '',
@@ -214,15 +197,15 @@ export class ManageUserCase {
         };
     }
 
-    // async DeleteMember(memberData: DeleteMenberType) {
-    //     const member = await prisma.User.delete({
-    //         where: {
-    //             userid: memberData.userid
-    //         }
-    //     });
+    async DeleteMember(userId: number) {
+        const member = await prisma.user.delete({
+            where: {
+                id: userId
+            }
+        });
 
-    //     return member;
-    // }
+        return member;
+    }
 
     // async UpdateMember(memberId: number, memberData: UpdateMenberType) {
     //     let user = await prisma.User.findUnique({

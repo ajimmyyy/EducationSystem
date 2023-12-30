@@ -8,7 +8,7 @@ import {
   AccordionHeader,
   AccordionBody,
 } from "@material-tailwind/react";
-import { set } from "zod";
+import AddSemesterListItem from "./add-semester-dialog";
  
 // 管理員控制項目的選單
 export function Menu({addOption}:{addOption: React.Dispatch<React.SetStateAction<string>>}) {
@@ -21,11 +21,17 @@ export function Menu({addOption}:{addOption: React.Dispatch<React.SetStateAction
   const DEPARTMENT_OPTION = "department";
 
   //分支選單開關
-  const [open, setOpen] = React.useState(0);
+  const [branchOpen, setBranchOpen] = React.useState(0);
+  //彈窗開關
+  const [dialogOpen, setDialogOpen] = React.useState(false);
+
   //分支選單開關控制
-  const handleOpen = (value: React.SetStateAction<number>) => {
-    setOpen(open === value ? 0 : value);
+  const handleBranchOpen = (value: React.SetStateAction<number>) => {
+    setBranchOpen(branchOpen === value ? 0 : value);
   };
+
+  //彈窗開關控制
+  const handleDialogOpen = () => setDialogOpen(!dialogOpen);
 
   //選單選項點擊控制
   const handleMenuOption = (value: string) => {
@@ -42,11 +48,11 @@ export function Menu({addOption}:{addOption: React.Dispatch<React.SetStateAction
       <List placeholder>
         <Accordion
           placeholder
-          open={open === 1}
-          icon={<span>{open === 1 ? '▲' : '▼'}</span>}
+          open={branchOpen === 1}
+          icon={<span>{branchOpen === 1 ? '▲' : '▼'}</span>}
         >
-          <ListItem placeholder className="p-0" selected={open === 1}>
-            <AccordionHeader placeholder onClick={() => handleOpen(1)} className="border-b-0 p-3">
+          <ListItem placeholder className="p-0" selected={branchOpen === 1}>
+            <AccordionHeader placeholder onClick={() => handleBranchOpen(1)} className="border-b-0 p-3">
               <Typography placeholder color="blue-gray" className="mr-auto font-normal">
                 使用者管理
               </Typography>
@@ -75,6 +81,7 @@ export function Menu({addOption}:{addOption: React.Dispatch<React.SetStateAction
         <ListItem placeholder onClick={() => handleMenuOption(DEPARTMENT_OPTION)}>
           系所管理
         </ListItem>
+        <AddSemesterListItem/>
       </List>
     </Card>
   );

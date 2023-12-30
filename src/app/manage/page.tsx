@@ -1,5 +1,5 @@
 "use client";
-import { EditUserInfo } from "@/components/manage/edit-info";
+import { EditUserInfo } from "@/components/manage/edit-user-info";
 import { Search } from "@/components/manage/search";
 import { Menu } from "@/components/manage/menu";
 import { useState, useEffect} from "react";

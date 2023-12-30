@@ -10,14 +10,11 @@ const MenberCreateRequestBody = z.object({
   cellphone: z.string().refine((value) => value.length === 10 && value.startsWith('09'), {
       message: 'Cellphone must be 10 characters long and start with "09"',
   }).optional(),
-  departmentId: z.number().optional(),
+  department: z.string().optional(),
   schoolClass: z.string().optional(),
   office: z.string().optional(),
   web: z.string().optional(),
   info: z.string().optional(),
-  semester: z.string().refine((value) => /^\d{3}-\d$/.test(value), {
-    message: "Invalid semester format.",
-  }),
 });
 
 const MenberSearchRequestBody = z.string().refine((value) =>
@@ -27,11 +24,19 @@ const MenberSearchRequestBody = z.string().refine((value) =>
   }
 );
 
+const MenberDeleteRequestBody = z.object({
+  userId: z.number().refine(value =>
+    value > 0,
+    {
+    message: "Value must be a non-zero positive integer"
+    }
+  )
+});
+
 interface UpdateRequest {
     userid: number
     data: any
 }
-
 
 export async function POST(request: Request) {
     const body = await request.json();
@@ -43,14 +48,14 @@ export async function POST(request: Request) {
         });
     }
 
-    const {role, name, password, email, cellphone, departmentId, schoolClass, office, web, info, semester } = parsed.data;
+    const {role, name, password, email, cellphone, department, schoolClass, office, web, info } = parsed.data;
     const response = await manageUserCase
     .CreateMember({
       name,
       password,
       email,
       cellphone,
-      departmentId,
+      department,
     })
     .catch((e) => {
       console.log(e);
@@ -62,7 +67,7 @@ export async function POST(request: Request) {
     switch (role) {
       case 'student':
           try {
-              const user = await manageUserCase.AssignStudentRole(id, {schoolClass: schoolClass, semester: semester});
+              const user = await manageUserCase.AssignStudentRole(id, schoolClass);
               return Response.json({ success: true, user })
           }
           catch (error) {
@@ -109,16 +114,24 @@ export async function GET(request: NextRequest) {
 
   return Response.json({ success: true, data: result });
 }
-// export async function DELETE(request: Request){
-//     const body = await request.json();
 
-//     try {
-//         const user = await manageUserCase.DeleteMember(body);
-//         return Response.json({ success: true, user })
-//     } catch (error) {
-//         return Response.json({ success: false, error })
-//     }
-// }
+export async function DELETE(request: Request){
+  const body = await request.json();
+  const parsed = MenberDeleteRequestBody.safeParse(body);
+  if (!parsed.success) {
+      return Response.json(parsed.error, {
+      status: 400,
+      statusText: "invalid request body",
+      });
+  }
+
+  try {
+    const user = await manageUserCase.DeleteMember(parsed.data.userId);
+    return Response.json({ success: true, user })
+  } catch (error) { 
+    return Response.json({ success: false, error });
+  }
+}
 
 // export async function PUT(request: Request){
 //     const body: UpdateRequest = await request.json();

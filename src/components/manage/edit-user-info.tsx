@@ -2,12 +2,12 @@ import {
   Chip,
   Card,
   Typography,
-  Button,
 }
 from "@material-tailwind/react";
 import { useState, useEffect, use } from "react";
 import { useSearchUser } from "@/hooks/useSearchUser";
-import AddInfoButton from "./dialog-box";
+import AddInfoButton from "./add-info-dialog";
+import EditMenu from "./edit-menu";
 
 //表格元素
 const TableCell = ({ classes, value }: { classes: string; value: string }) => (
@@ -39,13 +39,7 @@ const TableRow = ({ classes, id, name, email, cellphone, departmentId, schoolCla
           <TableCell key={index} classes={classes} value={String(value)} />
         ))}
       <td className={classes}>
-        <Button
-          placeholder
-          className="rounded-full bg-gray-700"
-          size="sm"
-        >
-          Edit
-        </Button>
+        <EditMenu userId={id}/>
       </td>
     </tr>
   );
@@ -69,21 +63,22 @@ const TableHeader = ({ head, width }: { head: string, width: number }) => (
 );
 
 // 資料庫資料表格
-export function EditUserInfo({ userType }: { userType: string }) {
-  // 表格列名稱(最後""保留給Edit按鈕)
-  const userTypeMappings = {
-    "student": { tableName: "學生列表", tableHead: ["id", "name", "email", "cellphone", "department", "class", ""] },
-    "teacher": { tableName: "教師列表", tableHead: ["id", "name", "email", "cellphone", "department", "office", "web", "info", ""]},
-    "manager": { tableName: "管理員列表", tableHead: ["id", "name", "email", "cellphone", "department", ""]},
+export function EditUserInfo({ userType }: { userType: string }) {  
+  const userTypeMappings: { [key: string]: { tableName: string; tableHead: string[] } } = {
+    student: { tableName: "學生列表", tableHead: ["id", "name", "email", "cellphone", "department", "schoolClass", ""] },
+    teacher: { tableName: "教師列表", tableHead: ["id", "name", "email", "cellphone", "department", "office", "web", "info", ""] },
+    manager: { tableName: "管理員列表", tableHead: ["id", "name", "email", "cellphone", "department", ""] },
   };
-  const { tableName, tableHead } = (
-    userTypeMappings as {
-      [key: string]: { tableName: string; tableHead: string[] }
-    })[userType] || userTypeMappings.manager;
 
-  //api要取表格資料
+  //表格名稱, 表格頭
+  const { tableName, tableHead } = userTypeMappings[userType] || userTypeMappings.student;
+  //新增資料項目
+  const inputHead = [...tableHead.slice(1, 2), "password", ...tableHead.slice(2, -1),];
+  //表格行
   const [tableRows, setTableRows] = useState([]);
+  //搜尋資料(使用者資料)
   const { users } = useSearchUser(userType);
+
   useEffect(() => {
     setTableRows(users);
   }, [users]);
@@ -92,7 +87,7 @@ export function EditUserInfo({ userType }: { userType: string }) {
     <div className="w-[calc(100vw-305px)] mt-2">
       <div className="flex gap-2">
         <Chip value={tableName} className="text-base flex-grow" />
-        <AddInfoButton parameter={tableHead.slice(2, -1)} role={userType}/>
+        <AddInfoButton parameter={inputHead} role={userType} />
       </div>
       <Card placeholder className="overflow-scroll max-h-[calc(100vh-175px)]">
         <table className="table-auto text-left">

@@ -5,11 +5,11 @@ export const useSearchUser = (userType: string) => {
     const [users, setUsers] = useState([]);
 
     useEffect(() => {
-        const fetchUsers = async () => {
-            const { data } = await apiFetcher("/api/ManageUser?type=" + userType, {});
+        const fetchUsers = async (type: string) => {
+            const { data } = await apiFetcher(`/api/ManageUser?type=${type}`, {});
             setUsers(data);
         }
-        fetchUsers();
+        fetchUsers(userType);
     }, [userType]);
 
     return {users};
