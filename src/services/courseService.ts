@@ -13,6 +13,7 @@ export interface SearchCourseResult {
       schedule: {
         include: {
           classroom: true;
+          intervals: true;
         };
       };
       teacher: {
@@ -38,19 +39,29 @@ async function searchCourse({
   if (searchCache.has(cacheKey)) {
     return searchCache.get(cacheKey)!;
   }
-  const keywords = keyword.split(/\s+/); // 使用正則表達式分割關鍵字
+  const keywords = keyword.split(" ");
 
-  const searchConditions = keywords.map((kw) => ({
+  const searchConditions = keywords.map((keyword) => ({
     OR: [
       {
         name: {
-          contains: kw,
+          contains: keyword,
           mode: "insensitive",
         },
       },
       {
-        syllabus: {
-          contains: kw,
+        teacher: {
+          user: {
+            name: {
+              contains: keyword,
+              mode: "insensitive",
+            },
+          },
+        },
+      },
+      {
+        code: {
+          contains: keyword,
           mode: "insensitive",
         },
       },
@@ -60,7 +71,9 @@ async function searchCourse({
   const result = await prisma.course.findMany({
     where: {
       AND: [
-        ...(searchConditions as any),
+        {
+          OR: [...(searchConditions as any)],
+        },
         {
           semester: semester,
         },
@@ -85,16 +98,17 @@ async function searchCourse({
     orderBy: {
       _relevance: {
         fields: ["name"],
-        search: keyword,
+        search: keywords[0],
         sort: "desc",
       },
     },
   });
-
   const courseCount = await prisma.course.count({
     where: {
       AND: [
-        ...(searchConditions as any),
+        {
+          OR: [...(searchConditions as any)],
+        },
         {
           semester: semester,
         },

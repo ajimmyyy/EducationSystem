@@ -5,11 +5,14 @@ import {
   ListItemPrefix,
   ListItemSuffix,
 } from "../material-tailwind";
+import { MdOutlinePerson, MdAccessTime } from "react-icons/md";
 
 interface CourseListItemProps {
   course: SearchCourseResult["courses"][0];
   index: number;
 }
+
+const weekdayMap = ["一", "二", "三", "四", "五", "六", "日"];
 
 export default function CourseListItem({ course, index }: CourseListItemProps) {
   return (
@@ -82,17 +85,68 @@ export default function CourseListItem({ course, index }: CourseListItemProps) {
             ) : null}
           </div>
         </div>
-        <div className="relative w-[20%] ">
+        <div className="relative flex w-[20%] gap-4">
           {course.teacher && (
             <Chip
               value={course.teacher.user.name}
               variant="ghost"
+              icon={
+                <span>
+                  <MdOutlinePerson />
+                </span>
+              }
               size="sm"
-              className="w-16 rounded-full px-2 py-1 text-xs group-hover:bg-white/20 group-hover:text-white"
+              className="w-fit rounded-full px-2 py-1 text-xs group-hover:bg-white/20 group-hover:text-white"
+            />
+          )}
+          {course.schedule.length > 0 && (
+            <Chip
+              value={course.schedule
+                .map(
+                  (schedule) =>
+                    `${weekdayMap[schedule.weekday]} ${schedule.intervals
+                      .map((interval) => interval.time)
+                      .join(",")} `,
+                )
+                .join(" / ")}
+              variant="ghost"
+              icon={
+                <span>
+                  <MdAccessTime />
+                </span>
+              }
+              size="sm"
+              className="w-fit rounded-full px-2 py-1 text-xs group-hover:bg-white/20 group-hover:text-white"
             />
           )}
         </div>
-        <div className="relative w-[20%]"></div>
+        <div className="relative w-[20%]">
+          {course.note === course.note2 ? (
+            <>
+              {course.note && (
+                <p className="text-xs text-gray-500">
+                  <span>備註:</span>
+                  {course.note}
+                </p>
+              )}
+            </>
+          ) : (
+            <>
+              {course.note && (
+                <p className="text-xs text-gray-500">
+                  <span>備註:</span>
+                  {course.note}
+                </p>
+              )}
+              {course.note2 && (
+                <p className="text-xs text-gray-500">
+                  <span>備註:</span>
+                  {course.note2}
+                </p>
+              )}
+            </>
+          )}
+        </div>
       </div>
       <ListItemSuffix placeholder="null">
         <Chip

@@ -13,11 +13,6 @@ export const useSearchCourses = () => {
   const infiniteQuery = useInfiniteQuery<SearchCourseResult>({
     queryKey: ["search", searchParams.toString()],
     queryFn: async ({ pageParam = 0 }) => {
-      console.debug(`Fetching page ${pageParam}...`, {
-        ...queryParams,
-        page: pageParam,
-        perPage: BATCH_SIZE,
-      });
       const data = await apiFetcher(`/api/course/search`, {
         method: "POST",
         body: {

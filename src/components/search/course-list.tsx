@@ -25,8 +25,6 @@ export default function CourseList() {
     isFetchingNextPage,
   } = useSearchCourses();
 
-  console.log("pages", pages);
-
   // when the button is visible, fetch more courses
   useEffect(() => {
     console.log("intersection?.isIntersecting", intersection?.isIntersecting);
@@ -57,19 +55,22 @@ export default function CourseList() {
         ))}
       </List>
 
-      <button
-        ref={loadMoreRef}
-        onClick={() => fetchNextPage()}
-        disabled={!hasNextPage || isFetchingNextPage}
-      >
-        {isLoading
-          ? ""
-          : isFetchingNextPage
-            ? "loading"
-            : hasNextPage
-              ? "load-more"
-              : "no-more"}
-      </button>
+      <div className="w-full">
+        <button
+          ref={loadMoreRef}
+          onClick={() => fetchNextPage()}
+          disabled={!hasNextPage || isFetchingNextPage}
+          className="w-full h-4  "
+        >
+          {isLoading
+            ? ""
+            : isFetchingNextPage
+              ? "loading"
+              : hasNextPage
+                ? "load-more"
+                : "no-more"}
+        </button>
+      </div>
     </main>
   );
 }
