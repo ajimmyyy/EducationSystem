@@ -10,7 +10,11 @@ from "@material-tailwind/react";
 import apiFetcher from "@/utils/api-fetcher";
 import { useState, useEffect, use } from 'react';
 
-const AddInfoButton = ({ parameter, role }: { parameter: string[], role: string }) => {
+const AddInfoButton = ({ parameter, role , setNeedUpdate}: {
+  parameter: string[],
+  role: string,
+  setNeedUpdate: React.Dispatch<React.SetStateAction<boolean>>
+}) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [parameterHead, setParameterHead] = useState<string[]>([]);
   const [inputInfos, setInputInfos] = useState<{}>({});
@@ -45,6 +49,7 @@ const AddInfoButton = ({ parameter, role }: { parameter: string[], role: string 
       });
 
       console.log(response);
+      setNeedUpdate(true);
     };
     fetchUsers();
     setDialogOpen(false);

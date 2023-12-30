@@ -8,7 +8,7 @@ const MenberCreateRequestBody = z.object({
   password: z.string(),
   email: z.string().email(),
   cellphone: z.string().refine((value) => value.length === 10 && value.startsWith('09'), {
-      message: 'Cellphone must be 10 characters long and start with "09"',
+    message: 'Cellphone must be 10 characters long and start with "09"',
   }).optional(),
   department: z.string().optional(),
   schoolClass: z.string().optional(),
@@ -17,39 +17,55 @@ const MenberCreateRequestBody = z.object({
   info: z.string().optional(),
 });
 
-const MenberSearchRequestBody = z.string().refine((value) =>
-  ['student', 'teacher', 'manager'].includes(value),
-  {
+const MemberSearchRequest = z.object({
+  type: z.string().refine((value) => ['student', 'teacher', 'manager'].includes(value), {
     message: 'userType must be "student", "teacher", or "manager"',
-  }
-);
+  }),
+  page: z.number().refine(value => value > 0, {
+    message: "Value must be a non-zero positive integer"
+  }),
+});
 
 const MenberDeleteRequestBody = z.object({
   userId: z.number().refine(value =>
     value > 0,
     {
-    message: "Value must be a non-zero positive integer"
+      message: "Value must be a non-zero positive integer"
     }
   )
 });
 
+const MenberUpdateRequestBody = z.object({
+  id: z.number().refine(value => value > 0, {
+    message: "Value must be a non-zero positive integer"
+  }),
+  email: z.string().email(),
+  cellphone: z.string().refine((value) => value.length === 10 && value.startsWith('09'), {
+    message: 'Cellphone must be 10 characters long and start with "09"',
+  }).optional(),
+  schoolClass: z.string().optional(),
+  office: z.string().optional(),
+  web: z.string().optional(),
+  info: z.string().optional(),
+});
+
 interface UpdateRequest {
-    userid: number
-    data: any
+  userid: number
+  data: any
 }
 
 export async function POST(request: Request) {
-    const body = await request.json();
-    const parsed = MenberCreateRequestBody.safeParse(body);
-    if (!parsed.success) {
-        return Response.json(parsed.error, {
-        status: 400,
-        statusText: "invalid request body",
-        });
-    }
+  const body = await request.json();
+  const parsed = MenberCreateRequestBody.safeParse(body);
+  if (!parsed.success) {
+    return Response.json(parsed.error, {
+      status: 400,
+      statusText: "invalid request body",
+    });
+  }
 
-    const {role, name, password, email, cellphone, department, schoolClass, office, web, info } = parsed.data;
-    const response = await manageUserCase
+  const { role, name, password, email, cellphone, department, schoolClass, office, web, info } = parsed.data;
+  const response = await manageUserCase
     .CreateMember({
       name,
       password,
@@ -62,51 +78,53 @@ export async function POST(request: Request) {
       return Response.json({ success: false, e });
     });
 
-    const { id } = response as { id: number; name: string; password: string; email: string; cellphone: string | null; departmentId: number | null; };
+  const { id } = response as { id: number; name: string; password: string; email: string; cellphone: string | null; departmentId: number | null; };
 
-    switch (role) {
-      case 'student':
-          try {
-              const user = await manageUserCase.AssignStudentRole(id, schoolClass);
-              return Response.json({ success: true, user })
-          }
-          catch (error) {
-              return Response.json({ success: false, error })
-          }
-      case 'teacher':
-          try {
-              const user = await manageUserCase.AssignTeacherRole(id, {office: office, web: web, info: info});
-              return Response.json({ success: true, user })
-          }
-          catch (error) {
-              return Response.json({ success: false, error })
-          }
-      case 'manager':
-          try {
-              const user = await manageUserCase.AssignManagerRole(id);
-              return Response.json({ success: true, user })
-          }
-          catch (error) {
-              return Response.json({ success: false, error })
-          }
-      default:
-          return Response.json({ success: false, error: "role doesn't exist"})
-    }
+  switch (role) {
+    case 'student':
+      try {
+        const user = await manageUserCase.AssignStudentRole(id, schoolClass);
+        return Response.json({ success: true, user })
+      }
+      catch (error) {
+        return Response.json({ success: false, error })
+      }
+    case 'teacher':
+      try {
+        const user = await manageUserCase.AssignTeacherRole(id, { office: office, web: web, info: info });
+        return Response.json({ success: true, user })
+      }
+      catch (error) {
+        return Response.json({ success: false, error })
+      }
+    case 'manager':
+      try {
+        const user = await manageUserCase.AssignManagerRole(id);
+        return Response.json({ success: true, user })
+      }
+      catch (error) {
+        return Response.json({ success: false, error })
+      }
+    default:
+      return Response.json({ success: false, error: "role doesn't exist" })
+  }
 }
 
 export async function GET(request: NextRequest) {
-    const params = request.nextUrl.searchParams;
-    const usertype = params.get("type") || "student";
-    const parsed = MenberSearchRequestBody.safeParse(usertype);
-    if (!parsed.success) {
-        return Response.json(parsed.error, {
-        status: 400,
-        statusText: "invalid request",
-        });
-    }
+  const PER_PAGE = 10;
+  const params = request.nextUrl.searchParams;
+  const usertype = params.get("type") || "student";
+  const page = params.get("page") || "1";
+  const parsed = MemberSearchRequest.safeParse({ type: usertype, page: parseInt(page) });
+  if (!parsed.success) {
+    return Response.json(parsed.error, {
+      status: 400,
+      statusText: "invalid request",
+    });
+  }
 
-    const result = await manageUserCase
-    .SearchMember(parsed.data)
+  const result = await manageUserCase
+    .SearchMember(parsed.data.type, parsed.data.page, PER_PAGE)
     .catch((e) => {
       console.log(e);
       return Response.json({ success: false, e });
@@ -115,32 +133,49 @@ export async function GET(request: NextRequest) {
   return Response.json({ success: true, data: result });
 }
 
-export async function DELETE(request: Request){
+export async function DELETE(request: Request) {
   const body = await request.json();
   const parsed = MenberDeleteRequestBody.safeParse(body);
   if (!parsed.success) {
-      return Response.json(parsed.error, {
+    return Response.json(parsed.error, {
       status: 400,
       statusText: "invalid request body",
-      });
+    });
   }
 
   try {
     const user = await manageUserCase.DeleteMember(parsed.data.userId);
     return Response.json({ success: true, user })
-  } catch (error) { 
+  } catch (error) {
     return Response.json({ success: false, error });
   }
 }
 
-// export async function PUT(request: Request){
-//     const body: UpdateRequest = await request.json();
-//     const { userid, data } = body;
+export async function PUT(request: Request){
+  const body = await request.json();
+  const parsed = MenberUpdateRequestBody.safeParse(body);
+  if (!parsed.success) {
+    return Response.json(parsed.error, {
+      status: 400,
+      statusText: "invalid request body",
+    });
+  }
+  
+  const { id, email, cellphone, schoolClass, office, web, info } = parsed.data;
 
-//     try {
-//         const user = await manageUserCase.UpdateMember(userid, data);
-//         return Response.json({ success: true, user })
-//     } catch (error) {
-//         return Response.json({ success: false, error })
-//     }
-// }
+  const response = await manageUserCase
+    .UpdateMember({
+      id,
+      email,
+      cellphone,
+      schoolClass,
+      office,
+      web,
+      info
+    })
+    .catch((e) => {
+      console.log(e);
+      return Response.json({ success: false, e });
+    });
+
+}

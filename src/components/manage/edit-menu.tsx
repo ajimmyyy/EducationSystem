@@ -10,7 +10,8 @@ import { useState, useEffect, use } from "react";
 import { MdBorderColor, MdOutlineDeleteOutline } from "react-icons/md";
 import apiFetcher from "@/utils/api-fetcher";
 
-const EditMenu = ({userId}: {userId: number}) => {
+const EditMenu = ({userId, setNeedUpdate}: {userId: number, setNeedUpdate: React.Dispatch<React.SetStateAction<boolean>>}) => {
+  
   const handleDeleteData = () => {
     const fetchUser = async () => {
       const response =  await apiFetcher("/api/ManageUser", {
@@ -19,7 +20,22 @@ const EditMenu = ({userId}: {userId: number}) => {
           userId: userId,
         },
       });
+      setNeedUpdate(true);
+      console.log(response);
+    };
+    fetchUser();
+  }
 
+  const handleEditData = () => {
+    const fetchUser = async () => {
+      const response =  await apiFetcher("/api/ManageUser", {
+        method: "PUT",
+        body: {
+          id: userId,
+
+        },
+      });
+      setNeedUpdate(true);
       console.log(response);
     };
     fetchUser();
@@ -37,11 +53,15 @@ const EditMenu = ({userId}: {userId: number}) => {
         </Button>
       </MenuHandler>
       <MenuList placeholder>
-        <MenuItem placeholder>
-          <MdBorderColor />
-        </MenuItem>
-        <MenuItem placeholder onClick={handleDeleteData}>
+        <>
+          <MenuItem placeholder className="flex">
+            <MdBorderColor />
+            edit
+          </MenuItem>
+        </>
+        <MenuItem placeholder onClick={handleDeleteData} className="flex">
           <MdOutlineDeleteOutline />
+          delete
         </MenuItem>
       </MenuList>
     </Menu>

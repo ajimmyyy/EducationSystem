@@ -22,16 +22,11 @@ export function Menu({addOption}:{addOption: React.Dispatch<React.SetStateAction
 
   //分支選單開關
   const [branchOpen, setBranchOpen] = React.useState(0);
-  //彈窗開關
-  const [dialogOpen, setDialogOpen] = React.useState(false);
 
   //分支選單開關控制
   const handleBranchOpen = (value: React.SetStateAction<number>) => {
     setBranchOpen(branchOpen === value ? 0 : value);
   };
-
-  //彈窗開關控制
-  const handleDialogOpen = () => setDialogOpen(!dialogOpen);
 
   //選單選項點擊控制
   const handleMenuOption = (value: string) => {
