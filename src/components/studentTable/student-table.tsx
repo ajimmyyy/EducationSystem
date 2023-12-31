@@ -5,6 +5,7 @@ import { TimetableRow } from "./timetable-row";
 import { useState } from "react";
 import useGetStudentCourse from "@/hooks/useGetStudentCourse";
 import StudentTableItem from "./student-table-item";
+import { Select, Option } from "@material-tailwind/react";
 
 const intervals: Record<string, { start: string; end: string }> = {
   "1": { start: "08:10", end: "09:00" },
@@ -24,57 +25,72 @@ const intervals: Record<string, { start: string; end: string }> = {
 };
 
 const studentId = 736;
-const semester = "112-1";
 
 export default function StudentTable() {
-  //const [semester, setSemester] = useState("112-1");
+  const [semester, setSemester] = useState("112-1");
   const { data } = useGetStudentCourse(studentId, semester);
 
   return (
-    <div className="pb-4 pt-2 md:px-4">
-      <table
-        style={{
-          width: "100%",
-          height: "100%",
-          borderCollapse: "separate",
-          // borderSpacing: "0 2px",
-          borderSpacing: 0,
-          tableLayout: "fixed",
-        }}
-      >
-        <thead>
-          <tr>
-            <th></th>
-            {"一二三四五六".split("").map((day) => (
-              <th key={day}>{day}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {"1234N56789ABCD".split("").map((interval) => (
-            <TimetableRow key={interval}>
-              <td>
-                <Stack sx={{ height: "100%" }} justifyContent="space-between">
-                  <span style={{ fontSize: "14px", color: "#888888" }}>
-                    {intervals[interval].start}
-                  </span>
-                  <span style={{ fontWeight: 500 }}>{interval}</span>
-                  <span style={{ fontSize: "14px", color: "#888888" }}>
-                    {intervals[interval].end}
-                  </span>
-                </Stack>
-              </td>
-              {"012345".split("").map((day) => (
-                <td key={day + interval}>
-                  <StudentTableItem
-                    courseItem={data[`${day}-${interval}` as string]}
-                  ></StudentTableItem>
-                </td>
+    <>
+      <div className="pb-4 pt-2 md:px-4">
+        <div>
+          <Select
+            label="學期"
+            placeholder={undefined}
+            value={semester}
+            onChange={(e) => {
+              setSemester(e as string);
+            }}
+          >
+            <Option value="112-2">112-2</Option>
+            <Option value="112-1">112-1</Option>
+          </Select>
+        </div>
+        <table
+          style={{
+            marginTop: "2rem",
+            width: "100%",
+            height: "100%",
+            borderCollapse: "separate",
+            // borderSpacing: "0 2px",
+            borderSpacing: 0,
+            tableLayout: "fixed",
+          }}
+        >
+          <thead>
+            <tr>
+              <th></th>
+              {"一二三四五六".split("").map((day) => (
+                <th key={day}>{day}</th>
               ))}
-            </TimetableRow>
-          ))}
-        </tbody>
-      </table>
-    </div>
+            </tr>
+          </thead>
+          <tbody>
+            {"1234N56789ABCD".split("").map((interval) => (
+              <TimetableRow key={interval}>
+                <td>
+                  <Stack sx={{ height: "100%" }} justifyContent="space-between">
+                    <span style={{ fontSize: "14px", color: "#888888" }}>
+                      {intervals[interval].start}
+                    </span>
+                    <span style={{ fontWeight: 500 }}>{interval}</span>
+                    <span style={{ fontSize: "14px", color: "#888888" }}>
+                      {intervals[interval].end}
+                    </span>
+                  </Stack>
+                </td>
+                {"012345".split("").map((day) => (
+                  <td key={day + interval}>
+                    <StudentTableItem
+                      courseItem={data[`${day}-${interval}` as string]}
+                    ></StudentTableItem>
+                  </td>
+                ))}
+              </TimetableRow>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
   );
 }
