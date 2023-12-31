@@ -41,7 +41,7 @@ export default function SearchBar() {
   }, [searchParams]);
 
   return (
-    <div className="flex gap-2">
+    <div className="flex flex-grow gap-2">
       <div className="flex-grow">
         <Input
           label="搜尋課程名稱 / 教師名稱 / 課程代碼"
