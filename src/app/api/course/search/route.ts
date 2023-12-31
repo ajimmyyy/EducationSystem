@@ -4,6 +4,9 @@ import courseService from "@/services/courseService";
 const CourseSearchRequestBody = z.object({
   keyword: z.string(),
   semester: z.string().regex(/^\d{3}-\d$/),
+  schedule: z.string().optional(),
+  departments: z.string().optional(),
+
   page: z.number().int().default(0),
   perPage: z.number().int().positive().default(10),
 });
@@ -18,18 +21,27 @@ export async function POST(request: Request) {
     });
   }
 
-  const { keyword, semester, page, perPage } = parsed.data;
+  const { keyword, semester, page, perPage, schedule, departments } =
+    parsed.data;
   const result = await courseService
     .searchCourse({
       keyword,
       semester,
+      schedule,
+      departments,
       page,
       perPage,
     })
     .catch((e) => {
-      console.log(e);
-      return [];
+      Response.error();
+      return Response.json({
+        success: false,
+        message: e.message,
+      });
     });
 
-  return Response.json(result);
+  return Response.json({
+    success: true,
+    ...result,
+  });
 }

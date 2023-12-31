@@ -1,8 +1,9 @@
-import puppeteer, { Page } from "puppeteer";
+import type { Page } from "puppeteer";
+import puppeteer from "puppeteer";
 import { load } from "cheerio";
 import { URL } from "url";
 import fs from "fs";
-import { RawCourse } from "@/types/course";
+import type { RawCourse } from "@/types/course";
 
 export async function fetchCourseData(year: string, semester: string) {
   const url = "https://aps.ntut.edu.tw/course/tw/";
@@ -13,7 +14,8 @@ export async function fetchCourseData(year: string, semester: string) {
   await page.goto(`${url}${subjStart}`, { waitUntil: "networkidle2" });
 
   const links = await getLinks(page);
-  const data = await processLinks(links, page, url, `${year}-${semester}`);
+  const rawdata = await processLinks(links, page, url, `${year}-${semester}`);
+  const data = removeDeplicateCodeCourses(rawdata);
 
   await browser.close();
   saveDataToFile(data, year, semester);
@@ -46,9 +48,9 @@ async function processLinks(
   links: string[],
   page: Page,
   baseUrl: string,
-  semester: string
+  semester: string,
 ): Promise<RawCourse[]> {
-  let data: RawCourse[] = [];
+  const data: RawCourse[] = [];
   console.log("共有: ", links.length, "個系所");
   for (let i = 0; i < links.length; i++) {
     const link = links[i];
@@ -56,7 +58,7 @@ async function processLinks(
     await page.goto(new URL(link, baseUrl).toString(), {
       waitUntil: "networkidle2",
     });
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 300));
     data.push(...(await processSubPage(page, link, baseUrl, semester)));
   }
   return data;
@@ -66,23 +68,32 @@ async function processSubPage(
   page: Page,
   link: string,
   baseUrl: string,
-  semester: string
+  semester: string,
 ): Promise<RawCourse[]> {
   const content = await page.content();
   const $ = load(content);
-  let details: RawCourse[] = [];
+  const details: RawCourse[] = [];
 
   await page.goto(new URL(link, baseUrl).toString(), {
     waitUntil: "networkidle2",
   });
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+  await new Promise((resolve) => setTimeout(resolve, 300));
   const subPageContent = await page.content();
   const subPage$ = load(subPageContent);
   const sublinks = subPage$("a[href]")
     .map((i, link) => $(link).attr("href"))
     .get();
+  const subLinkContent = await subPage$("a[href]")
+    .map((i, link) => $(link).contents().text())
+    .get();
 
-  for (const sublink of sublinks) {
+  console.log("共有: ", sublinks.length, "個子系所");
+
+  for (let i = 0; i < sublinks.length; i++) {
+    const sublink = sublinks[i];
+    console.log("子系所: ", i + 1, "/", sublinks.length);
+    console.log(`正在取得 ${subLinkContent[i]} 的課程資料中...`);
+
     await page.goto(new URL(sublink, baseUrl).toString(), {
       waitUntil: "networkidle2",
     });
@@ -97,7 +108,7 @@ async function processSubPage(
     trs.pop();
 
     for (const tr of trs) {
-      let tdArray = $(tr)
+      const tdArray = $(tr)
         .find("td")
         .map((_, td) => $(td).text().trim())
         .get();
@@ -124,16 +135,16 @@ async function processSubPage(
       details.push({
         code: tdArray[0],
         name: tdArray[1],
-        phase: tdArray[2] as any,
-        credit: tdArray[3] as any,
-        hours: tdArray[4] as any,
-        studentQuota: tdArray[15] as any,
+        phase: tdArray[2] ? Number(tdArray[2] as string) : 0,
+        credit: Number(tdArray[3] as string),
+        hours: Number(tdArray[4] as string),
+        studentQuota: Number(tdArray[15] as string),
         syllabus: tdArray[18],
         progress: tdArray[18],
         grading: tdArray[18],
         textbook: tdArray[18],
         isEnglishTaught: tdArray[17].includes("英語"),
-        teacherName: tdArray[6] as any,
+        teacherName: tdArray[6] ? (tdArray[6] as string).split("\n")[0] : "",
         schedule: [
           tdArray[8]
             .split(" ")
@@ -167,6 +178,7 @@ async function processSubPage(
         classroom: tdArray[14],
         note: tdArray[19],
         note2: tdArray[19],
+        departmentName: subLinkContent[i],
         semester,
         ...syllabus,
       });
@@ -217,6 +229,18 @@ async function fetchCourseSyllabus(page: Page, link: string, baseUrl: string) {
   return courseDetail;
 }
 
+function removeDeplicateCodeCourses(data: RawCourse[]) {
+  const codeSet = new Set();
+  const newData = [];
+  for (const course of data) {
+    if (!codeSet.has(course.code)) {
+      codeSet.add(course.code);
+      newData.push(course);
+    }
+  }
+  return newData;
+}
+
 function saveDataToFile(data: RawCourse[], year: string, semester: string) {
   const jsonFileName = `./src/data/courses-${year}-${semester}.json`;
   fs.writeFileSync(jsonFileName, JSON.stringify(data, null, 2), "utf-8");
@@ -233,7 +257,7 @@ export async function GET(req: Request) {
     (e) => {
       console.log(e);
       return [];
-    }
+    },
   );
 
   return Response.json(data);
