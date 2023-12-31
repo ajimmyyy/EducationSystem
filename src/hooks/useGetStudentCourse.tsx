@@ -1,8 +1,13 @@
 import apiFetcher from "@/utils/api-fetcher";
 import { use, useEffect, useState } from "react";
 
+interface CourseItem {
+  id: number;
+  name: string;
+}
+
 export interface CourseTable {
-  [key: string]: { name: string };
+  [key: string]: CourseItem;
 }
 
 export default function useGetStudentCourse(
