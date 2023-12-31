@@ -18,7 +18,7 @@ interface TableProps {
 }
 
 // 資料庫資料表格
-export function DepartmentTable({ userType }: { userType: string }) {
+export function DepartmentTable({ type }: { type: string }) {
   const tableName = "系所列表";
   const tableHead = ["id", "name", "email", "phone", ""];
   const addHead = ["name", "email", "phone"];
@@ -34,20 +34,20 @@ export function DepartmentTable({ userType }: { userType: string }) {
       setNeedUpdate(false);
     };
     fetchDeparment();
-  }, [page, userType, needUpdate]);
+  }, [page, type, needUpdate]);
 
   useEffect(() => {
     setPage(1);
-  }, [userType]);
+  }, [type]);
 
   return (
     <div className="w-[calc(100vw-305px)] mt-2">
       <div className="flex gap-2">
         <Chip value={tableName} className="text-base flex-grow" />
-        <AddInfoButton parameter={addHead} role={userType} setNeedUpdate={setNeedUpdate} />
+        <AddInfoButton parameter={addHead} role={type} setNeedUpdate={setNeedUpdate} />
       </div>
       <Card placeholder className="overflow-scroll max-h-[calc(100vh-175px)]">
-        <Table tableHead={tableHead} tableRows={tableRows} setNeedUpdate={setNeedUpdate} />
+        <Table role={type} tableHead={tableHead} tableRows={tableRows} setNeedUpdate={setNeedUpdate} />
         <CardFooter
           placeholder
           className="flex items-center justify-between border-t border-blue-gray-50 p-4"

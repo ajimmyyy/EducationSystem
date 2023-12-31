@@ -200,6 +200,8 @@ function AddCourseStep({inputInfos, setNeedUpdate }: AddInfoButtonProps) {
         },
       });
       setNeedUpdate(true);
+
+      console.log(response);
     };
     fetch();
     setDialogOpen(false);

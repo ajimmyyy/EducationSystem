@@ -24,14 +24,10 @@ interface CreateCourseType {
   progress?: string;
   grading?: string;
   textbook?: string;
-  note1?: string;
+  note?: string;
   note2?: string;
   semester?: string;
   isEnglishTaught: boolean;
-}
-
-interface DeleteCourseType {
-  courseid: number
 }
 
 export class ManageCourseCase {
@@ -84,15 +80,15 @@ export class ManageCourseCase {
     return newCourse;
   }
 
-  // async DeleteCourse(courseData: DeleteCourseType) {
-  //   const course = await prisma.course.delete({
-  //     where: {
-  //       courseid: courseData.courseid
-  //     }
-  //   });
+  async DeleteCourse(courseId: number) {
+    const course = await prisma.course.delete({
+      where: {
+        id: courseId
+      }
+    });
 
-  //   return course;
-  // }
+    return course;
+  }
 
   async CheckCourseAvailability(teacherId: number, schedules: ScheduleType[]): Promise<boolean> {
     const isClassroomAvailableResult = await this.isClassroomAvailable(schedules);

@@ -13,6 +13,16 @@ const ClassroomSearchRequest = z.object({
   }),
 });
 
+const ClassroomDeleteRequestBody = z.object({
+  id: z.number().refine(value =>
+    value > 0,
+    {
+      message: "Value must be a non-zero positive integer"
+    }
+  )
+});
+
+
 export async function POST(request: Request) {
   const body = await request.json();
   if (typeof body.buildingid === 'string') {
@@ -61,13 +71,20 @@ export async function GET(request: NextRequest) {
   return Response.json({ success: true, data: result });
 }
 
-// export async function DELETE(request: Request) {
-//     const body = await request.json();
+export async function DELETE(request: Request) {
+  const body = await request.json();
+  const parsed = ClassroomDeleteRequestBody.safeParse(body);
+  if (!parsed.success) {
+    return Response.json(parsed.error, {
+      status: 400,
+      statusText: "invalid request body",
+    });
+  }
 
-//     try {
-//         const classroom = await manageClassroomCase.DeleteClassroom(body);
-//         return Response.json({ success: true, classroom })
-//     } catch (error) {
-//         return Response.json({ success: false, error })
-//     }
-// }
+  try {
+    const response = await manageClassroomCase.DeleteClassroom(parsed.data.id);
+    return Response.json({ success: true, response })
+  } catch (error) {
+    return Response.json({ success: false, error });
+  }
+}

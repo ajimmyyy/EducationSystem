@@ -15,13 +15,14 @@ interface TableRowProps {
 
 //傳入表格資料型態
 interface TableDataProps {
+  role: string;
   tableHead: string[];
   tableRows: TableRowProps[];
   setNeedUpdate: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 // 資料庫資料表格
-export function Table({ tableHead, tableRows, setNeedUpdate }: TableDataProps) {
+export function Table({role, tableHead, tableRows, setNeedUpdate }: TableDataProps) {
   //表格列元素
   const TableHeader = ({ head, width }: { head: string, width: number }) => (
     <th
@@ -54,7 +55,7 @@ export function Table({ tableHead, tableRows, setNeedUpdate }: TableDataProps) {
             </td>
           ))}
         <td className="p-4 border-b border-blue-gray-50">
-          <EditMenu userId={id} setNeedUpdate={setNeedUpdate} />
+          <EditMenu role={role} id={id} setNeedUpdate={setNeedUpdate} />
         </td>
       </tr>
     );

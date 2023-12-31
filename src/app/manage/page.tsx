@@ -14,13 +14,13 @@ export default function Home() {
   const renderTableBasedOnOption = () => {
     switch (option) {
       case "department":
-        return <DepartmentTable userType={option} />;
+        return <DepartmentTable type={option} />;
       case "classroom":
-        return <ClassroomTable userType={option}/>;
+        return <ClassroomTable type={option}/>;
       case "course":
-        return <CourseTable userType={option}/>;
+        return <CourseTable type={option}/>;
       default:
-        return <UserTable userType={option}/>;
+        return <UserTable type={option}/>;
     }
   };
 

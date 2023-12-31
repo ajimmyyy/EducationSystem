@@ -18,8 +18,8 @@ interface TableProps {
 }
 
 // 資料庫資料表格
-export function UserTable({ userType }: { userType: string }) {
-  const userTypeMappings: { [key: string]: TableProps } = {
+export function UserTable({ type }: { type: string }) {
+  const typeMappings: { [key: string]: TableProps } = {
     student: {
       tableName: "學生列表",
       tableHead: ["id", "name", "email", "cellphone", "department", "schoolClass", ""],
@@ -37,32 +37,32 @@ export function UserTable({ userType }: { userType: string }) {
     },
   };
 
-  const { tableName, tableHead, addHead } = userTypeMappings[userType] || userTypeMappings.student;
+  const { tableName, tableHead, addHead } = typeMappings[type] || typeMappings.student;
   const [tableRows, setTableRows] = useState<[]>([]);
   const [needUpdate, setNeedUpdate] = useState(false);
   const [page, setPage] = useState(1);
 
   useEffect(() => {
     const fetchUser = async () => {
-      const { data } = await apiFetcher(`/api/ManageUser?type=${userType}&page=${page}`, {});
+      const { data } = await apiFetcher(`/api/ManageUser?type=${type}&page=${page}`, {});
       setTableRows(data);
       setNeedUpdate(false);
     };
     fetchUser();
-  }, [page, userType, needUpdate]);
+  }, [page, type, needUpdate]);
 
   useEffect(() => {
     setPage(1);
-  }, [userType]);
+  }, [type]);
 
   return (
     <div className="w-[calc(100vw-305px)] mt-2">
       <div className="flex gap-2">
         <Chip value={tableName} className="text-base flex-grow" />
-        <AddInfoButton parameter={addHead} role={userType} setNeedUpdate={setNeedUpdate} />
+        <AddInfoButton parameter={addHead} role={type} setNeedUpdate={setNeedUpdate} />
       </div>
       <Card placeholder className="overflow-scroll max-h-[calc(100vh-175px)]">
-        <Table tableHead={tableHead} tableRows={tableRows} setNeedUpdate={setNeedUpdate} />
+        <Table role={type} tableHead={tableHead} tableRows={tableRows} setNeedUpdate={setNeedUpdate} />
         <CardFooter
           placeholder
           className="flex items-center justify-between border-t border-blue-gray-50 p-4"

@@ -30,15 +30,15 @@ export class ManageClassroomCase {
     return classroom
   }
 
-  // async DeleteClassroom(classroomData: DeleteClassroomType) {
-  //   const classroom = await prisma.classroom.delete({
-  //     where: {
-  //       classroomid: classroomData.classroomid
-  //     }
-  //   });
+  async DeleteClassroom(classroomId: number) {
+    const classroom = await prisma.classroom.delete({
+      where: {
+        id: classroomId
+      }
+    });
 
-  //   return classroom;
-  // }
+    return classroom;
+  }
 
   async IsClassroomExist(room: CreateClassroomType): Promise<boolean> {
     const classroom = await prisma.classroom.findFirst({

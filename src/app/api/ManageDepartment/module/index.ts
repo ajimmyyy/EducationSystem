@@ -6,10 +6,6 @@ interface CreateDepartmentType {
   phone?: string
 }
 
-interface DeleteDepartmentType {
-  departmentid: number
-}
-
 export class ManageDepartmentCase {
   async CreateDepartment(department: CreateDepartmentType) {
     const newDepartment = await prisma.department.create({
@@ -31,10 +27,10 @@ export class ManageDepartmentCase {
     return department
   }
   
-  async DeleteDepartment(departmentData: DeleteDepartmentType) {
+  async DeleteDepartment(departmentId: number) {
     const department = await prisma.department.delete({
       where: {
-        id: departmentData.departmentid
+        id: departmentId
       }
     });
 

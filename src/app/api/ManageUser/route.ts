@@ -27,7 +27,7 @@ const MemberSearchRequest = z.object({
 });
 
 const MenberDeleteRequestBody = z.object({
-  userId: z.number().refine(value =>
+  id: z.number().refine(value =>
     value > 0,
     {
       message: "Value must be a non-zero positive integer"
@@ -144,8 +144,8 @@ export async function DELETE(request: Request) {
   }
 
   try {
-    const user = await manageUserCase.DeleteMember(parsed.data.userId);
-    return Response.json({ success: true, user })
+    const response = await manageUserCase.DeleteMember(parsed.data.id);
+    return Response.json({ success: true, response })
   } catch (error) {
     return Response.json({ success: false, error });
   }

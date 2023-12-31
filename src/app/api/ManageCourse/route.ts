@@ -12,7 +12,7 @@ const CourseCreateRequestBody = z.object({
   progress: z.string().optional(),
   grading: z.string().optional(),
   textbook: z.string().optional(),
-  note1: z.string().optional(),
+  note: z.string().optional(),
   note2: z.string().optional(),
   semester: z.string().optional(),
   isEnglishTaught: z.boolean().default(false),
@@ -32,6 +32,16 @@ const CourseSearchRequest = z.object({
     message: "Value must be a non-zero positive integer"
   }),
 });
+
+const CourseDeleteRequestBody = z.object({
+  id: z.number().refine(value =>
+    value > 0,
+    {
+      message: "Value must be a non-zero positive integer"
+    }
+  )
+});
+
 
 export async function GET(request: NextRequest) {
   const PER_PAGE = 10;
@@ -75,7 +85,7 @@ export async function POST(request: Request) {
     progress,
     grading,
     textbook,
-    note1,
+    note,
     note2,
     semester,
     isEnglishTaught,
@@ -101,7 +111,7 @@ export async function POST(request: Request) {
         progress,
         grading,
         textbook,
-        note1,
+        note,
         note2,
         semester,
         isEnglishTaught,
@@ -117,13 +127,20 @@ export async function POST(request: Request) {
   return Response.json({ success: true, result });
 }
 
-// export async function DELETE(request: Request) {
-//   const body = await request.json();
+export async function DELETE(request: Request) {
+  const body = await request.json();
+  const parsed = CourseDeleteRequestBody.safeParse(body);
+  if (!parsed.success) {
+    return Response.json(parsed.error, {
+      status: 400,
+      statusText: "invalid request body",
+    });
+  }
 
-//   try {
-//     await manageCourseCase.DeleteCourse(body);
-//     return Response.json({ success: true });
-//   } catch (error) {
-//     return Response.json({ success: false, error });
-//   }
-// }
+  try {
+    const response = await manageCourseCase.DeleteCourse(parsed.data.id);
+    return Response.json({ success: true, response })
+  } catch (error) {
+    return Response.json({ success: false, error });
+  }
+}

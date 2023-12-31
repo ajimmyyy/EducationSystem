@@ -10,18 +10,29 @@ import { useState, useEffect, use } from "react";
 import { MdBorderColor, MdOutlineDeleteOutline } from "react-icons/md";
 import apiFetcher from "@/utils/api-fetcher";
 
-export function EditMenu({ userId, setNeedUpdate }:
+export function EditMenu({role, id, setNeedUpdate }:
   {
-    userId: number,
+    role: string,
+    id: number,
     setNeedUpdate: React.Dispatch<React.SetStateAction<boolean>>
   }) {
 
+  const userTypeMappings: { [key: string]: string } = {
+    student: "/api/ManageUser",
+    teacher: "/api/ManageUser",
+    manager: "/api/ManageUser",
+    course: "/api/ManageCourse",
+    classroom: "/api/ManageClassroom",
+    department: "/api/ManageDepartment",
+  };
+  const apiUrl = userTypeMappings[role];
+
   const handleDeleteData = () => {
     const fetchUser = async () => {
-      const response = await apiFetcher("/api/ManageUser", {
+      const response = await apiFetcher(apiUrl, {
         method: "DELETE",
         body: {
-          userId: userId,
+          id: id,
         },
       });
       setNeedUpdate(true);
@@ -32,11 +43,10 @@ export function EditMenu({ userId, setNeedUpdate }:
 
   const handleEditData = () => {
     const fetchUser = async () => {
-      const response = await apiFetcher("/api/ManageUser", {
+      const response = await apiFetcher(apiUrl, {
         method: "PUT",
         body: {
-          id: userId,
-
+          id: id,
         },
       });
       setNeedUpdate(true);

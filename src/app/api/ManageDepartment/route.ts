@@ -16,6 +16,15 @@ const DepartmentSearchRequest = z.object({
   }),
 });
 
+const DepartmentDeleteRequestBody = z.object({
+  id: z.number().refine(value =>
+    value > 0,
+    {
+      message: "Value must be a non-zero positive integer"
+    }
+  )
+});
+
 export async function POST(request: Request) {
   const body = await request.json();
   const parsed = DeparmentCreateRequestBody.safeParse(body);
@@ -62,12 +71,20 @@ export async function GET(request: NextRequest) {
   return Response.json({ success: true, data: result });
 }
 
-// export async function DELETE(request: Request) {
-//     const body = await request.json();
-//     try {
-//         const department = await manageDepartmentCase.DeleteDepartment(body);
-//         return Response.json({ success: true, department })
-//     } catch (error) {
-//         return Response.json({ success: false, error })
-//     }
-// }
+export async function DELETE(request: Request) {
+  const body = await request.json();
+  const parsed = DepartmentDeleteRequestBody.safeParse(body);
+  if (!parsed.success) {
+    return Response.json(parsed.error, {
+      status: 400,
+      statusText: "invalid request body",
+    });
+  }
+
+  try {
+    const response = await manageDepartmentCase.DeleteDepartment(parsed.data.id);
+    return Response.json({ success: true, response })
+  } catch (error) {
+    return Response.json({ success: false, error });
+  }
+}
