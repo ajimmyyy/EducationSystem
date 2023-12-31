@@ -14,7 +14,8 @@ export async function fetchCourseData(year: string, semester: string) {
   await page.goto(`${url}${subjStart}`, { waitUntil: "networkidle2" });
 
   const links = await getLinks(page);
-  const data = await processLinks(links, page, url, `${year}-${semester}`);
+  const rawdata = await processLinks(links, page, url, `${year}-${semester}`);
+  const data = removeDeplicateCodeCourses(rawdata);
 
   await browser.close();
   saveDataToFile(data, year, semester);
@@ -57,7 +58,7 @@ async function processLinks(
     await page.goto(new URL(link, baseUrl).toString(), {
       waitUntil: "networkidle2",
     });
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 300));
     data.push(...(await processSubPage(page, link, baseUrl, semester)));
   }
   return data;
@@ -76,7 +77,7 @@ async function processSubPage(
   await page.goto(new URL(link, baseUrl).toString(), {
     waitUntil: "networkidle2",
   });
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+  await new Promise((resolve) => setTimeout(resolve, 300));
   const subPageContent = await page.content();
   const subPage$ = load(subPageContent);
   const sublinks = subPage$("a[href]")
@@ -226,6 +227,18 @@ async function fetchCourseSyllabus(page: Page, link: string, baseUrl: string) {
     }
   });
   return courseDetail;
+}
+
+function removeDeplicateCodeCourses(data: RawCourse[]) {
+  const codeSet = new Set();
+  const newData = [];
+  for (const course of data) {
+    if (!codeSet.has(course.code)) {
+      codeSet.add(course.code);
+      newData.push(course);
+    }
+  }
+  return newData;
 }
 
 function saveDataToFile(data: RawCourse[], year: string, semester: string) {

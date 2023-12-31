@@ -11,6 +11,7 @@ export async function injectCoursesData(
     throw new Error("Another injection is in progress");
   }
   isInjecting = true;
+  console.log(`Injecting courses for semester ${semester}`);
   // Delete old course data
   await prisma.interval.deleteMany({
     where: {
