@@ -1,13 +1,11 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/header";
 import Main from "@/components/main";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/material-tailwind";
 import ReactQueryProvider from "@/providers/react-query";
-
-const inter = Inter({ subsets: ["latin"] });
+import React from "react";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -21,7 +19,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className=" bg-[#f5f5f5]">
         <ThemeProvider>
           <ReactQueryProvider>
             <Header />

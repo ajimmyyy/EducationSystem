@@ -8,18 +8,19 @@ import { z } from "zod";
 export const SearchParams = z.object({
   keyword: z.string().default(""),
   semester: z.string().default("112-2"),
+  schedule: z.string().default(""),
+  departments: z.string().default(""),
 });
 
-type QueryParamsType = {
+export type QueryParamsType = {
   queryParams: z.infer<typeof SearchParams>;
 };
 
 const QueryParamsContext = createContext<QueryParamsType | null>(null);
 
-export default function queryParamsProvider({ children }: PropsWithChildren) {
+export default function QueryParamsProvider({ children }: PropsWithChildren) {
   const searchParams = useSearchParams();
   const queryParams = SearchParams.parse(Object.fromEntries(searchParams));
-  console.log("queryParams", queryParams);
 
   return (
     <QueryParamsContext.Provider value={{ queryParams }}>
@@ -31,11 +32,12 @@ export default function queryParamsProvider({ children }: PropsWithChildren) {
 export const useQueryParams = () => {
   const queryParamsContext = useContext(QueryParamsContext);
 
-  console.log("queryParamsContext", queryParamsContext);
   if (queryParamsContext === null)
     return {
       keyword: "",
       semester: "112-2",
+      schedule: "",
+      departments: "",
     };
   return queryParamsContext.queryParams;
 };
