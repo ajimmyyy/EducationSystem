@@ -5,16 +5,20 @@ import {
   MenuList,
   MenuItem,
 }
-from "@material-tailwind/react";
+  from "@material-tailwind/react";
 import { useState, useEffect, use } from "react";
 import { MdBorderColor, MdOutlineDeleteOutline } from "react-icons/md";
 import apiFetcher from "@/utils/api-fetcher";
 
-const EditMenu = ({userId, setNeedUpdate}: {userId: number, setNeedUpdate: React.Dispatch<React.SetStateAction<boolean>>}) => {
-  
+export function EditMenu({ userId, setNeedUpdate }:
+  {
+    userId: number,
+    setNeedUpdate: React.Dispatch<React.SetStateAction<boolean>>
+  }) {
+
   const handleDeleteData = () => {
     const fetchUser = async () => {
-      const response =  await apiFetcher("/api/ManageUser", {
+      const response = await apiFetcher("/api/ManageUser", {
         method: "DELETE",
         body: {
           userId: userId,
@@ -28,7 +32,7 @@ const EditMenu = ({userId, setNeedUpdate}: {userId: number, setNeedUpdate: React
 
   const handleEditData = () => {
     const fetchUser = async () => {
-      const response =  await apiFetcher("/api/ManageUser", {
+      const response = await apiFetcher("/api/ManageUser", {
         method: "PUT",
         body: {
           id: userId,
@@ -67,5 +71,3 @@ const EditMenu = ({userId, setNeedUpdate}: {userId: number, setNeedUpdate: React
     </Menu>
   );
 }
-
-export default EditMenu;

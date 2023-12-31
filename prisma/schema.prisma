@@ -26,8 +26,6 @@ model Course {
   credit              Int
   // 階段
   phase               Int
-  // 時數
-  hours               Int
   // 限修人數
   studentQuota        Int
   // 教學大綱
@@ -100,7 +98,7 @@ model Interval {
   weekday  Int
   time     String   @db.VarChar(1)
   courseId Int
-  schedule Schedule @relation(fields: [courseId, weekday], references: [courseId, weekday])
+  schedule Schedule @relation(fields: [courseId, weekday], references: [courseId, weekday], onDelete: Cascade)
 
   @@id([courseId, weekday, time])
 }

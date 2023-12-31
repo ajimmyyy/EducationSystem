@@ -1,6 +1,7 @@
 import React from "react";
 import {
   Card,
+  ListItemPrefix,
   Typography,
   List,
   ListItem,
@@ -9,9 +10,10 @@ import {
   AccordionBody,
 } from "@material-tailwind/react";
 import AddSemesterListItem from "./add-semester-dialog";
- 
+import { MdGroups, MdMenuBook, MdOutlineOtherHouses, MdCorporateFare } from "react-icons/md";
+
 // 管理員控制項目的選單
-export function Menu({addOption}:{addOption: React.Dispatch<React.SetStateAction<string>>}) {
+export function Menu({ addOption }: { addOption: React.Dispatch<React.SetStateAction<string>> }) {
   //選單選項名稱
   const STUDENT_OPTION = "student";
   const TEACHER_OPTION = "teacher";
@@ -32,7 +34,7 @@ export function Menu({addOption}:{addOption: React.Dispatch<React.SetStateAction
   const handleMenuOption = (value: string) => {
     addOption(value);
   };
- 
+
   return (
     <Card placeholder className=" h-[calc(100vh-4rem)] w-full max-w-[20rem] p-4 shadow-xl shadow-blue-gray-900/5">
       <div className="mb-2 p-4">
@@ -48,6 +50,9 @@ export function Menu({addOption}:{addOption: React.Dispatch<React.SetStateAction
         >
           <ListItem placeholder className="p-0" selected={branchOpen === 1}>
             <AccordionHeader placeholder onClick={() => handleBranchOpen(1)} className="border-b-0 p-3">
+              <ListItemPrefix placeholder>
+                <MdGroups />
+              </ListItemPrefix>
               <Typography placeholder color="blue-gray" className="mr-auto font-normal">
                 使用者管理
               </Typography>
@@ -68,15 +73,24 @@ export function Menu({addOption}:{addOption: React.Dispatch<React.SetStateAction
           </AccordionBody>
         </Accordion>
         <ListItem placeholder onClick={() => handleMenuOption(COURSE_OPTION)}>
+          <ListItemPrefix placeholder>
+            <MdMenuBook />
+          </ListItemPrefix>
           課程管理
         </ListItem>
         <ListItem placeholder onClick={() => handleMenuOption(CLASSROOM_OPTION)}>
+          <ListItemPrefix placeholder>
+            <MdOutlineOtherHouses />
+          </ListItemPrefix>
           教室管理
         </ListItem>
         <ListItem placeholder onClick={() => handleMenuOption(DEPARTMENT_OPTION)}>
+          <ListItemPrefix placeholder>
+            <MdCorporateFare />
+          </ListItemPrefix>
           系所管理
         </ListItem>
-        <AddSemesterListItem/>
+        <AddSemesterListItem />
       </List>
     </Card>
   );

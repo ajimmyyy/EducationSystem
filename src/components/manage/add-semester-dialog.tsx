@@ -1,17 +1,19 @@
 import {
   Button,
   ListItem,
+  ListItemPrefix,
   Input,
   Dialog,
   DialogHeader,
   DialogBody,
   DialogFooter,
 }
-from "@material-tailwind/react";
+  from "@material-tailwind/react";
 import { useState, useEffect, use } from 'react';
 import apiFetcher from "@/utils/api-fetcher";
+import { MdAccessTime } from "react-icons/md";
 
-const AddSemesterListItem = () => {
+export function AddSemesterListItem() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [inputSemester, setInputSemester] = useState("");
 
@@ -26,7 +28,7 @@ const AddSemesterListItem = () => {
 
   const handleAddData = () => {
     const fetchTable = async () => {
-      const response =  await apiFetcher("/api/courseTable/add", {
+      const response = await apiFetcher("/api/courseTable/add", {
         method: "POST",
         body: {
           semester: inputSemester,
@@ -42,6 +44,9 @@ const AddSemesterListItem = () => {
   return (
     <>
       <ListItem placeholder onClick={handleDialogOpen}>
+        <ListItemPrefix placeholder>
+          <MdAccessTime />
+        </ListItemPrefix>
         學期管理
       </ListItem>
       <Dialog placeholder open={dialogOpen} handler={handleDialogOpen}>

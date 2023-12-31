@@ -1,34 +1,33 @@
 import {
-  Button,
   IconButton,
   Dialog,
   DialogHeader,
   DialogBody,
   DialogFooter,
+  Button,
 }
   from "@material-tailwind/react";
 import apiFetcher from "@/utils/api-fetcher";
 import { useState, useEffect, use } from 'react';
+import AddCourseStep from "@/components/manage/add-course-step";
+import React from "react";
+
+interface HeadProps {
+  value: string,
+  type: string
+}
 
 interface AddInfoButtonProps {
-  parameter: string[];
+  parameter: HeadProps[];
   role: string;
   setNeedUpdate: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-function AddInfoButton({ parameter, role, setNeedUpdate }: AddInfoButtonProps) {
-  const userTypeMappings: { [key: string]: string } = {
-    student: "/api/ManageUser",
-    teacher: "/api/ManageUser",
-    manager: "/api/ManageUser",
-    course: "/api/ManageCourse",
-    classroom: "/api/ManageClassroom",
-    department: "/api/ManageDepartment",
-  };
-  const apiUrl = userTypeMappings[role];
+
+function AddCourseButton({ parameter, role, setNeedUpdate }: AddInfoButtonProps) {
 
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [parameterHead, setParameterHead] = useState<string[]>([]);
+  const [parameterHead, setParameterHead] = useState<HeadProps[]>([]);
   const [inputInfos, setInputInfos] = useState<{}>({});
 
   useEffect(() => {
@@ -40,31 +39,19 @@ function AddInfoButton({ parameter, role, setNeedUpdate }: AddInfoButtonProps) {
     setInputInfos({});
   };
 
-  const handleInputChange = (key: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (key: HeadProps ) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (key.type === "number") {
+      setInputInfos((prevInputInfo) => ({
+        ...prevInputInfo,
+        [key.value]: parseInt(event.target.value, 10),
+      }));
+      return;
+    }
+    
     setInputInfos((prevInputInfo) => ({
       ...prevInputInfo,
-      [key]: event.target.value,
+      [key.value]: event.target.value,
     }));
-  };
-
-  const handleAddData = () => {
-    const fetch = async () => {
-      const filteredInputInfos = Object.fromEntries(
-        Object.entries(inputInfos).filter(([key, value]) => value !== "")
-      );
-      const response = await apiFetcher(apiUrl, {
-        method: "POST",
-        body: {
-          role: role,
-          ...filteredInputInfos
-        },
-      });
-
-      console.log(response);
-      setNeedUpdate(true);
-    };
-    fetch();
-    setDialogOpen(false);
   };
 
   return (
@@ -79,14 +66,15 @@ function AddInfoButton({ parameter, role, setNeedUpdate }: AddInfoButtonProps) {
         <img src="/images/plus-solid.svg" alt="Plus Icon" />
       </IconButton>
       <Dialog placeholder open={dialogOpen} handler={handleDialogOpen}>
-        <DialogHeader placeholder>新增資料</DialogHeader>
+        <DialogHeader placeholder>課程資訊</DialogHeader>
         <DialogBody placeholder>
           {parameterHead.map((value, index) => (
             <input
-              key={value}
-              type="text"
-              placeholder={`Enter ${value}`}
+              key={value.value}
+              type={value.type}
+              placeholder={`Enter ${value.value}`}
               className="mt-2"
+              min={0}
               onChange={handleInputChange(value)}
             />
           ))}
@@ -101,13 +89,11 @@ function AddInfoButton({ parameter, role, setNeedUpdate }: AddInfoButtonProps) {
           >
             <span>Cancel</span>
           </Button>
-          <Button placeholder variant="gradient" color="green" onClick={handleAddData}>
-            <span>Confirm</span>
-          </Button>
+          <AddCourseStep inputInfos={inputInfos} setNeedUpdate={setNeedUpdate}/>
         </DialogFooter>
       </Dialog>
     </>
   );
 };
 
-export default AddInfoButton;
+export default AddCourseButton;
