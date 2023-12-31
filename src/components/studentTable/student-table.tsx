@@ -27,8 +27,8 @@ const intervals: Record<string, { start: string; end: string }> = {
 const studentId = 736;
 
 export default function StudentTable() {
-  const [semester, setSemester] = useState("112-1");
-  const { data } = useGetStudentCourse(studentId, semester);
+  const [semester, setSemester] = useState("112-2");
+  const { data, totalCredit } = useGetStudentCourse(studentId, semester);
 
   return (
     <>
@@ -46,6 +46,7 @@ export default function StudentTable() {
             <Option value="112-1">112-1</Option>
           </Select>
         </div>
+        <h1>總學分: {totalCredit}</h1>
         <table
           style={{
             marginTop: "2rem",

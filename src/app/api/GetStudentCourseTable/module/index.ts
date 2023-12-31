@@ -26,13 +26,29 @@ export async function GetStudentCourse(studentId: number, semester: string) {
           course: {
             select: {
               id: true,
+              code: true,
               name: true,
+              credit: true,
+              teacher: {
+                select: {
+                  user: {
+                    select: {
+                      name: true,
+                    },
+                  },
+                },
+              },
               schedule: {
                 select: {
                   weekday: true,
                   intervals: {
                     select: {
                       time: true,
+                    },
+                  },
+                  classroom: {
+                    select: {
+                      location: true,
                     },
                   },
                 },
