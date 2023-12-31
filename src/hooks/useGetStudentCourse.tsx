@@ -7,7 +7,7 @@ export interface CourseTable {
 
 export default function useGetStudentCourse(
   studentId: number,
-  semester: string
+  semester: string,
 ) {
   const [data, setData] = useState<CourseTable>({});
   useEffect(() => {
@@ -17,7 +17,7 @@ export default function useGetStudentCourse(
           studentId +
           "&semester=" +
           semester,
-        { method: "GET" }
+        { method: "GET" },
       );
       const result: CourseTable = res?.course?.reduce(
         (acc: { [x: string]: any }, item: { participationCourse: any[] }) => {
@@ -28,15 +28,17 @@ export default function useGetStudentCourse(
                   let key = `${schedule.weekday}-${interval.time}`;
                   acc[key] = {
                     name: courses.course.name,
+                    id: courses.course.id,
                   };
                 });
-              }
+              },
             );
           });
           return acc;
         },
-        {}
+        {},
       );
+      console.log(result);
       setData(result);
     }
     setStudentCourseData();

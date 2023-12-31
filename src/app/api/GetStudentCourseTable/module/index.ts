@@ -25,6 +25,7 @@ export async function GetStudentCourse(studentId: number, semester: string) {
         select: {
           course: {
             select: {
+              id: true,
               name: true,
               schedule: {
                 select: {

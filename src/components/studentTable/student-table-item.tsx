@@ -1,15 +1,27 @@
 import { Button } from "@material-tailwind/react";
+import { useRouter } from "next/navigation";
 
 interface CourseItem {
+  id: number;
   name: string;
 }
 
 export default function StudentTableItem({
-  courseItem: courseName,
+  courseItem: courseItem,
 }: {
   courseItem: CourseItem;
 }) {
-  if (courseName) {
-    return <Button placeholder={undefined}>{courseName.name}</Button>;
+  const router = useRouter();
+  if (courseItem) {
+    return (
+      <Button
+        placeholder={undefined}
+        onClick={() => {
+          router.push(`/course/${courseItem.id}`);
+        }}
+      >
+        {courseItem.name}
+      </Button>
+    );
   }
 }
