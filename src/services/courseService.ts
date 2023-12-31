@@ -1,46 +1,73 @@
 import prisma from "@/utils/prisma";
 import { Prisma } from "@prisma/client";
 
+export type FullCourse = Prisma.CourseGetPayload<{
+  include: {
+    schedule: {
+      include: {
+        classroom: true;
+        intervals: true;
+      };
+    };
+    teacher: {
+      include: {
+        user: true;
+      };
+    };
+    department: true;
+  };
+}>;
+
 export interface SearchCourseParams {
   keyword: string;
   semester: string;
+  schedule?: string;
+  departments?: string;
   page: number;
   perPage: number;
 }
 export interface SearchCourseResult {
-  courses: Prisma.CourseGetPayload<{
-    include: {
-      schedule: {
-        include: {
-          classroom: true;
-        };
-      };
-      teacher: true;
-      department: true;
-    };
-  }>[];
+  courses: FullCourse[];
   courseCount: number;
 }
 
 async function searchCourse({
   keyword,
   semester,
+  schedule,
+  departments,
   page,
   perPage,
 }: SearchCourseParams): Promise<SearchCourseResult> {
-  const keywords = keyword.split(/\s+/); // 使用正則表達式分割關鍵字
+  const keywords = keyword.split(" ");
+  const schedules = schedule?.split(",").filter((s) => s.length > 0) ?? []; // 00,01,20 [星期幾][節次]
+  const departmentIds =
+    departments
+      ?.split(",")
+      .filter((s) => s.length > 0)
+      .map(Number) ?? [];
 
-  const searchConditions = keywords.map((kw) => ({
+  const keywordConditions = keywords.map((keyword) => ({
     OR: [
       {
         name: {
-          contains: kw,
+          contains: keyword,
           mode: "insensitive",
         },
       },
       {
-        syllabus: {
-          contains: kw,
+        teacher: {
+          user: {
+            name: {
+              contains: keyword,
+              mode: "insensitive",
+            },
+          },
+        },
+      },
+      {
+        code: {
+          contains: keyword,
           mode: "insensitive",
         },
       },
@@ -50,7 +77,36 @@ async function searchCourse({
   const result = await prisma.course.findMany({
     where: {
       AND: [
-        ...(searchConditions as any),
+        {
+          OR: [...(keywordConditions as any)],
+        },
+        {
+          schedule:
+            schedules.length > 0
+              ? {
+                  some: {
+                    intervals: {
+                      some: {
+                        OR: schedules.map((schedule) => ({
+                          weekday: Number(schedule[0]),
+                          time: schedule[1],
+                        })),
+                      },
+                    },
+                  },
+                }
+              : undefined,
+        },
+        {
+          department:
+            departmentIds?.length > 0
+              ? {
+                  id: {
+                    in: departmentIds,
+                  },
+                }
+              : undefined,
+        },
         {
           semester: semester,
         },
@@ -60,9 +116,14 @@ async function searchCourse({
       schedule: {
         include: {
           classroom: true,
+          intervals: true,
         },
       },
-      teacher: true,
+      teacher: {
+        include: {
+          user: true,
+        },
+      },
       department: true,
     },
     skip: page * perPage,
@@ -70,16 +131,44 @@ async function searchCourse({
     orderBy: {
       _relevance: {
         fields: ["name"],
-        search: keyword,
+        search: keywords[0],
         sort: "desc",
       },
     },
   });
-
   const courseCount = await prisma.course.count({
     where: {
       AND: [
-        ...(searchConditions as any),
+        {
+          OR: [...(keywordConditions as any)],
+        },
+        {
+          schedule:
+            schedules.length > 0
+              ? {
+                  some: {
+                    intervals: {
+                      some: {
+                        OR: schedules.map((schedule) => ({
+                          weekday: Number(schedule[0]),
+                          time: schedule[1],
+                        })),
+                      },
+                    },
+                  },
+                }
+              : undefined,
+        },
+        {
+          department:
+            departmentIds?.length > 0
+              ? {
+                  id: {
+                    in: departmentIds,
+                  },
+                }
+              : undefined,
+        },
         {
           semester: semester,
         },
@@ -93,6 +182,33 @@ async function searchCourse({
   };
 }
 
+async function getCourseById(id: number) {
+  const course = await prisma.course.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      schedule: {
+        include: {
+          classroom: true,
+          intervals: true,
+        },
+      },
+      teacher: {
+        include: {
+          user: true,
+        },
+      },
+      department: true,
+    },
+  });
+
+  return {
+    course,
+  };
+}
+
 export default {
   searchCourse,
+  getCourseById,
 };
