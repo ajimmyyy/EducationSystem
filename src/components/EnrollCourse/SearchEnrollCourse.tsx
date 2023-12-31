@@ -10,13 +10,9 @@ export function EnrollObject() {
 
   return (
     <div className="flex justify-center items-center gap-2">
-        <Input label="請輸入課程名字" crossOrigin=""/>
-        <div className="flex justify-center items-center gap-2">
-            <Input label="請輸入課號" crossOrigin=""/>
-            <Button color="blue" className="w-32" onClick={handleButtonClick} placeholder={Button}>
-                搜尋課程
-            </Button>
-        </div>
+      <Button color="blue" className="w-32" onClick={handleButtonClick} placeholder={Button}>
+          前往加選課程
+      </Button>    
   </div>
   );
 };

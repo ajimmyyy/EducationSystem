@@ -45,13 +45,13 @@ export default function CourseList() {
         </span>
       </div>
       <List placeholder="null">
-        {pages.map((page, i) => (
-          <Fragment key={i}>
-            {page.courses.map((course, index) => (
-              <CourseListItem key={course.id} course={course} index={index} />
-            ))}
-          </Fragment>
-        ))}
+      {Array.isArray(pages) ? pages.map((page, i) => (
+        <Fragment key={i}>
+          {Array.isArray(page.courses) ? page.courses.map((course, index) => (
+            <CourseListItem key={course.id} course={course} index={index} />
+          )) : null}
+        </Fragment>
+      )) : null}
       </List>
 
       <div className="w-full">

@@ -1,118 +1,76 @@
-import { Card, Typography, Button } from "@material-tailwind/react";
+//quote from search/course-list.tsx
+import {
+  Chip,
+  List,
+  ListItem,
+  ListItemPrefix,
+} from "@/components/material-tailwind";
+import { useSearchCourses } from "@/hooks/useSearchCourses";
+import { Fragment, useEffect, useRef } from "react";
+import { useIntersection } from "react-use";
+import CourseListItem from "./CourseItem";
 
-const TABLE_HEAD = ["Course Name", "Course Time", "Course ID", "Personal Ceiling",""];
+export default function CourseList() {
+  const loadMoreRef = useRef<HTMLButtonElement>(null);
+  const intersection = useIntersection(loadMoreRef, {
+    root: null,
+    rootMargin: "0px",
+    threshold: 1,
+  });
 
-const TABLE_ROWS = [
-  {
-    courseName: "Web Development",
-    courseTime: "1-1",
-    courseId: "WD101",
-    personalCeiling: "20",
-  },
-  {
-    courseName: "Data Science",
-    courseTime: "2-3、4-2",
-    courseId: "DS102",
-    personalCeiling: "20",
-  },
-  {
-    courseName: "Digital Marketing",
-    courseTime: "4-4",
-    courseId: "DM104",
-    personalCeiling: "20",
-  },
-  {
-    courseName: "Graphic Design",
-    courseTime: "5-1",
-    courseId: "GD105",
-    personalCeiling: "100",
-  },
-];
+  const {
+    data: { pages = [] } = {},
+    isLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useSearchCourses();
 
-export function DefaultTable() {
+  // when the button is visible, fetch more courses
+  useEffect(() => {
+    console.log("intersection?.isIntersecting", intersection?.isIntersecting);
+    if (intersection?.isIntersecting) fetchNextPage();
+  }, [intersection?.isIntersecting, fetchNextPage]);
+
+  console.log("pages", pages);
+
   return (
-    <Card className="h-full w-full overflow-scroll" placeholder="">
-      <table className="w-full min-w-max table-auto text-left">
-        <thead>
-          <tr>
-            {TABLE_HEAD.map((head) => (
-              <th
-                key={head}
-                className="border-b border-blue-gray-100 bg-blue-gray-50 p-4"
-              >
-                <Typography
-                  variant="small"
-                  color="blue-gray"
-                  className="font-normal leading-none opacity-70"
-                  placeholder={head}
-                >
-                  {head}
-                </Typography>
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {TABLE_ROWS.map(({ courseName, courseTime, courseId, personalCeiling }, index) => {
-            const classes = `${index % 2 === 0 ? "bg-white" : "bg-gray-100"} p-4 border-b border-blue-gray-50`;
+    <main className="">
+      <div
+        className="sticky top-[148px] z-10 flex h-fit w-full rounded-t bg-blue-500 px-4 py-1
+        before:absolute before:left-0 before:right-0 before:top-[-16px] before:z-[-1] before:h-[16px] before:bg-gray-100 before:content-['']
+      "
+      >
+        <span className="text-sm text-white">
+          {isLoading ? "載入中" : `共 ${pages[0]?.courseCount ?? 0} 堂課程`}
+        </span>
+      </div>
+      <List placeholder="null">
+      {Array.isArray(pages) ? pages.map((page, i) => (
+        <Fragment key={i}>
+          {Array.isArray(page.courses) ? page.courses.map((course, index) => (
+            <CourseListItem key={course.id} course={course} index={index} />
+          )) : null}
+        </Fragment>
+      )) : null}
+      </List>
 
-            return (
-              <tr key={index}>
-                <td className={classes}>
-                  <Typography
-                    variant="small"
-                    color="blue-gray"
-                    className="font-normal"
-                    placeholder={courseName}
-                  >
-                    {courseName}
-                  </Typography>
-                </td>
-
-                <td className={classes}>
-                  <div className="bg-blue-gray-100 rounded-full px-2 py-1 inline-block">
-                    <Typography
-                      variant="small"
-                      color="blue-gray"
-                      className="font-normal"
-                      placeholder={courseTime}
-                    >
-                      {courseTime}
-                    </Typography>
-                  </div>
-                </td>
-
-                <td className={classes}>
-                  <Typography
-                    variant="small"
-                    color="blue-gray"
-                    className="font-normal"
-                    placeholder={courseId}
-                  >
-                    {courseId}
-                  </Typography>
-                </td>
-
-                <td className={classes}>
-                    <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal"
-                        placeholder={personalCeiling}
-                    >
-                        {personalCeiling}
-                    </Typography>
-                </td>
-
-                <td className={classes} style={{ width: '150px' }}>
-                  <Button size="sm" variant="gradient" color="blue-gray" className="flex items-center gap-2" placeholder= "">加選</Button>
-                </td>
-
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </Card>
+      <div className="w-full">
+        <button
+          ref={loadMoreRef}
+          onClick={() => fetchNextPage()}
+          disabled={!hasNextPage || isFetchingNextPage}
+          className="h-4 w-full  "
+        >
+          {isLoading
+            ? ""
+            : isFetchingNextPage
+              ? "loading"
+              : hasNextPage
+                ? "load-more"
+                : "no-more"}
+        </button>
+      </div>
+    </main>
   );
 }
