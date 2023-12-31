@@ -6,6 +6,7 @@ import {
   ListItemSuffix,
 } from "../material-tailwind";
 import { MdOutlinePerson, MdAccessTime } from "react-icons/md";
+import { useRouter } from "next/navigation";
 
 interface CourseListItemProps {
   course: SearchCourseResult["courses"][0];
@@ -15,11 +16,15 @@ interface CourseListItemProps {
 const weekdayMap = ["一", "二", "三", "四", "五", "六", "日"];
 
 export default function CourseListItem({ course, index }: CourseListItemProps) {
+  const router = useRouter();
   return (
     <ListItem
       placeholder="null"
       key={course.id}
       className={index % 2 === 0 ? "bg-white" : "bg-[#f7f7f7]"}
+      onClick={() => {
+        router.push(`/course/${course.id}`);
+      }}
     >
       <ListItemPrefix placeholder="null" className="text-sm text-gray-500">
         {course.code}

@@ -1,13 +1,12 @@
 "use client";
 import { Button, Input } from "@/components/material-tailwind";
 import { useUpdateSearchParams } from "@/hooks/useUpdateSearchParams";
-import { useParams, usePathname, useSearchParams } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
+import React, { useEffect, useRef } from "react";
 
 export default function SearchBar() {
   const inputRef = useRef<HTMLInputElement>(null);
   const updateSearchParams = useUpdateSearchParams();
-  const params = useParams() as { type: string };
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
@@ -45,7 +44,7 @@ export default function SearchBar() {
     <div className="flex gap-2">
       <div className="flex-grow">
         <Input
-          label="搜尋課程名稱 / 教師名稱 / code"
+          label="搜尋課程名稱 / 教師名稱 / 課程代碼"
           crossOrigin={undefined}
           defaultValue={searchParams.get("keyword") || ""}
           onChange={handleChange}

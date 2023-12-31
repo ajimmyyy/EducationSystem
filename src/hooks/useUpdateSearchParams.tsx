@@ -1,7 +1,9 @@
 import { useSearchParams, useRouter } from "next/navigation";
+import { QueryParamsType } from "./useQueryParams";
 
 export type SearchParamsEntries = {
-  [key: string]:
+  // eslint-disable-next-line no-unused-vars
+  [key in keyof QueryParamsType["queryParams"]]:
     | string
     | number
     | boolean

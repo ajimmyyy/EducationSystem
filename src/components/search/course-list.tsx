@@ -31,21 +31,20 @@ export default function CourseList() {
     if (intersection?.isIntersecting) fetchNextPage();
   }, [intersection?.isIntersecting, fetchNextPage]);
 
+  console.log("pages", pages);
+
   return (
-    <main>
+    <main className="">
+      <div
+        className="sticky top-[148px] z-10 flex h-fit w-full rounded-t bg-blue-500 px-4 py-1
+        before:absolute before:left-0 before:right-0 before:top-[-16px] before:z-[-1] before:h-[16px] before:bg-gray-100 before:content-['']
+      "
+      >
+        <span className="text-sm text-white">
+          {isLoading ? "載入中" : `共 ${pages[0]?.courseCount ?? 0} 堂課程`}
+        </span>
+      </div>
       <List placeholder="null">
-        <ListItem placeholder="null">
-          <ListItemPrefix placeholder="null">
-            <Chip
-              value={
-                isLoading ? "載入中" : `共 ${pages[0]?.courseCount ?? 0} 堂課程`
-              }
-              variant="ghost"
-              size="sm"
-              className="rounded-full px-2 py-1 text-xs group-hover:bg-white/20 group-hover:text-white"
-            />
-          </ListItemPrefix>
-        </ListItem>
         {pages.map((page, i) => (
           <Fragment key={i}>
             {page.courses.map((course, index) => (
@@ -60,7 +59,7 @@ export default function CourseList() {
           ref={loadMoreRef}
           onClick={() => fetchNextPage()}
           disabled={!hasNextPage || isFetchingNextPage}
-          className="w-full h-4  "
+          className="h-4 w-full  "
         >
           {isLoading
             ? ""

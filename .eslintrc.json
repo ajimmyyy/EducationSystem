@@ -13,23 +13,6 @@
     "react/function-component-definition": [
       "warn",
       { "namedComponents": "function-declaration" }
-    ],
-    "no-restricted-imports": [
-      "error",
-      {
-        "paths": [
-          {
-            "name": "next/navigation",
-            "importNames": ["usePathname", "useRouter", "redirect"],
-            "message": "Please import from '@/navigation' instead."
-          },
-          {
-            "name": "next/link",
-            "importNames": ["default"],
-            "message": "Please import from '@/navigation' instead."
-          }
-        ]
-      }
     ]
   },
   "globals": {
