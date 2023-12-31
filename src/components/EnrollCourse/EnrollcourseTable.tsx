@@ -89,14 +89,16 @@ export function DefaultTable() {
                 </td>
 
                 <td className={classes}>
-                  <Typography
-                    variant="small"
-                    color="blue-gray"
-                    className="font-normal"
-                    placeholder={courseTime}
-                  >
-                    {courseTime}
-                  </Typography>
+                  <div className="bg-blue-gray-100 rounded-full px-2 py-1 inline-block">
+                    <Typography
+                      variant="small"
+                      color="blue-gray"
+                      className="font-normal"
+                      placeholder={courseTime}
+                    >
+                      {courseTime}
+                    </Typography>
+                  </div>
                 </td>
 
                 <td className={classes}>

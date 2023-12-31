@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useSearchCourses } from '../../hooks/useSearchCourses';
 import { useEnrollCourse } from '../../hooks/useEnrollCourse';
 import { DefaultTable } from '../../components/EnrollCourse/EnrollcourseTable';
+import { UserInform } from '../../components/EnrollCourse/UserInform';
 
 const EnrollPage = () => {
   const searchCourses = useSearchCourses();
@@ -22,6 +23,7 @@ const handleEnroll = (courseId: number) => {
 
   return (
     <div>
+      <UserInform/>
       <DefaultTable />
     </div>
   );
