@@ -17,12 +17,6 @@ const TABLE_ROWS = [
     courseId: "DS102",
   },
   {
-    state: "已撤銷",
-    courseName: "Machine Learning",
-    courseTime: "3-2",
-    courseId: "ML103",
-  },
-  {
     state: "已加選",
     courseName: "Digital Marketing",
     courseTime: "4-4",
