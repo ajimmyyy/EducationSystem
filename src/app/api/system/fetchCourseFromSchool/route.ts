@@ -248,20 +248,27 @@ function saveDataToFile(data: RawCourse[], year: string, semester: string) {
 
 // eslint-disable-next-line no-unused-vars
 export async function GET(req: Request) {
-  return Response.json({ error: "Dev Only" });
+  const { searchParams } = new URL(req.url);
+  const registerword = searchParams.get("registerword");
 
-  // const { searchParams } = new URL(req.url);
-  // const year = searchParams.get("year");
-  // const semester = searchParams.get("semester");
-  // if (!year || !semester) {
-  //   return Response.json({ error: "Missing year or semester" });
-  // }
-  // const data = await fetchCourseData(year as string, semester as string).catch(
-  //   (e) => {
-  //     console.log(e);
-  //     return [];
-  //   },
-  // );
+  if (!registerword || registerword !== "dkelgowsmn") {
+    return Response.json({
+      success: false,
+      message: "registerword is required",
+    });
+  }
 
-  // return Response.json(data);
+  const year = searchParams.get("year");
+  const semester = searchParams.get("semester");
+  if (!year || !semester) {
+    return Response.json({ error: "Missing year or semester" });
+  }
+  const data = await fetchCourseData(year as string, semester as string).catch(
+    (e) => {
+      console.log(e);
+      return [];
+    },
+  );
+
+  return Response.json(data);
 }
