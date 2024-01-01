@@ -25,7 +25,7 @@ export interface HeadProps {
 // 資料庫資料表格
 export function CourseTable({ type }: { type: string }) {
   const tableName = "課程列表";
-  const tableHead = ["id", "code", "name", "credt", "phase", "studentQuota", ""];
+  const tableHead = ["id", "code", "name", "credt", "phase", "studentQuota", "semester", ""];
   const addHead: HeadProps[] = [
     { value: "code", type: "text" },
     { value: "name", type: "text" },

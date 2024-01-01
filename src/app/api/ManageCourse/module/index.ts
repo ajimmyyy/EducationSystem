@@ -40,6 +40,7 @@ export class ManageCourseCase {
         credit: true,
         phase: true,
         studentQuota: true,
+        semester: true,
       },
       skip: (page - 1) * perPage,
       take: perPage,
