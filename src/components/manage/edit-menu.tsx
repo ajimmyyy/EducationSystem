@@ -7,7 +7,7 @@ import {
 }
   from "@material-tailwind/react";
 import { useState, useEffect, use } from "react";
-import { MdBorderColor, MdOutlineDeleteOutline } from "react-icons/md";
+import { MdSettings, MdBorderColor, MdOutlineDeleteOutline } from "react-icons/md";
 import apiFetcher from "@/utils/api-fetcher";
 
 export function EditMenu({role, id, setNeedUpdate }:
@@ -63,7 +63,7 @@ export function EditMenu({role, id, setNeedUpdate }:
           className="rounded-full bg-gray-700"
           size="sm"
         >
-          Edit
+          <MdSettings size={20}/>
         </Button>
       </MenuHandler>
       <MenuList placeholder>

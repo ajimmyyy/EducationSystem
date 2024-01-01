@@ -25,7 +25,7 @@ export default function Home() {
   };
 
   return (
-    <main className="flex">
+    <main className="flex gap-1">
       <Menu addOption={setOption}/>
       <div>
         <Search/>

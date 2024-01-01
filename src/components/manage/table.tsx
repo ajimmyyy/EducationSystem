@@ -22,7 +22,7 @@ interface TableDataProps {
 }
 
 // 資料庫資料表格
-export function Table({role, tableHead, tableRows, setNeedUpdate }: TableDataProps) {
+export function Table({ role, tableHead, tableRows, setNeedUpdate }: TableDataProps) {
   //表格列元素
   const TableHeader = ({ head, width }: { head: string, width: number }) => (
     <th
@@ -48,8 +48,17 @@ export function Table({role, tableHead, tableRows, setNeedUpdate }: TableDataPro
         {Object.values(tableRow)
           .filter((value) => value !== undefined)
           .map((value, index) => (
-            <td className="p-4 border-b border-blue-gray-50">
-              <Typography placeholder variant="small" color="blue-gray" className="font-normal">
+            <td
+              key={index}
+              className={`p-4 border-b border-blue-gray-50 ${index % 2 === 0 ? 'bg-gray-100' : 'bg-white'
+                }`}
+            >
+              <Typography
+                placeholder
+                variant="small"
+                color="blue-gray"
+                className="font-normal"
+              >
                 {value}
               </Typography>
             </td>
