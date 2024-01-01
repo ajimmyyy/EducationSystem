@@ -1,58 +1,54 @@
 import prisma from "@/utils/prisma";
 
-export class EnrollCourseCase {
-    async enrollCourseToTable(input: CreateCourseInput) {
-
-        //Check if the course exists
+export class EnrollCourseService {
+    async enrollCourse(studentId: number, courseId: number, semester: string) {
+        // 查找對應的課程
         const course = await prisma.course.findUnique({
-            where: { courseid: input.courseid }
+            where: { id: courseId }
         });
+
         if (!course) {
             throw new Error("Course not found");
         }
-    
-        //check the enrollment count
-        const enrollmentCount = await prisma.participationcourse.count({
-            where: { courseid: input.courseid }
-        });
-    
-        //check if the student already selected the course
-        const existingEntry = await prisma.participationcourse.findUnique({
+
+        // 查找學生的課表
+        const courseTable = await prisma.courseTable.findFirst({
             where: {
-                coursetableid_courseid: {
-                    coursetableid: input.coursetableid,
-                    courseid: input.courseid
-                }
+                studentId: studentId,
+                semester: semester
             }
         });
-        if (existingEntry) {
-            throw new Error("Course already selected by the student");
+
+        if (!courseTable) {
+            throw new Error("Course table not found");
         }
 
-        //check if the course is full or not
-        if (enrollmentCount >= course.studentquota) {
-            await prisma.unassignedcourse.create({
+        // 檢查課程是否已滿
+        const enrollmentCount = await prisma.participationCourse.count({
+            where: { courseId: courseId }
+        });
+
+        if (enrollmentCount >= course.studentQuota) {
+            // 將請求加入 UnassignedCourse
+            const unassignedCourse = await prisma.unassignedCourse.create({
                 data: {
-                    courseid: input.courseid,
-                    studentid: input.coursetableid
+                    courseTableId: courseTable.id,
+                    courseId: courseId,
+                    state: 'wait'
                 }
             });
-            throw new Error("Course is full");
+            return { status: 'waiting', course: unassignedCourse };
         } else {
-            const addedCourse = await prisma.participationcourse.create({
+            // 將學生加入 ParticipationCourse
+            const participationCourse = await prisma.participationCourse.create({
                 data: {
-                    coursetableid: input.coursetableid,
-                    courseid: input.courseid
+                    courseTableId: courseTable.id,
+                    courseId: courseId
                 }
             });
-            return addedCourse;
+            return { status: 'enrolled', course: participationCourse };
         }
-    }    
+    }
 }
 
-export interface CreateCourseInput {
-    coursetableid: number;
-    courseid: number;
-}
-
-export const addNewCourseCase = new EnrollCourseCase();
+export const enrollCourseService = new EnrollCourseService();

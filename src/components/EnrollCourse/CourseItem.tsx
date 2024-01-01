@@ -33,11 +33,39 @@ export default function CourseListItem({ course, index }: CourseListItemProps) {
     setIsAlertOpen(false);
   };
 
-  const handleEnroll = () => {
-    console.log('加選課程');
-    // 在這裡添加加選課程的邏輯
-    closeAlert();
-  };
+  const handleEnroll = async () => {
+    try {
+        const studentId = 8901000;
+        const semester = "110-1";
+
+        const response = await fetch('/api/EnrollCourse', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                studentId: studentId,
+                courseId: course.id,
+                semester: semester
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            console.log('加選成功：', data);
+            window.location.href = '/Enroll';
+        } else {
+            console.error('加選失敗：', data.error);
+            // 處理錯誤情況
+        }
+    } catch (error) {
+        console.error('加選請求錯誤：', error);
+    } finally {
+        closeAlert(); 
+    }
+};
+
   
   
   return (

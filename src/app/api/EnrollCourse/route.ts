@@ -1,18 +1,18 @@
-import { EnrollCourseCase, CreateCourseInput } from "./module";
-
-const addNewCourseCase = new EnrollCourseCase();
+import { EnrollCourseService } from "./module";
 
 export async function POST(request: Request) {
+    const enrollCourseService = new EnrollCourseService();
     try {
-        const body = await request.json() as CreateCourseInput;
-        const addedCourse = await addNewCourseCase.enrollCourseToTable(body);
-
-        return new Response(JSON.stringify({ success: true, addedCourse }), {
+        const body = await request.json();
+        const { studentId, courseId, semester } = body;
+        
+        const result = await enrollCourseService.enrollCourse(studentId, courseId, semester);
+        return new Response(JSON.stringify({ success: true, result }), {
             headers: { 'Content-Type': 'application/json' }
         });
-    } catch (error: any) {
-        return new Response(JSON.stringify({ success: false, error: error.message}), {
+    } catch (error:any) {
+        return new Response(JSON.stringify({ success: false, error: error.message }), {
             headers: { 'Content-Type': 'application/json' }
         });
     }
-}
+}   

@@ -1,60 +1,40 @@
+import React, { useState, useEffect } from 'react';
 import { Card, Typography, Button } from "@material-tailwind/react";
 import { MdCreate } from "react-icons/md";
 
 const TABLE_HEAD = ["State", "Course Name", "Course Time", "Course ID", ""];
-
-const TABLE_ROWS = [
-  {
-    state: "已加選",
-    courseName: "Web Development",
-    courseTime: "1-1",
-    courseId: "WD101",
-  },
-  {
-    state: "簽核中",
-    courseName: "Data Science",
-    courseTime: "2-3、4-2",
-    courseId: "DS102",
-  },
-  {
-    state: "已加選",
-    courseName: "Digital Marketing",
-    courseTime: "4-4",
-    courseId: "DM104",
-  },
-  {
-    state: "簽核中",
-    courseName: "Graphic Design",
-    courseTime: "5-1",
-    courseId: "GD105",
-  },
-];
+const studentId = 8901000; // 固定的學生ID
+const semester = "110-1"; // 固定的學期
 
 export function DefaultTable() {
+  const [courses, setCourses] = useState([]);
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const response = await fetch(`/api/GetParticipationCourse?studentId=${studentId}&semester=${semester}`);
+        const data = await response.json();
+        console.log(data);
+
+        if (response.ok) {
+          setCourses(data.courses); 
+        } else {
+          console.error('獲取課程失敗：', data.error);
+        }
+      } catch (error) {
+        console.error('請求出錯：', error);
+      }
+    };
+
+    fetchCourses();
+  }, []); // 空依賴數組確保僅在組件加載時執行
+
   return (
     <Card className="h-full w-full overflow-scroll" placeholder="">
-      <table className="w-full min-w-max table-auto text-left">
-        <thead>
-          <tr>
-            {TABLE_HEAD.map((head) => (
-              <th
-                key={head}
-                className="border-b border-blue-gray-100 bg-blue-gray-50 p-4"
-              >
-                <Typography
-                  variant="small"
-                  color="blue-gray"
-                  className="font-normal leading-none opacity-70"
-                  placeholder={head}
-                >
-                  {head}
-                </Typography>
-              </th>
-            ))}
-          </tr>
-        </thead>
+      <table>
         <tbody>
-          {TABLE_ROWS.map(({ state, courseName, courseTime, courseId }, index) => {
+          {courses.map((course, index) => {
+            const { state, courseName, courseTime, courseId } = course;
             const classes = `${index % 2 === 0 ? "bg-white" : "bg-gray-100"} p-4 border-b border-blue-gray-50`;
             let stateButtonColor = state === "已加選" ? "green" : state === "簽核中" ? "orange" : "gray";
 
@@ -109,7 +89,6 @@ export function DefaultTable() {
                 <td className={classes} style={{ width: '150px' }}>
                   <Button size="sm" variant="gradient" color="blue-gray" className="flex items-center gap-2" placeholder= "">修改<MdCreate /></Button>
                 </td>
-
               </tr>
             );
           })}
