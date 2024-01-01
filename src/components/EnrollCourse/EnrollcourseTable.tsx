@@ -4,7 +4,7 @@ import { MdCreate } from "react-icons/md";
 
 const TABLE_HEAD = ["State", "Course Name", "Course Time", "Course ID", ""];
 const studentId = 8901000; // 固定的學生ID
-const semester = "110-1"; // 固定的學期
+const semester = "112-1"; // 固定的學期
 
 export function DefaultTable() {
   const [courses, setCourses] = useState([]);
