@@ -41,7 +41,7 @@ export function ClassroomTable({ type }: { type: string }) {
   }, [type]);
 
   return (
-    <div className="w-[calc(100vw-305px)] mt-2">
+    <div className="w-[55rem] mt-2">
       <div className="flex gap-2">
         <Chip value={tableName} className="text-base flex-grow" />
         <AddInfoButton parameter={addHead} role={type} setNeedUpdate={setNeedUpdate} />
@@ -52,14 +52,39 @@ export function ClassroomTable({ type }: { type: string }) {
           placeholder
           className="flex items-center justify-between border-t border-blue-gray-50 p-4"
         >
-          <div className="flex gap-2">
-            <Typography placeholder variant="small" color="blue-gray" className="font-normal w-[calc(60vw)]">
-              Page {page}
-            </Typography>
-            <Button placeholder variant="outlined" size="sm" onClick={() => { page > 1 && setPage(page - 1) }}>
+          <div className="flex items-center gap-2">
+            <Chip
+              variant="ghost"
+              value={
+                <Typography
+                  placeholder
+                  variant="small"
+                  color="black"
+                  className="font-medium capitalize leading-none"
+                >
+                  Page {page}
+                </Typography>
+              }
+              className="rounded-full py-1.5"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              placeholder
+              variant="outlined"
+              color="light-blue"
+              size="sm"
+              onClick={() => { page > 1 && setPage(page - 1) }}
+            >
               Previous
             </Button>
-            <Button placeholder variant="outlined" size="sm" onClick={() => { setPage(page + 1) }}>
+            <Button
+              placeholder
+              variant="outlined"
+              color="light-blue"
+              size="sm"
+              onClick={() => { setPage(page + 1) }}
+            >
               Next
             </Button>
           </div>

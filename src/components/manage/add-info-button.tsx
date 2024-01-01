@@ -40,7 +40,7 @@ function AddInfoButton({ parameter, role, setNeedUpdate }: AddInfoButtonProps) {
     setInputInfos({});
   };
 
-  const handleInputChange = (key: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (key: string) => (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInputInfos((prevInputInfo) => ({
       ...prevInputInfo,
       [key]: event.target.value,
@@ -74,6 +74,7 @@ function AddInfoButton({ parameter, role, setNeedUpdate }: AddInfoButtonProps) {
         variant="gradient"
         className="rounded-full"
         color="amber"
+        shadow-xl
         onClick={handleDialogOpen}
       >
         <img src="/images/plus-solid.svg" alt="Plus Icon" />
@@ -82,11 +83,11 @@ function AddInfoButton({ parameter, role, setNeedUpdate }: AddInfoButtonProps) {
         <DialogHeader placeholder>新增資料</DialogHeader>
         <DialogBody placeholder>
           {parameterHead.map((value, index) => (
-            <input
+            <textarea
               key={value}
-              type="text"
               placeholder={`Enter ${value}`}
               className="mt-2"
+              rows={2}
               onChange={handleInputChange(value)}
             />
           ))}

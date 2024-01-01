@@ -39,18 +39,25 @@ function AddCourseButton({ parameter, role, setNeedUpdate }: AddInfoButtonProps)
     setInputInfos({});
   };
 
-  const handleInputChange = (key: HeadProps ) => (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (key: HeadProps) => (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    let inputValue: string | number = event.target.value;
+  
     if (key.type === "number") {
-      setInputInfos((prevInputInfo) => ({
-        ...prevInputInfo,
-        [key.value]: parseInt(event.target.value, 10),
-      }));
-      return;
+      const parsedValue = parseInt(event.target.value, 10);
+  
+      if (isNaN(parsedValue)) {
+        console.error("Please enter a valid number.");
+        return;
+      }
+  
+      inputValue = parsedValue;
     }
-    
+  
     setInputInfos((prevInputInfo) => ({
       ...prevInputInfo,
-      [key.value]: event.target.value,
+      [key.value]: inputValue,
     }));
   };
 
@@ -69,12 +76,11 @@ function AddCourseButton({ parameter, role, setNeedUpdate }: AddInfoButtonProps)
         <DialogHeader placeholder>課程資訊</DialogHeader>
         <DialogBody placeholder>
           {parameterHead.map((value, index) => (
-            <input
+            <textarea
               key={value.value}
-              type={value.type}
               placeholder={`Enter ${value.value}`}
               className="mt-2"
-              min={0}
+              rows={2}
               onChange={handleInputChange(value)}
             />
           ))}
@@ -89,7 +95,7 @@ function AddCourseButton({ parameter, role, setNeedUpdate }: AddInfoButtonProps)
           >
             <span>Cancel</span>
           </Button>
-          <AddCourseStep inputInfos={inputInfos} setNeedUpdate={setNeedUpdate}/>
+          <AddCourseStep inputInfos={inputInfos} setNeedUpdate={setNeedUpdate} />
         </DialogFooter>
       </Dialog>
     </>
