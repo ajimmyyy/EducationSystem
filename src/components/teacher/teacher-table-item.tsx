@@ -1,9 +1,18 @@
 import { Button } from "@material-tailwind/react";
 
-export default function TeacherTableItem({day, interval}:{day: string, interval: string}) {
+// 單一格子的課程該有的資料
+interface CourseItem {
+  name: string;
+}
+
+// 老師課表的格子
+export default function TeacherTableItem({ courseItem: courseName }: { courseItem: CourseItem }) {
+  if (courseName) {
     return (
-        <Button placeholder>
-            {day + interval}
-        </Button>
+      <Button placeholder={undefined}>
+        {courseName.name}
+      </Button>
     );
+  }
+  return null;
 }

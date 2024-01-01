@@ -1,162 +1,223 @@
 import prisma from "@/utils/prisma";
 
 interface CourseType {
-    coursename: string
-    credit: number
-    studentquota: number
-    syllabusurl?: string
-    isenglishtaught?: boolean
+  coursename: string
+  credit: number
+  studentquota: number
+  syllabusurl?: string
+  isenglishtaught?: boolean
 }
 
 interface ScheduleType {
-    semester: string
-    weekday: string
-    starttime: string
-    endtime: string
+  weekday: number
+  classroomId: number,
+  intervals: string[]
 }
 
 interface CreateCourseType {
-    course: CourseType
-    schedule: ScheduleType[]
-}
-
-interface DeleteCourseType {
-    courseid: number
+  code: string;
+  name: string;
+  credit: number;
+  phase: number;
+  studentQuota: number;
+  syllabus?: string;
+  progress?: string;
+  grading?: string;
+  textbook?: string;
+  note?: string;
+  note2?: string;
+  semester?: string;
+  isEnglishTaught: boolean;
 }
 
 export class ManageCourseCase {
-    async CreateCourse(teacherId: number, departmentId: number, classroomId: number, courseData: CreateCourseType) {
-        const { course, schedule } = courseData;
-        
-        const newCourse = await prisma.course.create({
-            data: {
-                ...course,
-                teacher: {
-                    connect: {
-                        teacherid: teacherId
-                    }
-                },
-                department: {
-                    connect: {
-                        departmentid: departmentId
-                    }
-                },
-                courseclassroom: {
-                    create: {
-                        classroom: {
-                            connect: {
-                                classroomid: classroomId
-                            }
-                        }
-                    }
-                }
-            }
-        });
+  async SearchCourse(page: number, perPage: number) {  
+    const course = await prisma.course.findMany({
+      select: {
+        id: true,
+        code: true,
+        name: true,
+        credit: true,
+        phase: true,
+        studentQuota: true,
+        semester: true,
+      },
+      skip: (page - 1) * perPage,
+      take: perPage,
+      orderBy: {
+        id: "asc"
+      }
+    });
 
-        await this.CreateSchedule(newCourse, schedule);
+    return course
+  }
 
-        return newCourse;
-    }
+  async CreateCourse(
+    courseData: CreateCourseType,
+    teacherId: number,
+    departmentId: number,
+    schedules: ScheduleType[])
+    {
 
-    async DeleteCourse(courseData: DeleteCourseType) {
-        const course = await prisma.course.delete({
-            where: {
-                courseid: courseData.courseid
-            }
-        });
+    const newCourse = await prisma.course.create({
+      data: {
+        ...courseData,
+        semester: courseData.semester || "",
+        teacher: {
+          connect: {
+            id: teacherId
+          }
+        },
+        department: {
+          connect: {
+            id: departmentId
+          }
+        }
+      }
+    });
 
-        return course;
-    }
+    await this.CreateSchedule(schedules, newCourse.id);
 
-    async CheckCourseAvailability(teacherId: number, classroomId: number, courseData: CreateCourseType): Promise<boolean> {
-        const { schedule } = courseData;
-        const isClassroomAvailableResult = await this.isClassroomAvailable(classroomId, schedule);
-        const isTeacherAvailableResult = await this.isTeacherAvailable(teacherId, schedule);
-    
-        return isClassroomAvailableResult && isTeacherAvailableResult;
-    }
+    return newCourse;
+  }
 
-    private buildDateObject(timeData: string) {
-        const time = new Date();
-        const [hour, minute] = timeData.split(':');
-        time.setHours(Number(hour), Number(minute));
-        
-        return time;
-    }
+  async DeleteCourse(courseId: number) {
+    const course = await prisma.course.delete({
+      where: {
+        id: courseId
+      }
+    });
 
-    private async CreateSchedule(course: any, scheduleData: ScheduleType[]) {
-        await Promise.all(scheduleData.map(schedule => {
-            return prisma.schedule.create({
-                data:{
-                    semester: schedule.semester,
-                    weekday: schedule.weekday,
-                    starttime: this.buildDateObject(schedule.starttime),
-                    endtime: this.buildDateObject(schedule.endtime),
-                    course: {
-                        connect: {
-                            courseid: course.courseid
-                        }
-                    }
-                }
-            });
-        }));
-    }
+    return course;
+  }
 
-    private async isClassroomAvailable(classroomId: number, scheduleList: ScheduleType[]): Promise<boolean> {
-        const course = await prisma.course.findFirst({
-            where: {
-                courseclassroom: {
-                    every: {
-                        classroomid: classroomId,
-                    },
-                },
-                schedule: {
-                    every: {
-                        OR: scheduleList.map(scheduleData => ({
-                            AND: [
-                                { weekday: scheduleData.weekday },
-                                { starttime: { lt: this.buildDateObject(scheduleData.endtime) } },
-                                { endtime: { gt: this.buildDateObject(scheduleData.starttime) } }
-                            ]
-                        }))
-                    },
-                },
+  async CheckCourseAvailability(teacherId: number, schedules: ScheduleType[]): Promise<boolean> {
+    const isClassroomAvailableResult = await this.isClassroomAvailable(schedules);
+    const isTeacherAvailableResult = await this.isTeacherAvailable(teacherId, schedules);
+
+    return isClassroomAvailableResult && isTeacherAvailableResult;
+  }
+
+  private async CreateSchedule(schedules: ScheduleType[], courseId: number) {
+    for (let i = 0; i < schedules.length; i++) {
+      const currentSchedule = schedules[i];
+      await prisma.schedule.create({
+        data: {
+          weekday: currentSchedule.weekday,
+          classroom: {
+            connect: {
+              id: currentSchedule.classroomId,
             },
-              include: {
-                courseclassroom: true,
-                schedule: true,
-            }
-        });
-
-        return !course;
-    }
-    
-    private async isTeacherAvailable(teacherId: number, scheduleList: ScheduleType[]): Promise<boolean> {
-        const course = await prisma.course.findFirst({
-            where: {
-                teacher: {
-                    teacherid: teacherId,
-                },
-                schedule: {
-                    every: {
-                        OR: scheduleList.map(scheduleData => ({
-                            AND: [
-                                { weekday: scheduleData.weekday },
-                                { starttime: { lt: this.buildDateObject(scheduleData.endtime) } },
-                                { endtime: { gt: this.buildDateObject(scheduleData.starttime) } }
-                            ]
-                        }))
-                    },
-                },
+          },
+          intervals: {
+            create: currentSchedule.intervals.map(interval => ({
+              time: interval,
+            })),
+          },
+          course: {
+            connect: {
+              id: courseId,
             },
-              include: {
-                teacher: true,
-                schedule: true,
-            }
-        });
-
-        return !course;
+          },
+        },
+      });
     }
+  }
+
+  private async isClassroomAvailable(schedules: ScheduleType[]): Promise<boolean> {
+    for (let i = 0; i < schedules.length; i++) {
+      const currentSchedule = schedules[i];
+      const interval = await prisma.classroom.findFirst({
+        where: {
+          id: currentSchedule.classroomId,
+        },
+        select: {
+          schedule:{
+            select: {
+              intervals:{
+                select: {
+                  time: true,
+                }
+              }
+            },
+            where: {
+              weekday: currentSchedule.weekday,
+            },
+          },
+        },
+      });
+
+      if (interval === null) {
+        return false;
+      }
+
+      if (interval.schedule.length > 0) {
+        const timeList: string[] = interval.schedule.flatMap(schedule => schedule.intervals.map(interval => interval.time));
+        const isOverlapping = this.areIntervalsOverlapping(timeList, currentSchedule.intervals);
+        if (isOverlapping) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+
+  private async isTeacherAvailable(teacherId: number, scheduleList: ScheduleType[]): Promise<boolean> {
+    for (let i = 0; i < scheduleList.length; i++) {
+      const currentSchedule = scheduleList[i];
+      const interval = await prisma.teacher.findFirst({
+        where: {
+          id: teacherId,
+        },
+        select: {
+          course:{
+            select: {
+              schedule:{
+                select: {
+                  intervals:{
+                    select: {
+                      time: true,
+                    }
+                  }
+                },
+                where: {
+                  weekday: currentSchedule.weekday,
+                }
+              }
+            },
+          },
+        },
+      });
+
+      if (interval === null) {
+        return false;
+      }
+
+      if (interval !== null) {
+        const timeList: string[] = interval.course.flatMap(course => course.schedule.flatMap(schedule => schedule.intervals.map(interval => interval.time)));
+        const isOverlapping = this.areIntervalsOverlapping(timeList, currentSchedule.intervals);
+        if (isOverlapping) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+
+  private areIntervalsOverlapping(intervalsA: string[], intervalsB: string[]): boolean {
+    const setA = new Set(intervalsA);
+    const setB = new Set(intervalsB);
+
+    for (const interval of setA) {
+      if (setB.has(interval)) {
+        return true;
+      }
+    }
+  
+    return false;
+  }
 }
 
 export const manageCourseCase = new ManageCourseCase();
