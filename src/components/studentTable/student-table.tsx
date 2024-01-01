@@ -1,7 +1,6 @@
 "use client";
 
 import { Stack } from "@mui/material";
-import { TimetableRow } from "./timetable-row";
 import { useEffect, useState } from "react";
 import useGetStudentCourse from "@/hooks/useGetStudentCourse";
 import StudentTableItem from "./student-table-item";
