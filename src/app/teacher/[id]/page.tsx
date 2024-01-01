@@ -2,6 +2,8 @@
 import { useCourse } from "@/hooks/useCourse";
 import { useParams } from "next/navigation";
 import TeacherCourseRequestItem from "@/components/teacher/teacher-course-request-item";
+import useGetTeacherRequest from "@/hooks/useGetTeacherRequest";
+import { CourseRequest } from "@/hooks/useGetTeacherRequest";
 
 const weekdayMap = ["一", "二", "三", "四", "五", "六", "日"];
 
@@ -10,6 +12,7 @@ export default function Home() {
   const courseId = params.id;
   console.log("courseId", courseId);
   const { data: { course } = {} } = useCourse(Number(courseId as string));
+  const { data: request } = useGetTeacherRequest(Number(courseId));
   if (!course) return null;
 
   return (
@@ -105,7 +108,10 @@ export default function Home() {
         </div>
       </div>
       <div className="p-2">
-        {/* <TeacherCourseRequestItem studentProperty={data} /> */}
+        {request?.map((request: CourseRequest) => (
+          <TeacherCourseRequestItem key={request.courseTableId} studentProperty={request} />
+        ))
+        }
       </div>
     </div>
   );
