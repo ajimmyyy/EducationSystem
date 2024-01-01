@@ -5,10 +5,9 @@ import {
   DialogHeader,
   DialogBody,
   DialogFooter,
-}
-  from "@material-tailwind/react";
+} from "@material-tailwind/react";
 import apiFetcher from "@/utils/api-fetcher";
-import { useState, useEffect, use } from 'react';
+import React, { useState, useEffect } from "react";
 
 interface AddInfoButtonProps {
   parameter: string[];
@@ -40,23 +39,25 @@ function AddInfoButton({ parameter, role, setNeedUpdate }: AddInfoButtonProps) {
     setInputInfos({});
   };
 
-  const handleInputChange = (key: string) => (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setInputInfos((prevInputInfo) => ({
-      ...prevInputInfo,
-      [key]: event.target.value,
-    }));
-  };
+  const handleInputChange =
+    (key: string) => (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+      setInputInfos((prevInputInfo) => ({
+        ...prevInputInfo,
+        [key]: event.target.value,
+      }));
+    };
 
   const handleAddData = () => {
     const fetch = async () => {
       const filteredInputInfos = Object.fromEntries(
-        Object.entries(inputInfos).filter(([key, value]) => value !== "")
+        // eslint-disable-next-line no-unused-vars
+        Object.entries(inputInfos).filter(([key, value]) => value !== ""),
       );
       const response = await apiFetcher(apiUrl, {
         method: "POST",
         body: {
           role: role,
-          ...filteredInputInfos
+          ...filteredInputInfos,
         },
       });
 
@@ -82,15 +83,18 @@ function AddInfoButton({ parameter, role, setNeedUpdate }: AddInfoButtonProps) {
       <Dialog placeholder open={dialogOpen} handler={handleDialogOpen}>
         <DialogHeader placeholder>新增資料</DialogHeader>
         <DialogBody placeholder>
-          {parameterHead.map((value, index) => (
-            <textarea
-              key={value}
-              placeholder={`Enter ${value}`}
-              className="mt-2"
-              rows={2}
-              onChange={handleInputChange(value)}
-            />
-          ))}
+          {
+            // eslint-disable-next-line no-unused-vars
+            parameterHead.map((value, index) => (
+              <textarea
+                key={value}
+                placeholder={`Enter ${value}`}
+                className="mt-2"
+                rows={2}
+                onChange={handleInputChange(value)}
+              />
+            ))
+          }
         </DialogBody>
         <DialogFooter placeholder>
           <Button
@@ -102,13 +106,18 @@ function AddInfoButton({ parameter, role, setNeedUpdate }: AddInfoButtonProps) {
           >
             <span>Cancel</span>
           </Button>
-          <Button placeholder variant="gradient" color="green" onClick={handleAddData}>
+          <Button
+            placeholder
+            variant="gradient"
+            color="green"
+            onClick={handleAddData}
+          >
             <span>Confirm</span>
           </Button>
         </DialogFooter>
       </Dialog>
     </>
   );
-};
+}
 
 export default AddInfoButton;

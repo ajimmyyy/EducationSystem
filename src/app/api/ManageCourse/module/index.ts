@@ -1,17 +1,17 @@
 import prisma from "@/utils/prisma";
 
-interface CourseType {
-  coursename: string
-  credit: number
-  studentquota: number
-  syllabusurl?: string
-  isenglishtaught?: boolean
-}
+// interface CourseType {
+//   coursename: string
+//   credit: number
+//   studentquota: number
+//   syllabusurl?: string
+//   isenglishtaught?: boolean
+// }
 
 interface ScheduleType {
-  weekday: number
-  classroomId: number,
-  intervals: string[]
+  weekday: number;
+  classroomId: number;
+  intervals: string[];
 }
 
 interface CreateCourseType {
@@ -31,7 +31,7 @@ interface CreateCourseType {
 }
 
 export class ManageCourseCase {
-  async SearchCourse(page: number, perPage: number) {  
+  async SearchCourse(page: number, perPage: number) {
     const course = await prisma.course.findMany({
       select: {
         id: true,
@@ -45,35 +45,34 @@ export class ManageCourseCase {
       skip: (page - 1) * perPage,
       take: perPage,
       orderBy: {
-        id: "asc"
-      }
+        id: "asc",
+      },
     });
 
-    return course
+    return course;
   }
 
   async CreateCourse(
     courseData: CreateCourseType,
     teacherId: number,
     departmentId: number,
-    schedules: ScheduleType[])
-    {
-
+    schedules: ScheduleType[],
+  ) {
     const newCourse = await prisma.course.create({
       data: {
         ...courseData,
         semester: courseData.semester || "",
         teacher: {
           connect: {
-            id: teacherId
-          }
+            id: teacherId,
+          },
         },
         department: {
           connect: {
-            id: departmentId
-          }
-        }
-      }
+            id: departmentId,
+          },
+        },
+      },
     });
 
     await this.CreateSchedule(schedules, newCourse.id);
@@ -84,16 +83,23 @@ export class ManageCourseCase {
   async DeleteCourse(courseId: number) {
     const course = await prisma.course.delete({
       where: {
-        id: courseId
-      }
+        id: courseId,
+      },
     });
 
     return course;
   }
 
-  async CheckCourseAvailability(teacherId: number, schedules: ScheduleType[]): Promise<boolean> {
-    const isClassroomAvailableResult = await this.isClassroomAvailable(schedules);
-    const isTeacherAvailableResult = await this.isTeacherAvailable(teacherId, schedules);
+  async CheckCourseAvailability(
+    teacherId: number,
+    schedules: ScheduleType[],
+  ): Promise<boolean> {
+    const isClassroomAvailableResult =
+      await this.isClassroomAvailable(schedules);
+    const isTeacherAvailableResult = await this.isTeacherAvailable(
+      teacherId,
+      schedules,
+    );
 
     return isClassroomAvailableResult && isTeacherAvailableResult;
   }
@@ -110,7 +116,7 @@ export class ManageCourseCase {
             },
           },
           intervals: {
-            create: currentSchedule.intervals.map(interval => ({
+            create: currentSchedule.intervals.map((interval) => ({
               time: interval,
             })),
           },
@@ -124,7 +130,9 @@ export class ManageCourseCase {
     }
   }
 
-  private async isClassroomAvailable(schedules: ScheduleType[]): Promise<boolean> {
+  private async isClassroomAvailable(
+    schedules: ScheduleType[],
+  ): Promise<boolean> {
     for (let i = 0; i < schedules.length; i++) {
       const currentSchedule = schedules[i];
       const interval = await prisma.classroom.findFirst({
@@ -132,13 +140,13 @@ export class ManageCourseCase {
           id: currentSchedule.classroomId,
         },
         select: {
-          schedule:{
+          schedule: {
             select: {
-              intervals:{
+              intervals: {
                 select: {
                   time: true,
-                }
-              }
+                },
+              },
             },
             where: {
               weekday: currentSchedule.weekday,
@@ -152,8 +160,13 @@ export class ManageCourseCase {
       }
 
       if (interval.schedule.length > 0) {
-        const timeList: string[] = interval.schedule.flatMap(schedule => schedule.intervals.map(interval => interval.time));
-        const isOverlapping = this.areIntervalsOverlapping(timeList, currentSchedule.intervals);
+        const timeList: string[] = interval.schedule.flatMap((schedule) =>
+          schedule.intervals.map((interval) => interval.time),
+        );
+        const isOverlapping = this.areIntervalsOverlapping(
+          timeList,
+          currentSchedule.intervals,
+        );
         if (isOverlapping) {
           return false;
         }
@@ -163,7 +176,10 @@ export class ManageCourseCase {
     return true;
   }
 
-  private async isTeacherAvailable(teacherId: number, scheduleList: ScheduleType[]): Promise<boolean> {
+  private async isTeacherAvailable(
+    teacherId: number,
+    scheduleList: ScheduleType[],
+  ): Promise<boolean> {
     for (let i = 0; i < scheduleList.length; i++) {
       const currentSchedule = scheduleList[i];
       const interval = await prisma.teacher.findFirst({
@@ -171,20 +187,20 @@ export class ManageCourseCase {
           id: teacherId,
         },
         select: {
-          course:{
+          course: {
             select: {
-              schedule:{
+              schedule: {
                 select: {
-                  intervals:{
+                  intervals: {
                     select: {
                       time: true,
-                    }
-                  }
+                    },
+                  },
                 },
                 where: {
                   weekday: currentSchedule.weekday,
-                }
-              }
+                },
+              },
             },
           },
         },
@@ -195,8 +211,15 @@ export class ManageCourseCase {
       }
 
       if (interval !== null) {
-        const timeList: string[] = interval.course.flatMap(course => course.schedule.flatMap(schedule => schedule.intervals.map(interval => interval.time)));
-        const isOverlapping = this.areIntervalsOverlapping(timeList, currentSchedule.intervals);
+        const timeList: string[] = interval.course.flatMap((course) =>
+          course.schedule.flatMap((schedule) =>
+            schedule.intervals.map((interval) => interval.time),
+          ),
+        );
+        const isOverlapping = this.areIntervalsOverlapping(
+          timeList,
+          currentSchedule.intervals,
+        );
         if (isOverlapping) {
           return false;
         }
@@ -206,7 +229,10 @@ export class ManageCourseCase {
     return true;
   }
 
-  private areIntervalsOverlapping(intervalsA: string[], intervalsB: string[]): boolean {
+  private areIntervalsOverlapping(
+    intervalsA: string[],
+    intervalsB: string[],
+  ): boolean {
     const setA = new Set(intervalsA);
     const setB = new Set(intervalsB);
 
@@ -215,7 +241,7 @@ export class ManageCourseCase {
         return true;
       }
     }
-  
+
     return false;
   }
 }
