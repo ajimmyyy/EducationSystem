@@ -36,7 +36,6 @@ export async function injectCoursesData(
       code: rawCourse.code,
       credit: Number(rawCourse.credit) || 0,
       phase: Number(rawCourse.phase) || 0,
-      hours: Number(rawCourse.hours) || 0,
       studentQuota: Number(rawCourse.studentQuota) || 0,
       syllabus: rawCourse.syllabus || "",
       progress: rawCourse.progress || "",
