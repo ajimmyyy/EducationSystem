@@ -23,25 +23,29 @@ export async function POST(request: Request) {
 
   const { keyword, semester, page, perPage, schedule, departments } =
     parsed.data;
-  const result = await courseService
-    .searchCourse({
+
+  try {
+    const result = await courseService.searchCourse({
       keyword,
       semester,
       schedule,
       departments,
       page,
       perPage,
-    })
-    .catch((e) => {
-      Response.error();
-      return Response.json({
-        success: false,
-        message: e.message,
-      });
     });
-
-  return Response.json({
-    success: true,
-    ...result,
-  });
+    return Response.json({
+      success: true,
+      ...result,
+    });
+  } catch (error: any) {
+    return Response.json(
+      {
+        success: false,
+        message: error?.message,
+      },
+      {
+        status: 500,
+      },
+    );
+  }
 }
