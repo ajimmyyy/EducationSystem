@@ -1,6 +1,7 @@
 "use client";
 import { useSelectedLayoutSegments } from "next/navigation";
 import { Breadcrumbs } from "./material-tailwind";
+import { GuideBar } from "./guide";
 
 export default function Header() {
   const segments = useSelectedLayoutSegments().filter(
@@ -26,14 +27,7 @@ export default function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 flex h-14 w-screen justify-center bg-white text-black shadow-md">
-        <div className="container flex h-full items-center">
-          <div className="flex items-center justify-between text-blue-gray-900">
-            <h1 className=" font-bold">北科課程網</h1>
-            <div className="flex items-center gap-4"></div>
-          </div>
-        </div>
-      </header>
+      <GuideBar />
       <div className="flex w-full justify-center">
         <div className="container">
           <Breadcrumbs placeholder={undefined}>

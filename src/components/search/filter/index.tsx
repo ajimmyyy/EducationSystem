@@ -5,7 +5,7 @@ import SemesterSelector from "./SemesterSelector";
 
 export default function FilterContainer() {
   return (
-    <div className="sticky top-14 z-20 h-fit w-full bg-gray-100 px-2 pt-2">
+    <div className="sticky top-20 z-20 h-fit w-full bg-gray-100 px-2 pt-2">
       <div className="flex gap-2">
         <SemesterSelector />
         <SearchBar />
