@@ -11,6 +11,7 @@ type Course = {
   id: number;
   name: string;
   code: string;
+  status: 'enrolled' | 'waiting';
 };
 type CourseResponse = {
   course: {
@@ -24,9 +25,18 @@ type CourseResponse = {
     studentId: number;
   };
 };
+type UnassignedCourseResponse = {
+  course: {
+    id: number;
+    name: string;
+    code: string;
+  };
+};
+
 
 export function DefaultTable() {
   const [courses, setCourses] = useState<Course[]>([]);
+  const [unassignedCourses, setUnassignedCourses] = useState<Course[]>([]);
   const [isEditAlertOpen, setIsEditAlertOpen] = useState(false);
   const [editAlertMessage, setEditAlertMessage] = useState('');
   const [selectedCourseId, setSelectedCourseId] = useState<number | null>(null);
@@ -53,8 +63,31 @@ export function DefaultTable() {
       }
     };
 
+    const fetchUnassignedCourses = async () => {
+      try {
+        const response = await fetch(`/api/GetUnAssignedCourse?studentId=${studentId}&semester=${semester}`);
+        const data = await response.json();
+        if (response.ok) {
+          const unassignedCoursesData = data.unassignedCourses.map((item : UnassignedCourseResponse) => ({
+            id: item.course.id,
+            name: item.course.name,
+            code: item.course.code,
+            status: 'waiting' 
+          }));
+          setUnassignedCourses(unassignedCoursesData);
+        } else {
+          console.error('獲取未分配課程失敗：', data.error);
+        }
+      } catch (error) {
+        console.error('請求未分配課程出錯：', error);
+      }
+    };
+
     fetchCourses();
+    fetchUnassignedCourses();
   }, []); 
+
+  const combinedCourses = [...courses, ...unassignedCourses];
 
   const openEditAlert = (course: Course) => {
     const message = `是否要退選課程 [${course.code}]${course.name}？`;
@@ -111,20 +144,20 @@ export function DefaultTable() {
             </tr>
           </thead>
         <tbody>
-          {courses.map((course, index) => {
+          {combinedCourses.map((course, index) => {
             const { name: courseName, code: courseCode } = course;
             const classes = `${index % 2 === 0 ? "bg-white" : "bg-gray-100"} p-4 border-b border-blue-gray-50`;
-
+            const status = course.status;
             return (
               <tr key={index}>
                 <td className={classes}>
                   <Button
                     size="sm"
-                    color="green" 
+                    color={status === 'waiting' ? 'orange' : 'green'}
                     className="capitalize"
                     placeholder=""
                   >
-                    已加選
+                    {status === 'waiting' ? '簽核中' : '已加選'}
                   </Button>
                 </td>
 

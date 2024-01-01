@@ -23,19 +23,6 @@ const EnrollPage = () => {
     }
   }, [selectedCourseId, searchCourses]);
 
-  // 加選課程的處理函數 
-  const handleEnroll = async (courseId: number) => {
-    try {
-      await enrollCourse.mutateAsync(courseId, {
-        onSuccess: () => {
-          searchCourses.refetch();
-        },
-      });
-    } catch (error) {
-      console.error('加選失敗：', error);
-    }
-  };
-
   return (
     <div className="w-full max-w-full flex flex-col">
       <div className="flex flex-row justify-between">
