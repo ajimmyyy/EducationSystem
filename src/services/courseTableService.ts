@@ -4,16 +4,31 @@ async function createCourseTable({ semester }: { semester: string }) {
   const students = await prisma.student.findMany();
   
   for (const student of students) {
-    await prisma.courseTable.create({
-      data: {
-        semester,
-        student: {
-          connect: {
-            id: student.id
-          }
-        }
-      }
+    const existingStudent = await prisma.student.findUnique({
+      where: {
+        id: student.id,
+      },
+      include: {
+        courseTable: {
+          where: {
+            semester,
+          },
+        },
+      },
     });
+
+    if (!existingStudent || !existingStudent.courseTable.length) {
+      await prisma.courseTable.create({
+        data: {
+          semester,
+          student: {
+            connect: {
+              id: student.id,
+            },
+          },
+        },
+      });
+    }
   }
 }
 
