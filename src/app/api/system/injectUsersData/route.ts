@@ -1,11 +1,19 @@
-//import { injectUsersData } from "@/utils/inject-users";
+import { injectUsersData } from "@/utils/inject-users";
 
-export async function GET() {
-  return Response.json({ error: "Dev Only" });
-  // await injectUsersData();
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const registerword = searchParams.get("registerword");
 
-  // return Response.json({
-  //   success: true,
-  //   message: "users data injected",
-  // });
+  if (!registerword || registerword !== "dkelgowsmn") {
+    return Response.json({
+      success: false,
+      message: "registerword is required",
+    });
+  }
+  await injectUsersData();
+
+  return Response.json({
+    success: true,
+    message: "users data injected",
+  });
 }
