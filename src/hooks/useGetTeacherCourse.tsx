@@ -1,13 +1,19 @@
 import apiFetcher from "@/utils/api-fetcher";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
-//老師課表的物件，key為"weekday-interval"，value為課程名稱
+//老師課表的物件，key 為 "weekday-interval"，value 為 課程名稱 與 課程id
 export interface CourseTable {
-  [key: string]: { name: string };
+  [key: string]: { 
+    name: string,
+    id: number,
+  };
 }
 
 //回傳老師課表的物件，key為"weekday-interval"，value為課程名稱
-export default function useGetTeacherCourse(teacherID: number, semester: string) {
+export default function useGetTeacherCourse(
+  teacherID: number,
+  semester: string,
+) {
   const [data, setData] = useState<CourseTable>({});
 
   useEffect(() => {
@@ -19,7 +25,8 @@ export default function useGetTeacherCourse(teacherID: number, semester: string)
             schedule.intervals.forEach(interval => {
               let key = `${schedule.weekday}-${interval.time}`;
               acc[key] = {
-                name: course.name
+                name: course.name,
+                id: course.id
               };
             });
           });
@@ -30,5 +37,5 @@ export default function useGetTeacherCourse(teacherID: number, semester: string)
     }
     setTeacherCourseData();
   }, [teacherID, semester]);
-  return {data};
+  return { data };
 }

@@ -1,29 +1,30 @@
 import prisma from "@/utils/prisma";
 
 export interface CourseDetail {
-    syllabusURL: string,
+  syllabus: string;
 }
 
-export class UpdateCourseDetail { 
-    async UpdateCourseDetail(courseID: number, courseDetail: CourseDetail) {
-        const course = await prisma.course.update({
-            where: {
-                courseid: courseID,
-            },
-            data: {
-                syllabusurl: courseDetail.syllabusURL,
-            }
-        });
-        return course;
-    }
+export class UpdateCourseDetail {
+  async UpdateCourseDetail(courseID: number, courseDetail: CourseDetail) {
+    const course = await prisma.course.update({
+      where: {
+        id: courseID,
+      },
+      data: {
+        syllabus: courseDetail.syllabus,
+      },
+    });
+    return course;
+  }
 
-    IsCourseDetailValid(courseDetail: CourseDetail) {
-        const { syllabusURL } = courseDetail;
-        // if (!syllabusURL) {
-        //     return false;
-        // }
-        return true;
-    }
+  IsCourseDetailValid(courseDetail: CourseDetail) {
+    courseDetail;
+    //const { syllabusURL } = courseDetail;
+    // if (!syllabusURL) {
+    //     return false;
+    // }
+    return true;
+  }
 }
 
 export const updateCourseDetail = new UpdateCourseDetail();

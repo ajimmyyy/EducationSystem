@@ -5,7 +5,7 @@ import { URL } from "url";
 import fs from "fs";
 import type { RawCourse } from "@/types/course";
 
-export async function fetchCourseData(year: string, semester: string) {
+async function fetchCourseData(year: string, semester: string) {
   const url = "https://aps.ntut.edu.tw/course/tw/";
   const subjStart = `Subj.jsp?format=-2&year=${year}&sem=${semester}`;
   const browser = await initializeBrowser();
@@ -137,7 +137,6 @@ async function processSubPage(
         name: tdArray[1],
         phase: tdArray[2] ? Number(tdArray[2] as string) : 0,
         credit: Number(tdArray[3] as string),
-        hours: Number(tdArray[4] as string),
         studentQuota: Number(tdArray[15] as string),
         syllabus: tdArray[18],
         progress: tdArray[18],

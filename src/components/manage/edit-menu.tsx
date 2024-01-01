@@ -4,19 +4,24 @@ import {
   MenuHandler,
   MenuList,
   MenuItem,
-}
-  from "@material-tailwind/react";
-import { useState, useEffect, use } from "react";
-import { MdBorderColor, MdOutlineDeleteOutline } from "react-icons/md";
+} from "@material-tailwind/react";
+import React from "react";
+import {
+  MdSettings,
+  MdBorderColor,
+  MdOutlineDeleteOutline,
+} from "react-icons/md";
 import apiFetcher from "@/utils/api-fetcher";
 
-export function EditMenu({role, id, setNeedUpdate }:
-  {
-    role: string,
-    id: number,
-    setNeedUpdate: React.Dispatch<React.SetStateAction<boolean>>
-  }) {
-
+export function EditMenu({
+  role,
+  id,
+  setNeedUpdate,
+}: {
+  role: string;
+  id: number;
+  setNeedUpdate: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
   const userTypeMappings: { [key: string]: string } = {
     student: "/api/ManageUser",
     teacher: "/api/ManageUser",
@@ -39,31 +44,27 @@ export function EditMenu({role, id, setNeedUpdate }:
       console.log(response);
     };
     fetchUser();
-  }
+  };
 
-  const handleEditData = () => {
-    const fetchUser = async () => {
-      const response = await apiFetcher(apiUrl, {
-        method: "PUT",
-        body: {
-          id: id,
-        },
-      });
-      setNeedUpdate(true);
-      console.log(response);
-    };
-    fetchUser();
-  }
+  // const handleEditData = () => {
+  //   const fetchUser = async () => {
+  //     const response = await apiFetcher(apiUrl, {
+  //       method: "PUT",
+  //       body: {
+  //         id: id,
+  //       },
+  //     });
+  //     setNeedUpdate(true);
+  //     console.log(response);
+  //   };
+  //   fetchUser();
+  // };
 
   return (
     <Menu>
       <MenuHandler>
-        <Button
-          placeholder
-          className="rounded-full bg-gray-700"
-          size="sm"
-        >
-          Edit
+        <Button placeholder className="rounded-full bg-gray-700" size="sm">
+          <MdSettings size={20} />
         </Button>
       </MenuHandler>
       <MenuList placeholder>

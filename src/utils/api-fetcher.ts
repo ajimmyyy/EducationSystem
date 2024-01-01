@@ -17,9 +17,8 @@ const apiFetcher = async (path: string, options: any) => {
   });
 
   const _data = await response.text();
+  if (!response.ok) throw new Error(_data);
   const data = _data ? JSON.parse(_data) : null;
-
-  if (!response.ok) throw new Error(data.message);
 
   return data;
 };

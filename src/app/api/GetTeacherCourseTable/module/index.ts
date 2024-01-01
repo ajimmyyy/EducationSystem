@@ -12,6 +12,7 @@ export async function getTeacherCourseTable(teacherId: number, semester: string)
         select: {
           code: true,
           name: true,
+          id: true,
           schedule: {
             select: {
               weekday: true,

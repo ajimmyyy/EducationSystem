@@ -1,9 +1,4 @@
-import {
-  Chip,
-  List,
-  ListItem,
-  ListItemPrefix,
-} from "@/components/material-tailwind";
+import { List } from "@/components/material-tailwind";
 import { useSearchCourses } from "@/hooks/useSearchCourses";
 import { Fragment, useEffect, useRef } from "react";
 import { useIntersection } from "react-use";

@@ -3,15 +3,15 @@ import { NextRequest } from "next/server";
 
 export async function GET(request: NextRequest) {
   const params = request.nextUrl.searchParams;
-  const teacherID = params.get("teacherID") || {};
-  if (!teacherID) {
+  const courseID = params.get("courseID") || {};
+  if (!courseID) {
     return Response.json({
       success: false,
-      error: "Invalid request. Missing teacherID",
+      error: "Invalid request. Missing courseID",
     });
   }
   try {
-    const courseRequests = await GetCourseRequest(Number(teacherID));
+    const courseRequests = await GetCourseRequest(Number(courseID));
     return Response.json({ success: true, courseRequests });
   } catch (error) {
     return Response.json({ success: false, error });

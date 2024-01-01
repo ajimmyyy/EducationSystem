@@ -10,7 +10,7 @@ import {
   AccordionBody,
 } from "@material-tailwind/react";
 import AddSemesterListItem from "./add-semester-dialog";
-import { MdGroups, MdMenuBook, MdOutlineOtherHouses, MdCorporateFare } from "react-icons/md";
+import { MdOutlineArrowDropDown, MdGroups, MdMenuBook, MdOutlineOtherHouses, MdCorporateFare } from "react-icons/md";
 
 // 管理員控制項目的選單
 export function Menu({ addOption }: { addOption: React.Dispatch<React.SetStateAction<string>> }) {
@@ -35,8 +35,11 @@ export function Menu({ addOption }: { addOption: React.Dispatch<React.SetStateAc
     addOption(value);
   };
 
+  //圖案旋轉控制
+  const rotate = branchOpen !==0 ? "rotate(180deg)" : "rotate(0)"
+
   return (
-    <Card placeholder className=" h-[calc(100vh-4rem)] w-full max-w-[20rem] p-4 shadow-xl shadow-blue-gray-900/5">
+    <Card placeholder className=" h-[calc(100vh-4rem)] w-full max-w-[16rem] p-4 shadow-xl shadow-blue-gray-900/5">
       <div className="mb-2 p-4">
         <Typography placeholder variant="h5" color="blue-gray">
           Manage
@@ -46,7 +49,9 @@ export function Menu({ addOption }: { addOption: React.Dispatch<React.SetStateAc
         <Accordion
           placeholder
           open={branchOpen === 1}
-          icon={<span>{branchOpen === 1 ? '▲' : '▼'}</span>}
+          icon={
+            <MdOutlineArrowDropDown size={35} style = {{transform: rotate }}/>
+          }
         >
           <ListItem placeholder className="p-0" selected={branchOpen === 1}>
             <AccordionHeader placeholder onClick={() => handleBranchOpen(1)} className="border-b-0 p-3">

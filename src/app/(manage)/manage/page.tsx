@@ -5,7 +5,7 @@ import { ClassroomTable } from "@/components/manage/classroom-table";
 import { CourseTable } from "@/components/manage/course-table";
 import { Search } from "@/components/manage/search";
 import { Menu } from "@/components/manage/menu";
-import { useState, useEffect} from "react";
+import { useState } from "react";
 
 // 管理員頁面
 export default function Home() {
@@ -16,19 +16,19 @@ export default function Home() {
       case "department":
         return <DepartmentTable type={option} />;
       case "classroom":
-        return <ClassroomTable type={option}/>;
+        return <ClassroomTable type={option} />;
       case "course":
-        return <CourseTable type={option}/>;
+        return <CourseTable type={option} />;
       default:
-        return <UserTable type={option}/>;
+        return <UserTable type={option} />;
     }
   };
 
   return (
-    <main className="flex">
-      <Menu addOption={setOption}/>
+    <main className="flex gap-1">
+      <Menu addOption={setOption} />
       <div>
-        <Search/>
+        <Search />
         {renderTableBasedOnOption()}
       </div>
     </main>

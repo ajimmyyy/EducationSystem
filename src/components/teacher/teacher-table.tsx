@@ -1,10 +1,9 @@
 import TeacherTableItem from "./teacher-table-item";
 import useGetTeacherCourse from "@/hooks/useGetTeacherCourse";
-import { CourseTable } from "@/hooks/useGetTeacherCourse";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Select, Option } from "@material-tailwind/react";
 
-// 放在最左側的時間表，同時也是用來從CourseTable取得課
+// 放在最左側的時間表，同時也是用來從 CourseTable 取得課
 const intervals: Record<string, { start: string; end: string }> = {
   "1": { start: "08:10", end: "09:00" },
   "2": { start: "09:10", end: "10:00" },
@@ -20,9 +19,9 @@ const intervals: Record<string, { start: string; end: string }> = {
   B: { start: "19:30", end: "20:20" },
   C: { start: "20:30", end: "21:20" },
   D: { start: "21:30", end: "22:20" },
-}
+};
 
-// 在等登入功能完成前，先寫死老師ID
+// 在等登入功能完成前，先寫死老師 ID
 const teacherID = 4;
 const defaultSemester = "112-2";
 
@@ -33,9 +32,13 @@ export default function TeacherTable() {
 
   return (
     <>
-    <div className="mt-4">
-        <Select label="學期" placeholder={undefined}
-          onChange={(e) => {setSemester(e as string)}}
+      <div className="mt-4">
+        <Select
+          label="學期"
+          placeholder={undefined}
+          onChange={(e) => {
+            setSemester(e as string);
+          }}
           value={defaultSemester}
         >
           <Option value="111-1">111-1</Option>
@@ -43,7 +46,7 @@ export default function TeacherTable() {
           <Option value="112-1">112-1</Option>
           <Option value="112-2">112-2</Option>
         </Select>
-    </div>
+      </div>
       <table
         style={{
           width: "100%",
@@ -69,9 +72,7 @@ export default function TeacherTable() {
                   <span style={{ fontSize: "14px", color: "#888888" }}>
                     {intervals[interval].start}
                   </span>
-                  <span style={{ fontWeight: 500 }}>
-                    {interval}
-                  </span>
+                  <span style={{ fontWeight: 500 }}>{interval}</span>
                   <span style={{ fontSize: "14px", color: "#888888" }}>
                     {intervals[interval].end}
                   </span>
@@ -79,7 +80,9 @@ export default function TeacherTable() {
               </td>
               {"0123456".split("").map((day) => (
                 <td key={day + interval}>
-                  <TeacherTableItem courseItem={data[`${day}-${interval}` as string]} />
+                  <TeacherTableItem
+                    courseItem={data[`${day}-${interval}` as string]}
+                  />
                 </td>
               ))}
             </tr>
@@ -87,5 +90,5 @@ export default function TeacherTable() {
         </tbody>
       </table>
     </>
-  )
+  );
 }
