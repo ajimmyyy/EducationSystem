@@ -1,9 +1,12 @@
 import apiFetcher from "@/utils/api-fetcher";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 //老師課表的物件，key為"weekday-interval"，value為課程名稱
 export interface CourseTable {
-  [key: string]: { name: string };
+  [key: string]: { 
+    name: string,
+    id: number,
+  };
 }
 
 //回傳老師課表的物件，key為"weekday-interval"，value為課程名稱
@@ -19,7 +22,8 @@ export default function useGetTeacherCourse(teacherID: number, semester: string)
             schedule.intervals.forEach(interval => {
               let key = `${schedule.weekday}-${interval.time}`;
               acc[key] = {
-                name: course.name
+                name: course.name,
+                id: course.id
               };
             });
           });

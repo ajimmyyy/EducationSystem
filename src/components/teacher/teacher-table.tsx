@@ -1,7 +1,6 @@
 import TeacherTableItem from "./teacher-table-item";
 import useGetTeacherCourse from "@/hooks/useGetTeacherCourse";
-import { CourseTable } from "@/hooks/useGetTeacherCourse";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Select, Option } from "@material-tailwind/react";
 
 // 放在最左側的時間表，同時也是用來從CourseTable取得課
