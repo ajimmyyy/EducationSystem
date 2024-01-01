@@ -1,12 +1,12 @@
-import { WithDrawCourseService } from "./module";
+import { UnassignCourseService } from "./module";
 
 export async function POST(request: Request) {
-    const withDrawCourseService = new WithDrawCourseService();
+    const unassignCourseService = new UnassignCourseService();
     try {
         const body = await request.json();
         const { studentId, courseId, semester } = body;
         
-        const result = await withDrawCourseService.withdrawCourse(studentId, courseId, semester);
+        const result = await unassignCourseService.unassignCourse(studentId, courseId, semester);
         return new Response(JSON.stringify({ success: true, result }), {
             headers: { 'Content-Type': 'application/json' }
         });

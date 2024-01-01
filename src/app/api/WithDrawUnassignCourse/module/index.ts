@@ -1,8 +1,7 @@
-// app/api/WithDraw/index.ts
 import prisma from "@/utils/prisma";
 
-export class WithDrawCourseService {
-    async withdrawCourse(studentId: number, courseId: number, semester: string) {
+export class UnassignCourseService {
+    async unassignCourse(studentId: number, courseId: number, semester: string) {
         // 查找學生的課表
         const courseTable = await prisma.courseTable.findFirst({
             where: {
@@ -37,8 +36,8 @@ export class WithDrawCourseService {
             }
         });
 
-        return { status: 'withdrawn' };
+        return { status: 'unassigned' };
     }
 }
 
-export const withDrawCourseService = new WithDrawCourseService();
+export const unassignCourseService = new UnassignCourseService();

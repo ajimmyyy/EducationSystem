@@ -1,13 +1,16 @@
 //quote from search/course-list-item.tsx
+import React, { useState } from 'react';
+import AlertWindows from './AlertWindows';
 import type { SearchCourseResult } from "@/services/courseService";
 import {
+  Button,
   Chip,
   ListItem,
   ListItemPrefix,
-  ListItemSuffix,
 } from "../material-tailwind";
 import { MdOutlinePerson, MdAccessTime } from "react-icons/md";
 import { useRouter } from "next/navigation";
+
 
 interface CourseListItemProps {
   course: SearchCourseResult["courses"][0];
@@ -17,15 +20,58 @@ interface CourseListItemProps {
 const weekdayMap = ["一", "二", "三", "四", "五", "六", "日"];
 
 export default function CourseListItem({ course, index }: CourseListItemProps) {
-  const router = useRouter();
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const openAlert = () => {
+    const message = `是否加選 ${course.code} ${course.name}?`;
+    setIsAlertOpen(true);
+    setAlertMessage(message);
+  };
+
+  const closeAlert = () => {
+    setIsAlertOpen(false);
+  };
+
+  const handleEnroll = async () => {
+    try {
+        const studentId = 748;
+        const semester = "112-1";
+
+        const response = await fetch('/api/EnrollCourse', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                studentId: studentId,
+                courseId: course.id,
+                semester: semester
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            console.log('加選成功：', data);
+            window.location.href = '/Enroll';
+        } else {
+            console.error('加選失敗：', data.error);
+        }
+
+    } catch (error) {
+        console.error('加選請求錯誤：', error);
+    } finally {
+        closeAlert(); 
+    }
+};
+
+  
+  
   return (
     <ListItem
       placeholder="null"
       key={course.id}
       className={index % 2 === 0 ? "bg-white" : "bg-[#f7f7f7]"}
-      onClick={() => {
-        router.push(`/course/${course.id}`);
-      }}
     >
       <ListItemPrefix placeholder="null" className="text-sm text-gray-500">
         {course.code}
@@ -65,14 +111,6 @@ export default function CourseListItem({ course, index }: CourseListItemProps) {
                 className="rounded-full px-2 py-1 text-xs group-hover:bg-white/20 group-hover:text-white"
               />
             )}
-            {course.hours ? (
-              <Chip
-                value={`時數: ${course.hours}`}
-                variant="ghost"
-                size="sm"
-                className="rounded-full px-2 py-1 text-xs group-hover:bg-white/20 group-hover:text-white"
-              />
-            ) : null}
             {course.studentQuota ? (
               <Chip
                 value={`人數: ${course.studentQuota}`}
@@ -154,14 +192,12 @@ export default function CourseListItem({ course, index }: CourseListItemProps) {
           )}
         </div>
       </div>
-      <ListItemSuffix placeholder="null">
-        <Chip
-          value="+99"
-          variant="ghost"
-          size="sm"
-          className="rounded-full px-2 py-1 text-xs group-hover:bg-white/20 group-hover:text-white"
-        />
-      </ListItemSuffix>
+      <div>
+        <td className="text-xs gap-2 right-50 flex justify-end" style={{ width: '150px' }}>
+            <Button size="sm" variant="gradient" color="blue-gray" onClick={openAlert} placeholder="">加選</Button>
+            </td>
+      </div>
+      <AlertWindows isOpen={isAlertOpen} message={alertMessage} onClose={closeAlert} onConfirm={handleEnroll} />
     </ListItem>
   );
 }

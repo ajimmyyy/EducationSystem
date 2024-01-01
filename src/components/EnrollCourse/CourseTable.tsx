@@ -1,8 +1,14 @@
-import { List } from "@/components/material-tailwind";
+//quote from search/course-list.tsx
+import {
+  Chip,
+  List,
+  ListItem,
+  ListItemPrefix,
+} from "@/components/material-tailwind";
 import { useSearchCourses } from "@/hooks/useSearchCourses";
 import { Fragment, useEffect, useRef } from "react";
 import { useIntersection } from "react-use";
-import CourseListItem from "./course-list-item";
+import CourseListItem from "./CourseItem";
 
 export default function CourseList() {
   const loadMoreRef = useRef<HTMLButtonElement>(null);
