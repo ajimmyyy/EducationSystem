@@ -1,17 +1,17 @@
-import { WithdrawCourseCase, WithdrawCourseInput } from "./module";
-
-const withdrawCourseCase = new WithdrawCourseCase();
+import { WithDrawCourseService } from "./module";
 
 export async function POST(request: Request) {
+    const withDrawCourseService = new WithDrawCourseService();
     try {
-        const body = await request.json() as WithdrawCourseInput;
-        const response = await withdrawCourseCase.removeCourseFromTable(body);
-
-        return new Response(JSON.stringify({ success: true, response }), {
+        const body = await request.json();
+        const { studentId, courseId, semester } = body;
+        
+        const result = await withDrawCourseService.withdrawCourse(studentId, courseId, semester);
+        return new Response(JSON.stringify({ success: true, result }), {
             headers: { 'Content-Type': 'application/json' }
         });
-    } catch (error : any) {
-        return new Response(JSON.stringify({ success: false, error : error.message }), {
+    } catch (error: any) {
+        return new Response(JSON.stringify({ success: false, error: error.message }), {
             headers: { 'Content-Type': 'application/json' }
         });
     }

@@ -1,3 +1,4 @@
+//api/EnrollCourse/module/index.ts
 import prisma from "@/utils/prisma";
 
 export class EnrollCourseService {

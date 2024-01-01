@@ -2,32 +2,35 @@ import React, { useState, useEffect } from 'react';
 import { Card, Typography, Button } from "@material-tailwind/react";
 import { MdCreate } from "react-icons/md";
 import AlertWindows from './AlertWindowsWithDraw';
-import { ZodNumberCheck } from 'zod';
 
 const TABLE_HEAD = ["State", "Course Name", "Course ID", ""];
-const studentId = 748; // 固定的學生ID
-const semester = "112-1"; // 固定的學期
+const studentId = 748; 
+const semester = "112-1"; 
+
+type Course = {
+  id: number;
+  name: string;
+  code: string;
+};
+type CourseResponse = {
+  course: {
+    id: number;
+    code: string;
+    name: string;
+  };
+  courseTable: {
+    id: number;
+    semester: string;
+    studentId: number;
+  };
+};
 
 export function DefaultTable() {
-  const [courses, setCourses] = useState([]);
+  const [courses, setCourses] = useState<Course[]>([]);
   const [isEditAlertOpen, setIsEditAlertOpen] = useState(false);
   const [editAlertMessage, setEditAlertMessage] = useState('');
+  const [selectedCourseId, setSelectedCourseId] = useState<number | null>(null);
 
-  const openEditAlert = (courseCode: string, courseName: string) => {
-    const message = `是否要退選課程 [${courseCode}]${courseName}？`;
-    setIsEditAlertOpen(true);
-    setEditAlertMessage(message);
-  };
-
-  const closeEditAlert = () => {
-    setIsEditAlertOpen(false);
-  };
-
-  const handleDelete = async (courseCode : string) => {
-    // 實現刪除課程的邏輯
-    closeEditAlert();
-  };
-  
   useEffect(() => {
     const fetchCourses = async () => {
       try {
@@ -36,7 +39,12 @@ export function DefaultTable() {
         console.log(data);
 
         if (response.ok) {
-          setCourses(data.courses); 
+          const coursesData = data.courses.map((item: CourseResponse) => ({
+            id: item.course.id,
+            name: item.course.name,
+            code: item.course.code
+          }));
+          setCourses(coursesData);
         } else {
           console.error('獲取課程失敗：', data.error);
         }
@@ -46,7 +54,49 @@ export function DefaultTable() {
     };
 
     fetchCourses();
-  }, []); // 空依賴數組確保僅在組件加載時執行
+  }, []); 
+
+  const openEditAlert = (course: Course) => {
+    const message = `是否要退選課程 [${course.code}]${course.name}？`;
+    setSelectedCourseId(course.id);
+    setIsEditAlertOpen(true);
+    setEditAlertMessage(message);
+  };
+
+  const closeEditAlert = () => {
+    setIsEditAlertOpen(false);
+  };
+
+  const handleDelete = async () => {
+    if (selectedCourseId) {
+      try {
+        const response = await fetch('/api/WithDraw', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                studentId: studentId,
+                courseId: selectedCourseId,
+                semester: semester
+            })
+        });
+    
+        const data = await response.json();
+    
+        if (data.success) {
+            console.log('退選成功：', data);
+            window.location.href = '/Enroll';
+        } else {
+            console.error('退選失敗：', data.error);
+        }
+      } catch (error) {
+          console.error('退選請求錯誤：', error);
+      } finally {
+          closeEditAlert();
+      }
+    }
+  };
 
   return (
     <Card className="h-full w-full overflow-scroll" placeholder="">
@@ -62,18 +112,17 @@ export function DefaultTable() {
           </thead>
         <tbody>
           {courses.map((course, index) => {
-            const { course: { name: courseName }, course: { code: courseCode }} = course;
+            const { name: courseName, code: courseCode } = course;
             const classes = `${index % 2 === 0 ? "bg-white" : "bg-gray-100"} p-4 border-b border-blue-gray-50`;
-            const stateButtonColor = "green";
 
             return (
               <tr key={index}>
                 <td className={classes}>
                   <Button
                     size="sm"
-                    color={stateButtonColor} 
+                    color="green" 
                     className="capitalize"
-                    placeholder="已加選"
+                    placeholder=""
                   >
                     已加選
                   </Button>
@@ -84,7 +133,7 @@ export function DefaultTable() {
                     variant="small"
                     color="blue-gray"
                     className="font-normal"
-                    placeholder={courseName}
+                    placeholder=""
                   >
                     {courseName}
                   </Typography>
@@ -95,24 +144,33 @@ export function DefaultTable() {
                     variant="small"
                     color="blue-gray"
                     className="font-normal"
-                    placeholder={courseCode}
+                    placeholder=""
                   >
                     {courseCode}
                   </Typography>
                 </td>
 
                 <td className={classes} style={{ width: '150px' }}>
-                  <Button size="sm" variant="gradient" color="blue-gray" className="flex items-center gap-2" onClick={() => openEditAlert(courseCode, courseName)} placeholder="">
-                    修改<MdCreate />
-                  </Button>
+                  <Button 
+                  size="sm" 
+                  variant="gradient" 
+                  color="blue-gray" 
+                  className="flex items-center gap-2" 
+                  onClick={() => {
+                    console.log(course); 
+                    openEditAlert(course)
+                  }} 
+                  placeholder=""
+                >
+                  修改<MdCreate />
+                </Button>
                 </td>
               </tr>
-              
             );
           })}
         </tbody>
       </table>
-      <AlertWindows isOpen={isEditAlertOpen} message={editAlertMessage} onClose={closeEditAlert} onConfirm={() => handleDelete(editAlertMessage.split(' ')[3])} />
+      <AlertWindows isOpen={isEditAlertOpen} message={editAlertMessage} onClose={closeEditAlert} onConfirm={handleDelete} />
     </Card>
   );
 }

@@ -21,7 +21,6 @@ const weekdayMap = ["一", "二", "三", "四", "五", "六", "日"];
 
 export default function CourseListItem({ course, index }: CourseListItemProps) {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
-  const router = useRouter();
   const [alertMessage, setAlertMessage] = useState('');
   const openAlert = () => {
     const message = `是否加選 ${course.code} ${course.name}?`;
