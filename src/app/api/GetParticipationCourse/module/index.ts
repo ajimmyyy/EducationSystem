@@ -11,7 +11,12 @@ export class GetParticipationCourseService {
                 }
             },
             include: {
-                course: true
+                course: true, // 包含課程詳情
+                courseTable: {
+                    include: {
+                        student: true 
+                    }
+                }
             }
         });
 
@@ -21,4 +26,5 @@ export class GetParticipationCourseService {
 }
 
 export const getParticipationCourseService = new GetParticipationCourseService();
+
 

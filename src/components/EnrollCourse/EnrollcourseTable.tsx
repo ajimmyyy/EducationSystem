@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Card, Typography, Button } from "@material-tailwind/react";
 import { MdCreate } from "react-icons/md";
 
-const TABLE_HEAD = ["State", "Course Name", "Course Time", "Course ID", ""];
-const studentId = 8901000; // 固定的學生ID
+const TABLE_HEAD = ["State", "Course Name", "Course ID", ""];
+const studentId = 748; // 固定的學生ID
 const semester = "112-1"; // 固定的學期
 
 export function DefaultTable() {
@@ -32,22 +32,31 @@ export function DefaultTable() {
   return (
     <Card className="h-full w-full overflow-scroll" placeholder="">
       <table>
+        <thead>
+            <tr>
+              {TABLE_HEAD.map((head, index) => (
+                <th key={index} className="p-4 border-b border-blue-gray-50" style={{ fontSize: 'small', textAlign: 'left' }}>
+                  {head}
+                </th>
+              ))}
+            </tr>
+          </thead>
         <tbody>
           {courses.map((course, index) => {
-            const { state, courseName, courseTime, courseId } = course;
+            const { course: { name: courseName }, course: { code: courseCode }} = course;
             const classes = `${index % 2 === 0 ? "bg-white" : "bg-gray-100"} p-4 border-b border-blue-gray-50`;
-            let stateButtonColor = state === "已加選" ? "green" : state === "簽核中" ? "orange" : "gray";
+            const stateButtonColor = "green";
 
             return (
               <tr key={index}>
                 <td className={classes}>
                   <Button
                     size="sm"
-                    color={stateButtonColor === "green" ? "green" : stateButtonColor === "orange" ? "orange" : "blue-gray"}
+                    color={stateButtonColor} 
                     className="capitalize"
-                    placeholder={state}
+                    placeholder="已加選"
                   >
-                    {state}
+                    已加選
                   </Button>
                 </td>
 
@@ -62,7 +71,7 @@ export function DefaultTable() {
                   </Typography>
                 </td>
 
-                <td className={classes}>
+                {/* <td className={classes}>
                   <div className="bg-blue-gray-100 rounded-full px-2 py-1 inline-block">
                     <Typography
                       variant="small"
@@ -73,16 +82,16 @@ export function DefaultTable() {
                       {courseTime}
                     </Typography>
                   </div>
-                </td>
+                </td> */}
 
                 <td className={classes}>
                   <Typography
                     variant="small"
                     color="blue-gray"
                     className="font-normal"
-                    placeholder={courseId}
+                    placeholder={courseCode}
                   >
-                    {courseId}
+                    {courseCode}
                   </Typography>
                 </td>
 

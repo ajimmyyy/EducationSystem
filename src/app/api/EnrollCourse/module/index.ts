@@ -11,33 +11,29 @@ export class EnrollCourseService {
             throw new Error("Course not found");
         }
 
-        let courseTable = await prisma.courseTable.findFirst({
+        // 查找學生的課表
+        const courseTable = await prisma.courseTable.findFirst({
             where: {
-              studentId: studentId,
-              semester: semester
-            }
-          });
-        
-          // 如果課程表不存在，則創建一個新的課程表
-          if (!courseTable) {
-            courseTable = await prisma.courseTable.create({
-              data: {
                 studentId: studentId,
-                semester: semester,
-              }
-            });
-          }
-        // // 查找學生的課表
-        // const courseTable = await prisma.courseTable.findFirst({
-        //     where: {
-        //         studentId: studentId,
-        //         semester: semester
-        //     }
-        // });
+                semester: semester
+            }
+        });
 
-        // if (!courseTable) {
-        //     throw new Error("Course table not found");
-        // }
+        if (!courseTable) {
+            throw new Error("Course table not found");
+        }
+
+        //檢查是否已經選過課
+        const isEnrolled = await prisma.participationCourse.findFirst({
+            where: {
+                courseTableId: courseTable.id,
+                courseId: courseId
+            }
+        });
+
+        if (isEnrolled) {
+            throw new Error("Course already enrolled");
+        }
 
         // 檢查課程是否已滿
         const enrollmentCount = await prisma.participationCourse.count({

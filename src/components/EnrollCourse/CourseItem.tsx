@@ -35,8 +35,8 @@ export default function CourseListItem({ course, index }: CourseListItemProps) {
 
   const handleEnroll = async () => {
     try {
-        const studentId = 8901000;
-        const semester = "110-1";
+        const studentId = 748;
+        const semester = "112-1";
 
         const response = await fetch('/api/EnrollCourse', {
             method: 'POST',
@@ -52,13 +52,13 @@ export default function CourseListItem({ course, index }: CourseListItemProps) {
 
         const data = await response.json();
 
-        if (response.ok) {
+        if (data.success) {
             console.log('加選成功：', data);
-            //window.location.href = '/Enroll';
+            window.location.href = '/Enroll';
         } else {
             console.error('加選失敗：', data.error);
-            // 處理錯誤情況
         }
+
     } catch (error) {
         console.error('加選請求錯誤：', error);
     } finally {
@@ -112,14 +112,6 @@ export default function CourseListItem({ course, index }: CourseListItemProps) {
                 className="rounded-full px-2 py-1 text-xs group-hover:bg-white/20 group-hover:text-white"
               />
             )}
-            {course.hours ? (
-              <Chip
-                value={`時數: ${course.hours}`}
-                variant="ghost"
-                size="sm"
-                className="rounded-full px-2 py-1 text-xs group-hover:bg-white/20 group-hover:text-white"
-              />
-            ) : null}
             {course.studentQuota ? (
               <Chip
                 value={`人數: ${course.studentQuota}`}

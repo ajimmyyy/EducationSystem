@@ -12,7 +12,7 @@ const EnrollPage = () => {
   const [selectedCourseId, setSelectedCourseId] = useState<number | null>(null);
   const studentInfo = {
     studentId: 8901000,
-    name: "王小明",
+    name: "賴清德",
     department: "資工三"
   };
 
