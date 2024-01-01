@@ -5,6 +5,7 @@ import { URL } from "url";
 import fs from "fs";
 import type { RawCourse } from "@/types/course";
 
+// eslint-disable-next-line no-unused-vars
 async function fetchCourseData(year: string, semester: string) {
   const url = "https://aps.ntut.edu.tw/course/tw/";
   const subjStart = `Subj.jsp?format=-2&year=${year}&sem=${semester}`;
@@ -245,19 +246,22 @@ function saveDataToFile(data: RawCourse[], year: string, semester: string) {
   fs.writeFileSync(jsonFileName, JSON.stringify(data, null, 2), "utf-8");
 }
 
+// eslint-disable-next-line no-unused-vars
 export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
-  const year = searchParams.get("year");
-  const semester = searchParams.get("semester");
-  if (!year || !semester) {
-    return Response.json({ error: "Missing year or semester" });
-  }
-  const data = await fetchCourseData(year as string, semester as string).catch(
-    (e) => {
-      console.log(e);
-      return [];
-    },
-  );
+  return Response.json({ error: "Dev Only" });
 
-  return Response.json(data);
+  // const { searchParams } = new URL(req.url);
+  // const year = searchParams.get("year");
+  // const semester = searchParams.get("semester");
+  // if (!year || !semester) {
+  //   return Response.json({ error: "Missing year or semester" });
+  // }
+  // const data = await fetchCourseData(year as string, semester as string).catch(
+  //   (e) => {
+  //     console.log(e);
+  //     return [];
+  //   },
+  // );
+
+  // return Response.json(data);
 }

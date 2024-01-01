@@ -26,7 +26,6 @@ export default function Home() {
             階段：
             {course.phase ? (course.phase === 1 ? "上" : "下") : "-"}
           </div>
-          <div className="border-b px-1 pb-2">時數：{course.hours || "-"}</div>
           <div className="border-b px-1 pb-2">
             限修人數：{course.studentQuota || "-"}
           </div>
