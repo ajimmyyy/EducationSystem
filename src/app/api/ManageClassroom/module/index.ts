@@ -1,40 +1,40 @@
 import prisma from "@/utils/prisma";
 
 interface CreateClassroomType {
-  location: string
-  buildingid?: number
+  location: string;
+  buildingid?: number;
 }
 
-interface DeleteClassroomType {
-  classroomid: number
-}
+// interface DeleteClassroomType {
+//   classroomid: number
+// }
 
 export class ManageClassroomCase {
   async CreateClassroom(room: CreateClassroomType) {
     const classroom = await prisma.classroom.create({
-      data: room
+      data: room,
     });
 
     return classroom;
   }
 
-  async SearchClassroom(page: number, perPage: number) {  
+  async SearchClassroom(page: number, perPage: number) {
     const classroom = await prisma.classroom.findMany({
       skip: (page - 1) * perPage,
       take: perPage,
       orderBy: {
-        id: "asc"
-      }
+        id: "asc",
+      },
     });
 
-    return classroom
+    return classroom;
   }
 
   async DeleteClassroom(classroomId: number) {
     const classroom = await prisma.classroom.delete({
       where: {
-        id: classroomId
-      }
+        id: classroomId,
+      },
     });
 
     return classroom;
@@ -44,8 +44,8 @@ export class ManageClassroomCase {
     const classroom = await prisma.classroom.findFirst({
       where: {
         location: room.location,
-        buildingid: room.buildingid
-      }
+        buildingid: room.buildingid,
+      },
     });
 
     if (classroom !== null) {
