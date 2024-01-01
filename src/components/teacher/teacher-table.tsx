@@ -3,7 +3,7 @@ import useGetTeacherCourse from "@/hooks/useGetTeacherCourse";
 import { useState } from "react";
 import { Select, Option } from "@material-tailwind/react";
 
-// 放在最左側的時間表，同時也是用來從CourseTable取得課
+// 放在最左側的時間表，同時也是用來從 CourseTable 取得課
 const intervals: Record<string, { start: string; end: string }> = {
   "1": { start: "08:10", end: "09:00" },
   "2": { start: "09:10", end: "10:00" },
@@ -21,7 +21,7 @@ const intervals: Record<string, { start: string; end: string }> = {
   D: { start: "21:30", end: "22:20" },
 }
 
-// 在等登入功能完成前，先寫死老師ID
+// 在等登入功能完成前，先寫死老師 ID
 const teacherID = 4;
 const defaultSemester = "112-2";
 

@@ -1,7 +1,7 @@
 "use client";
 import { useCourse } from "@/hooks/useCourse";
 import { useParams } from "next/navigation";
-import { List, ListItem, Button } from "@material-tailwind/react";
+import TeacherCourseRequestItem from "@/components/teacher/teacher-course-request-item";
 
 const weekdayMap = ["一", "二", "三", "四", "五", "六", "日"];
 
@@ -11,6 +11,7 @@ export default function Home() {
   console.log("courseId", courseId);
   const { data: { course } = {} } = useCourse(Number(courseId as string));
   if (!course) return null;
+
   return (
     <div className="px-4">
       <h1 className=" my-4 text-xl font-normal">{course.name}</h1>
@@ -27,7 +28,6 @@ export default function Home() {
             階段：
             {course.phase ? (course.phase === 1 ? "上" : "下") : "-"}
           </div>
-          <div className="border-b px-1 pb-2">時數：{course.hours || "-"}</div>
           <div className="border-b px-1 pb-2">
             限修人數：{course.studentQuota || "-"}
           </div>
@@ -104,24 +104,9 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <List placeholder={undefined}>
-        <ListItem className="bg-white" placeholder={undefined}>
-          <div className="flex justify-between items-center gap-1 w-full">
-            <div>
-              <span>課號</span>
-              <span>{course.code}</span>
-            </div>
-            <div className=" flex gap-2">
-              <Button  color="blue" size="sm" placeholder={undefined}>
-                同意
-              </Button>
-              <Button  color="red" size="sm" placeholder={undefined}>
-                拒絕
-              </Button>
-            </div>
-          </div>
-        </ListItem>
-      </List>
+      <div className="p-2">
+        {/* <TeacherCourseRequestItem studentProperty={data} /> */}
+      </div>
     </div>
   );
 }

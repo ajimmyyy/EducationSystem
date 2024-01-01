@@ -1,7 +1,7 @@
 import apiFetcher from "@/utils/api-fetcher";
 import { useEffect, useState } from "react";
 
-//老師課表的物件，key為"weekday-interval"，value為課程名稱
+//老師課表的物件，key 為 "weekday-interval"，value 為 課程名稱 與 課程id
 export interface CourseTable {
   [key: string]: { 
     name: string,
