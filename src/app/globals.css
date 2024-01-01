@@ -1,3 +1,36 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.chat-container a {
+  color: #1565c0;
+  text-decoration: underline;
+}
+
+.chat-container a:hover {
+  color: #003c8f;
+}
+
+.chat-container a:active {
+  color: #003c8f;
+}
+
+.chat-container a:focus {
+  color: #003c8f;
+}
+
+.chat-container a:visited {
+  color: #1565c0;
+}
+
+.chat-container li {
+  list-style: circle;
+}
+
+.chat-container ol {
+  list-style: decimal;
+}
+
+.chat-container ul {
+  list-style: disc;
+}
