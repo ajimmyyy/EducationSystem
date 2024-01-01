@@ -10,16 +10,15 @@ import {
   Tab,
   TabPanel,
   Checkbox,
-}
-  from "@material-tailwind/react";
+} from "@material-tailwind/react";
 import apiFetcher from "@/utils/api-fetcher";
-import { useState, useEffect, use } from 'react';
+import { useState } from "react";
 import React from "react";
 
-interface HeadProps {
-  value: string,
-  type: string
-}
+// interface HeadProps {
+//   value: string;
+//   type: string;
+// }
 
 interface AddInfoButtonProps {
   inputInfos: {};
@@ -43,13 +42,27 @@ const schedule = [
 ];
 
 const interval = [
-  "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D"
+  "1",
+  "2",
+  "3",
+  "4",
+  "5",
+  "6",
+  "7",
+  "8",
+  "9",
+  "A",
+  "B",
+  "C",
+  "D",
 ];
 
-function AddCourseStep({inputInfos, setNeedUpdate }: AddInfoButtonProps) {
+function AddCourseStep({ inputInfos, setNeedUpdate }: AddInfoButtonProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [isEnglish, setIsEnglish] = useState(false);
-  const [selectedIntervals, setSelectedIntervals] = useState<IntervalData[]>([]);
+  const [selectedIntervals, setSelectedIntervals] = useState<IntervalData[]>(
+    [],
+  );
   const [classroomId, setClassroomId] = useState<number>(0);
 
   const [activeStep, setActiveStep] = React.useState(0);
@@ -64,18 +77,22 @@ function AddCourseStep({inputInfos, setNeedUpdate }: AddInfoButtonProps) {
     } else {
       setActiveStep((cur) => cur + 1);
     }
-  }
+  };
 
   const handleDialogOpen = () => {
     setDialogOpen(!dialogOpen);
   };
 
-  const handleClassroomIdChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleClassroomIdChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     setClassroomId(parseInt(event.target.value, 10));
   };
 
   const handleCheckboxChange = (weekday: number, selectedInterval: string) => {
-    const existingEntryIndex = selectedIntervals.findIndex((entry) => entry.weekday === weekday);
+    const existingEntryIndex = selectedIntervals.findIndex(
+      (entry) => entry.weekday === weekday,
+    );
 
     if (existingEntryIndex !== -1) {
       const existingIntervals = selectedIntervals[existingEntryIndex].intervals;
@@ -101,16 +118,23 @@ function AddCourseStep({inputInfos, setNeedUpdate }: AddInfoButtonProps) {
     }
   };
 
-  const AddCourseLanguage = () => {
+  function AddCourseLanguage() {
     return (
       <div>
         <DialogHeader placeholder>可選</DialogHeader>
-        <Checkbox crossOrigin checked={isEnglish} onChange={() => { setIsEnglish(!isEnglish) }} label="Is Enghish Taught?" />
+        <Checkbox
+          crossOrigin
+          checked={isEnglish}
+          onChange={() => {
+            setIsEnglish(!isEnglish);
+          }}
+          label="Is Enghish Taught?"
+        />
       </div>
-    )
+    );
   }
 
-  const AddCourseTime = () => {
+  function AddCourseTime() {
     return (
       <div>
         <Tabs value={activeTab}>
@@ -121,8 +145,8 @@ function AddCourseStep({inputInfos, setNeedUpdate }: AddInfoButtonProps) {
                 key={value}
                 value={value}
                 onClick={() => {
-                  setActiveTab(value)
-                  setClassroomId(0)
+                  setActiveTab(value);
+                  setClassroomId(0);
                 }}
               >
                 {label}
@@ -139,18 +163,18 @@ function AddCourseStep({inputInfos, setNeedUpdate }: AddInfoButtonProps) {
                     value={classroomId}
                     onChange={handleClassroomIdChange}
                     min="0"
-                    style={{ textAlign: 'right' }}
+                    style={{ textAlign: "right" }}
                   />
                 </div>
 
-                {interval.map(time => (
+                {interval.map((time) => (
                   <Checkbox
                     key={time}
                     crossOrigin
                     label={time}
                     checked={
                       selectedIntervals
-                        .find(entry => entry.weekday === weekday)
+                        .find((entry) => entry.weekday === weekday)
                         ?.intervals.includes(time) ?? false
                     }
                     onChange={() => handleCheckboxChange(weekday, time)}
@@ -161,32 +185,34 @@ function AddCourseStep({inputInfos, setNeedUpdate }: AddInfoButtonProps) {
             <div>
               {schedule.map(({ value: weekday }) => (
                 <div key={weekday}>
-                  {schedule.find(entry => entry.value === weekday)?.label}:{" "}
+                  {schedule.find((entry) => entry.value === weekday)?.label}:{" "}
                   {selectedIntervals
-                    .find(entry => entry.weekday === weekday)
+                    .find((entry) => entry.weekday === weekday)
                     ?.intervals.join(", ")}
                   {" / "}
-                  {selectedIntervals
-                    .find(entry => entry.weekday === weekday)
-                    ?.classroomId}
+                  {
+                    selectedIntervals.find((entry) => entry.weekday === weekday)
+                      ?.classroomId
+                  }
                 </div>
               ))}
             </div>
           </TabsBody>
         </Tabs>
       </div>
-    )
+    );
   }
 
   const handleAddData = () => {
     const fetch = async () => {
       const filteredInputInfos = Object.fromEntries(
-        Object.entries(inputInfos).filter(([key, value]) => value !== "")
+        // eslint-disable-next-line no-unused-vars
+        Object.entries(inputInfos).filter(([key, value]) => value !== ""),
       );
       const filteredIntervals = selectedIntervals.filter(
-        (entry) => entry.intervals.length > 0
+        (entry) => entry.intervals.length > 0,
       );
-      
+
       console.log(filteredInputInfos);
       console.log(isEnglish);
       console.log(filteredIntervals);
@@ -196,7 +222,7 @@ function AddCourseStep({inputInfos, setNeedUpdate }: AddInfoButtonProps) {
         body: {
           ...filteredInputInfos,
           isEnglishTaught: isEnglish,
-          schedules: filteredIntervals
+          schedules: filteredIntervals,
         },
       });
       setNeedUpdate(true);
@@ -220,19 +246,28 @@ function AddCourseStep({inputInfos, setNeedUpdate }: AddInfoButtonProps) {
 
   return (
     <>
-      <Button placeholder variant="gradient" color="green" onClick={handleDialogOpen}>
+      <Button
+        placeholder
+        variant="gradient"
+        color="green"
+        onClick={handleDialogOpen}
+      >
         <span>Confirm</span>
       </Button>
       <Dialog placeholder open={dialogOpen} handler={handleDialogOpen}>
-        <div className="w-full py-4 px-8">
+        <div className="w-full px-8 py-4">
           <Stepper
             placeholder
             activeStep={activeStep}
             isLastStep={(value) => setIsLastStep(value)}
             isFirstStep={(value) => setIsFirstStep(value)}
           >
-            <Step placeholder onClick={() => setActiveStep(0)}>1</Step>
-            <Step placeholder onClick={() => setActiveStep(1)}>2</Step>
+            <Step placeholder onClick={() => setActiveStep(0)}>
+              1
+            </Step>
+            <Step placeholder onClick={() => setActiveStep(1)}>
+              2
+            </Step>
           </Stepper>
           {renderTableBasedOnOption()}
           <div className="mt-16 flex justify-between">
@@ -247,6 +282,6 @@ function AddCourseStep({inputInfos, setNeedUpdate }: AddInfoButtonProps) {
       </Dialog>
     </>
   );
-};
+}
 
 export default AddCourseStep;

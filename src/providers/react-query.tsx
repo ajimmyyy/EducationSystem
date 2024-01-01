@@ -9,10 +9,8 @@ import {
 } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 
 function ReactQueryProvider({ children }: PropsWithChildren) {
-  const router = useRouter();
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -22,13 +20,12 @@ function ReactQueryProvider({ children }: PropsWithChildren) {
             toast.error("檢測到一個錯誤，請檢查控制台");
           },
         }),
-      })
+      }),
   );
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* <ReactQueryDevtools buttonPosition="bottom-left" /> */}
-      <ReactQueryDevtools />
+      <ReactQueryDevtools buttonPosition="bottom-left" />
       {children}
     </QueryClientProvider>
   );

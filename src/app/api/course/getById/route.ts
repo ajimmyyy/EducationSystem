@@ -18,18 +18,21 @@ export async function GET(request: NextRequest) {
     });
   }
 
-  const result = await courseService
-    .getCourseById(Number(parsed.data.id))
-    .catch((e) => {
-      Response.error();
-      return Response.json({
-        success: false,
-        message: e.message,
-      });
+  try {
+    const result = await courseService.getCourseById(Number(parsed.data.id));
+    return Response.json({
+      success: true,
+      ...result,
     });
-
-  return Response.json({
-    success: true,
-    ...result,
-  });
+  } catch (error: any) {
+    return Response.json(
+      {
+        success: false,
+        message: error.message,
+      },
+      {
+        status: 500,
+      },
+    );
+  }
 }

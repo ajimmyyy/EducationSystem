@@ -10,7 +10,10 @@ export interface CourseTable {
 }
 
 //回傳老師課表的物件，key為"weekday-interval"，value為課程名稱
-export default function useGetTeacherCourse(teacherID: number, semester: string) {
+export default function useGetTeacherCourse(
+  teacherID: number,
+  semester: string,
+) {
   const [data, setData] = useState<CourseTable>({});
 
   useEffect(() => {
@@ -34,5 +37,5 @@ export default function useGetTeacherCourse(teacherID: number, semester: string)
     }
     setTeacherCourseData();
   }, [teacherID, semester]);
-  return {data};
+  return { data };
 }
