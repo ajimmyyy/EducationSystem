@@ -1,35 +1,146 @@
+import { z } from "zod";
 import { manageCourseCase } from "./module";
+import { NextRequest } from "next/server";
 
-interface RequestBody {
-    teacherid: number;
-    departmentid: number;
-    classroomid: number;
-    body: any;
+const CourseCreateRequestBody = z.object({
+  code: z.string().min(1),
+  name: z.string().min(1),
+  credit: z.number(),
+  phase: z.number(),
+  studentQuota: z.number(),
+  syllabus: z.string().optional(),
+  progress: z.string().optional(),
+  grading: z.string().optional(),
+  textbook: z.string().optional(),
+  note: z.string().optional(),
+  note2: z.string().optional(),
+  semester: z.string().optional(),
+  isEnglishTaught: z.boolean().default(false),
+  teacherId: z.number(),
+  departmentId: z.number(),
+  schedules: z.array(
+    z.object({
+      weekday: z.number(),
+      classroomId: z.number(),
+      intervals: z.array(z.string()),
+    })
+  ),
+});
+
+const CourseSearchRequest = z.object({
+  page: z.number().refine(value => value > 0, {
+    message: "Value must be a non-zero positive integer"
+  }),
+});
+
+const CourseDeleteRequestBody = z.object({
+  id: z.number().refine(value =>
+    value > 0,
+    {
+      message: "Value must be a non-zero positive integer"
+    }
+  )
+});
+
+
+export async function GET(request: NextRequest) {
+  const PER_PAGE = 10;
+  const params = request.nextUrl.searchParams;
+  const page = params.get("page") || "1";
+  const parsed = CourseSearchRequest.safeParse({ page: parseInt(page) });
+  if (!parsed.success) {
+    return Response.json(parsed.error, {
+      status: 400,
+      statusText: "invalid request",
+    });
+  }
+
+  const result = await manageCourseCase
+    .SearchCourse(parsed.data.page, PER_PAGE)
+    .catch((e) => {
+      console.log(e);
+      return Response.json({ success: false, e });
+    });
+
+  return Response.json({ success: true, data: result });
 }
 
 export async function POST(request: Request) {
-    const body: RequestBody = await request.json();
+  const body = await request.json();
+  const parsed = CourseCreateRequestBody.safeParse(body);
+  if (!parsed.success) {
+    return Response.json(parsed.error, {
+      status: 400,
+      statusText: "invalid request body",
+    });
+  }
 
-    const isAvailable = await manageCourseCase.CheckCourseAvailability(body.teacherid, body.classroomid, body.body);
-    if (!isAvailable) {
-        return Response.json({ success: false, error: "Classroom or teacher is not available during the specified time." });
-    }
+  const {
+    code,
+    name,
+    credit,
+    phase,
+    studentQuota,
+    syllabus,
+    progress,
+    grading,
+    textbook,
+    note,
+    note2,
+    semester,
+    isEnglishTaught,
+    teacherId,
+    departmentId,
+    schedules,
+  } = parsed.data;
 
-    try {
-        const course = await manageCourseCase.CreateCourse(body.teacherid, body.departmentid, body.classroomid, body.body);
-        return Response.json({ success: true, course })
-    } catch (error) {
-        return Response.json({ success: false, error })
-    }
+  const isAvailable = await manageCourseCase.CheckCourseAvailability(teacherId, schedules);
+  if (!isAvailable) {
+    return Response.json({ success: false, error: "Classroom or teacher is not available during the specified time." });
+  }
+
+  const result = await manageCourseCase
+    .CreateCourse(
+      {
+        code,
+        name,
+        credit,
+        phase,
+        studentQuota,
+        syllabus,
+        progress,
+        grading,
+        textbook,
+        note,
+        note2,
+        semester,
+        isEnglishTaught,
+      },
+      teacherId,
+      departmentId,
+      schedules
+    )
+    .catch((e) => {
+      console.log(e);
+      return Response.json({ success: false, e });
+    });
+  return Response.json({ success: true, result });
 }
 
 export async function DELETE(request: Request) {
-    const body = await request.json();
+  const body = await request.json();
+  const parsed = CourseDeleteRequestBody.safeParse(body);
+  if (!parsed.success) {
+    return Response.json(parsed.error, {
+      status: 400,
+      statusText: "invalid request body",
+    });
+  }
 
-    try {
-        await manageCourseCase.DeleteCourse(body);
-        return Response.json({ success: true });
-    } catch (error) {
-        return Response.json({ success: false, error });
-    }
+  try {
+    const response = await manageCourseCase.DeleteCourse(parsed.data.id);
+    return Response.json({ success: true, response })
+  } catch (error) {
+    return Response.json({ success: false, error });
+  }
 }
