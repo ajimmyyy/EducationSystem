@@ -26,11 +26,13 @@ const EnrollPage = () => {
   // 加選課程的處理函數 
   const handleEnroll = async (courseId: number) => {
     try {
-      await enrollCourse.mutateAsync(courseId); // 假設這是發送加選請求的函數
-      setSelectedCourseId(courseId); // 更新選擇的課程ID以觸發列表刷新
+      await enrollCourse.mutateAsync(courseId, {
+        onSuccess: () => {
+          searchCourses.refetch();
+        },
+      });
     } catch (error) {
       console.error('加選失敗：', error);
-      // 處理錯誤情況
     }
   };
 

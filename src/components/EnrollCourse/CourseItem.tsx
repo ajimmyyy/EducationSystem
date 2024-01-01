@@ -54,7 +54,7 @@ export default function CourseListItem({ course, index }: CourseListItemProps) {
 
         if (response.ok) {
             console.log('加選成功：', data);
-            window.location.href = '/Enroll';
+            //window.location.href = '/Enroll';
         } else {
             console.error('加選失敗：', data.error);
             // 處理錯誤情況

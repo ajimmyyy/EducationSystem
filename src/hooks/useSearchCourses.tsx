@@ -1,3 +1,4 @@
+//hooks/useSearchCourses.tsx
 import { useSearchParams } from "next/navigation";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import apiFetcher from "@/utils/api-fetcher";
