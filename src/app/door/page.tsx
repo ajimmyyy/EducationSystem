@@ -2,7 +2,7 @@
 import * as THREE from "three";
 import React, { Suspense, useState } from "react";
 import { Canvas } from "@react-three/fiber";
-import { Environment, useGLTF, ContactShadows, Text } from "@react-three/drei";
+import { Environment, ContactShadows, Text } from "@react-three/drei";
 import { useSpring } from "@react-spring/core";
 import { a as three } from "@react-spring/three";
 import { Model } from "./model";
