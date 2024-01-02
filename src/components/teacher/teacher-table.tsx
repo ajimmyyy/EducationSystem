@@ -22,11 +22,11 @@ const intervals: Record<string, { start: string; end: string }> = {
 };
 
 // 在等登入功能完成前，先寫死老師 ID
-const teacherID = 1506;
+// const teacherID = 1506;
 const defaultSemester = "112-2";
 
 // 產生老師課表的畫面
-export default function TeacherTable() {
+export default function TeacherTable({teacherID}: {teacherID: number}) {
   const [semester, setSemester] = useState(defaultSemester);
   const { data } = useGetTeacherCourse(teacherID, semester);
 
