@@ -26,15 +26,12 @@ export async function GET(request: Request) {
       role: user.role,
     });
   } catch (error: any) {
-    return Response.json(
-      {
-        isLogin: false,
-        id: null,
-        name: null,
-        dapartment: null,
-        role: null,
-      },
-      { status: 500 },
-    );
+    return Response.json({
+      isLogin: false,
+      id: null,
+      name: null,
+      dapartment: null,
+      role: null,
+    });
   }
 }
