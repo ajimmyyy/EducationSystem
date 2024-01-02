@@ -102,7 +102,7 @@ export function Model(
             castShadow
             receiveShadow
           >
-            <div className="h-[116vh] w-screen pb-5">
+            <div className="h-[1300px] w-[1960px] pb-10">
               <iframe
                 style={{ width: "100%", height: "100%" }}
                 src="/search"

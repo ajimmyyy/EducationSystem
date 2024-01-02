@@ -6,6 +6,7 @@ import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/material-tailwind";
 import ReactQueryProvider from "@/providers/react-query";
 import React from "react";
+import LaptopOnly from "@/components/laptop-only";
 
 export const metadata: Metadata = {
   title: "北科課程網",
@@ -21,6 +22,7 @@ export default function RootLayout({
     <html lang="en">
       <body className=" bg-[#f5f5f5]">
         <ThemeProvider>
+          <LaptopOnly />
           <ReactQueryProvider>
             <Header />
             <Main>{children}</Main>
