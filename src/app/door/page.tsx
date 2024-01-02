@@ -13,7 +13,7 @@ export default function App() {
   const props = useSpring({ open: Number(open) });
   const router = useRouter();
   return (
-    <div className="relative h-screen w-screen items-center justify-center bg-gradient-to-tr from-[#f0f0f0] to-[#d25578]">
+    <div className="fixed left-0 top-0 z-50 h-screen w-screen items-center justify-center bg-gradient-to-tr from-[#f0f0f0] to-[#d25578]">
       <Canvas
         dpr={[1, 2]}
         camera={{ position: [0, 0, -20], fov: 35 }}

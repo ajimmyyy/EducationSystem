@@ -5,7 +5,7 @@ import {
   Button,
   Typography,
 } from "@/components/material-tailwind";
-import { useLogin, LoginForm } from "../../../hooks/useLogin";
+import { useLogin, LoginForm } from "@/hooks/useLogin";
 import { useForm } from "react-hook-form";
 
 export default function Login() {
