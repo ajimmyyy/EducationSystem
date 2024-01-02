@@ -5,7 +5,8 @@ import { URL } from "url";
 import fs from "fs";
 import type { RawCourse } from "@/types/course";
 
-export async function fetchCourseData(year: string, semester: string) {
+// eslint-disable-next-line no-unused-vars
+async function fetchCourseData(year: string, semester: string) {
   const url = "https://aps.ntut.edu.tw/course/tw/";
   const subjStart = `Subj.jsp?format=-2&year=${year}&sem=${semester}`;
   const browser = await initializeBrowser();
@@ -137,7 +138,6 @@ async function processSubPage(
         name: tdArray[1],
         phase: tdArray[2] ? Number(tdArray[2] as string) : 0,
         credit: Number(tdArray[3] as string),
-        hours: Number(tdArray[4] as string),
         studentQuota: Number(tdArray[15] as string),
         syllabus: tdArray[18],
         progress: tdArray[18],
@@ -246,8 +246,18 @@ function saveDataToFile(data: RawCourse[], year: string, semester: string) {
   fs.writeFileSync(jsonFileName, JSON.stringify(data, null, 2), "utf-8");
 }
 
+// eslint-disable-next-line no-unused-vars
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
+  const registerword = searchParams.get("registerword");
+
+  if (!registerword || registerword !== "dkelgowsmn") {
+    return Response.json({
+      success: false,
+      message: "registerword is required",
+    });
+  }
+
   const year = searchParams.get("year");
   const semester = searchParams.get("semester");
   if (!year || !semester) {

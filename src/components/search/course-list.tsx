@@ -1,9 +1,4 @@
-import {
-  Chip,
-  List,
-  ListItem,
-  ListItemPrefix,
-} from "@/components/material-tailwind";
+import { List } from "@/components/material-tailwind";
 import { useSearchCourses } from "@/hooks/useSearchCourses";
 import { Fragment, useEffect, useRef } from "react";
 import { useIntersection } from "react-use";
@@ -45,13 +40,13 @@ export default function CourseList() {
         </span>
       </div>
       <List placeholder="null">
-        {pages.map((page, i) => (
-          <Fragment key={i}>
-            {page.courses.map((course, index) => (
-              <CourseListItem key={course.id} course={course} index={index} />
-            ))}
-          </Fragment>
-        ))}
+      {Array.isArray(pages) ? pages.map((page, i) => (
+        <Fragment key={i}>
+          {Array.isArray(page.courses) ? page.courses.map((course, index) => (
+            <CourseListItem key={course.id} course={course} index={index} />
+          )) : null}
+        </Fragment>
+      )) : null}
       </List>
 
       <div className="w-full">

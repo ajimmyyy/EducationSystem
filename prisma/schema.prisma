@@ -82,7 +82,6 @@ model Department {
 model Schedule {
   // 0~6
   weekday     Int
-  // 多個時間段
   intervals   Interval[]
   courseId    Int
   course      Course     @relation(fields: [courseId], references: [id], onDelete: Cascade)

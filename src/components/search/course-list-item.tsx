@@ -1,3 +1,4 @@
+//quote from search/course-list-item.tsx
 import type { SearchCourseResult } from "@/services/courseService";
 import {
   Chip,
@@ -64,14 +65,6 @@ export default function CourseListItem({ course, index }: CourseListItemProps) {
                 className="rounded-full px-2 py-1 text-xs group-hover:bg-white/20 group-hover:text-white"
               />
             )}
-            {course.hours ? (
-              <Chip
-                value={`時數: ${course.hours}`}
-                variant="ghost"
-                size="sm"
-                className="rounded-full px-2 py-1 text-xs group-hover:bg-white/20 group-hover:text-white"
-              />
-            ) : null}
             {course.studentQuota ? (
               <Chip
                 value={`人數: ${course.studentQuota}`}

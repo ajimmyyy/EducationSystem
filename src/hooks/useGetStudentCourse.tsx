@@ -1,5 +1,5 @@
 import apiFetcher from "@/utils/api-fetcher";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 export interface CourseItem {
   id: number;
@@ -47,8 +47,8 @@ export default function useGetStudentCourse(
                     courseName: courses.course.name,
                     id: courses.course.id,
                     code: courses.course.code,
-                    teacherName: courses.course.teacher.user.name,
-                    classroom: schedule.classroom.location,
+                    teacherName: courses.course.teacher?.user.name,
+                    classroom: schedule.classroom?.location,
                   };
                 });
               },

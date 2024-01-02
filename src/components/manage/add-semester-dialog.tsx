@@ -7,9 +7,8 @@ import {
   DialogHeader,
   DialogBody,
   DialogFooter,
-}
-  from "@material-tailwind/react";
-import { useState, useEffect, use } from 'react';
+} from "@material-tailwind/react";
+import React, { useState } from "react";
 import apiFetcher from "@/utils/api-fetcher";
 import { MdAccessTime } from "react-icons/md";
 
@@ -52,7 +51,12 @@ export function AddSemesterListItem() {
       <Dialog placeholder open={dialogOpen} handler={handleDialogOpen}>
         <DialogHeader placeholder>新增新學期</DialogHeader>
         <DialogBody placeholder>
-          <Input crossOrigin label="semester name" value={inputSemester} onChange={handleInputChange} />
+          <Input
+            crossOrigin
+            label="semester name"
+            value={inputSemester}
+            onChange={handleInputChange}
+          />
         </DialogBody>
         <DialogFooter placeholder>
           <Button
@@ -64,13 +68,18 @@ export function AddSemesterListItem() {
           >
             <span>Cancel</span>
           </Button>
-          <Button placeholder variant="gradient" color="green" onClick={handleAddData}>
+          <Button
+            placeholder
+            variant="gradient"
+            color="green"
+            onClick={handleAddData}
+          >
             <span>Confirm</span>
           </Button>
         </DialogFooter>
       </Dialog>
     </>
   );
-};
+}
 
 export default AddSemesterListItem;

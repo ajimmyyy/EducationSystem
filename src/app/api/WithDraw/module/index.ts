@@ -1,37 +1,44 @@
+// app/api/WithDraw/index.ts
 import prisma from "@/utils/prisma";
 
-export class WithdrawCourseCase {
-    async removeCourseFromTable(input: WithdrawCourseInput) {
-        // check if the course is chosen by the student
-        const existingEntry = await prisma.participationcourse.findUnique({
+export class WithDrawCourseService {
+    async withdrawCourse(studentId: number, courseId: number, semester: string) {
+        // 查找學生的課表
+        const courseTable = await prisma.courseTable.findFirst({
             where: {
-                coursetableid_courseid: {
-                    coursetableid: input.coursetableid,
-                    courseid: input.courseid
-                }
+                studentId: studentId,
+                semester: semester
             }
         });
-    
-        if (!existingEntry) {
-            throw new Error("Course not found in student's coursetable");
+
+        if (!courseTable) {
+            throw new Error("Course table not found");
         }
-    
-        // remove the course from the participationcourse table
-        await prisma.participationcourse.delete({
+
+        // 檢查是否選過這門課
+        const enrollment = await prisma.participationCourse.findFirst({
             where: {
-                coursetableid_courseid: {
-                    coursetableid: input.coursetableid,
-                    courseid: input.courseid
+                courseTableId: courseTable.id,
+                courseId: courseId
+            }
+        });
+
+        if (!enrollment) {
+            throw new Error("Course not enrolled");
+        }
+
+        // 從 ParticipationCourse 刪除該選課記錄
+        await prisma.participationCourse.delete({
+            where: {
+                courseTableId_courseId: {
+                    courseTableId: courseTable.id,
+                    courseId: courseId
                 }
             }
         });
-        return { message: "Course successfully withdrawn" };
+
+        return { status: 'withdrawn' };
     }
 }
 
-export interface WithdrawCourseInput {
-    coursetableid: number;
-    courseid: number;
-}
-
-export const withdrawCourseCase = new WithdrawCourseCase();
+export const withDrawCourseService = new WithDrawCourseService();

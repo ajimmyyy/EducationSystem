@@ -1,13 +1,13 @@
 import prisma from "@/utils/prisma";
 
 export class DealCourseRequest{
-    async IsCourseRequestExist(courseid: number, studentid: number): Promise<boolean> {
-        const courseRequest = await prisma.unassignedcourse.findFirst({
+    async IsCourseRequestExist(courseId: number, courseTableId: number): Promise<boolean> {
+        const courseRequest = await prisma.unassignedCourse.findFirst({
             where: {
-                courseid: courseid,
-                studentid: studentid,
+                courseId: courseId,
+                courseTableId: courseTableId,
                 state: {
-                    notIn: ['allow', 'deny']
+                    notIn: ["success", 'fail']
                 }
             }
         });
@@ -18,30 +18,26 @@ export class DealCourseRequest{
         return true;
     }
 
-    async DealCourseRequest(courseid: number, studentid: number, action: string) {
-        if (action == 'deny' || action == 'allow') {
-            if (action == 'allow') {
-                const table = await prisma.coursetable.findFirst({
-                    where: { studentid: studentid }
-                });
-            
-                const participation = await prisma.participationcourse.findFirst({
-                    where: { courseid: courseid, coursetableid: table.coursetableid }
+    async DealCourseRequest(courseid: number, courseTableId: number, action: string) {
+        if (action == 'fail' || action == 'success') {
+            if (action == 'success') {
+                const participation = await prisma.participationCourse.findFirst({
+                    where: { courseId: courseid, courseTableId: courseTableId }
                 });
             
                 if (!participation) {
-                    await prisma.participationcourse.create({
+                    await prisma.participationCourse.create({
                         data: {
-                            courseid: courseid,
-                            coursetableid: table.coursetableid,
+                            courseId: courseid,
+                            courseTableId: courseTableId,
                         }
                     })
                 }else
                     throw new Error("The Participation relation is exist");
                 }
                 
-            await prisma.unassignedcourse.updateMany({
-                where: {courseid: courseid, studentid: studentid},
+            await prisma.unassignedCourse.updateMany({
+                where: {courseId: courseid, courseTableId: courseTableId},
                 data: {state: action}
             })
         }else

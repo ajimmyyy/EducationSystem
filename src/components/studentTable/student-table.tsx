@@ -1,11 +1,11 @@
 "use client";
 
-import { Paper, Stack } from "@mui/material";
-import { TimetableRow } from "./timetable-row";
-import { useState } from "react";
+import { Stack } from "@mui/material";
+import { useEffect, useState } from "react";
 import useGetStudentCourse from "@/hooks/useGetStudentCourse";
 import StudentTableItem from "./student-table-item";
 import { Select, Option } from "@material-tailwind/react";
+import useUser from "@/hooks/useUser";
 
 const intervals: Record<string, { start: string; end: string }> = {
   "1": { start: "08:10", end: "09:00" },
@@ -24,11 +24,18 @@ const intervals: Record<string, { start: string; end: string }> = {
   D: { start: "21:10", end: "22:00" },
 };
 
-const studentId = 736;
-
 export default function StudentTable() {
   const [semester, setSemester] = useState("112-2");
-  const { data, totalCredit } = useGetStudentCourse(studentId, semester);
+  const [studentId, setStudentId] = useState<number | undefined>(undefined);
+  const { data: userData } = useUser();
+  useEffect(() => {
+    // 當 userData?.id 發生變化時，更新 studentId
+    setStudentId(userData?.id);
+  }, [userData?.id]);
+  const { data: courseData, totalCredit } = useGetStudentCourse(
+    studentId || -1,
+    semester,
+  );
 
   return (
     <>
@@ -68,7 +75,7 @@ export default function StudentTable() {
           </thead>
           <tbody>
             {"1234N56789ABCD".split("").map((interval) => (
-              <TimetableRow key={interval}>
+              <tr key={interval}>
                 <td>
                   <Stack sx={{ height: "100%" }} justifyContent="space-between">
                     <span style={{ fontSize: "14px", color: "#888888" }}>
@@ -83,11 +90,11 @@ export default function StudentTable() {
                 {"012345".split("").map((day) => (
                   <td key={day + interval}>
                     <StudentTableItem
-                      courseItem={data[`${day}-${interval}` as string]}
+                      courseItem={courseData[`${day}-${interval}` as string]}
                     ></StudentTableItem>
                   </td>
                 ))}
-              </TimetableRow>
+              </tr>
             ))}
           </tbody>
         </table>

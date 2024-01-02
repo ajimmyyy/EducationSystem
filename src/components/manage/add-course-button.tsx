@@ -5,16 +5,14 @@ import {
   DialogBody,
   DialogFooter,
   Button,
-}
-  from "@material-tailwind/react";
-import apiFetcher from "@/utils/api-fetcher";
-import { useState, useEffect, use } from 'react';
+} from "@material-tailwind/react";
+import { useState, useEffect } from "react";
 import AddCourseStep from "@/components/manage/add-course-step";
 import React from "react";
 
 interface HeadProps {
-  value: string,
-  type: string
+  value: string;
+  type: string;
 }
 
 interface AddInfoButtonProps {
@@ -23,9 +21,7 @@ interface AddInfoButtonProps {
   setNeedUpdate: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-
-function AddCourseButton({ parameter, role, setNeedUpdate }: AddInfoButtonProps) {
-
+function AddCourseButton({ parameter, setNeedUpdate }: AddInfoButtonProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [parameterHead, setParameterHead] = useState<HeadProps[]>([]);
   const [inputInfos, setInputInfos] = useState<{}>({});
@@ -39,27 +35,27 @@ function AddCourseButton({ parameter, role, setNeedUpdate }: AddInfoButtonProps)
     setInputInfos({});
   };
 
-  const handleInputChange = (key: HeadProps) => (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    let inputValue: string | number = event.target.value;
-  
-    if (key.type === "number") {
-      const parsedValue = parseInt(event.target.value, 10);
-  
-      if (isNaN(parsedValue)) {
-        console.error("Please enter a valid number.");
-        return;
+  const handleInputChange =
+    (key: HeadProps) =>
+    (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      let inputValue: string | number = event.target.value;
+
+      if (key.type === "number") {
+        const parsedValue = parseInt(event.target.value, 10);
+
+        if (isNaN(parsedValue)) {
+          console.error("Please enter a valid number.");
+          return;
+        }
+
+        inputValue = parsedValue;
       }
-  
-      inputValue = parsedValue;
-    }
-  
-    setInputInfos((prevInputInfo) => ({
-      ...prevInputInfo,
-      [key.value]: inputValue,
-    }));
-  };
+
+      setInputInfos((prevInputInfo) => ({
+        ...prevInputInfo,
+        [key.value]: inputValue,
+      }));
+    };
 
   return (
     <>
@@ -75,7 +71,7 @@ function AddCourseButton({ parameter, role, setNeedUpdate }: AddInfoButtonProps)
       <Dialog placeholder open={dialogOpen} handler={handleDialogOpen}>
         <DialogHeader placeholder>課程資訊</DialogHeader>
         <DialogBody placeholder>
-          {parameterHead.map((value, index) => (
+          {parameterHead.map((value) => (
             <textarea
               key={value.value}
               placeholder={`Enter ${value.value}`}
@@ -95,11 +91,14 @@ function AddCourseButton({ parameter, role, setNeedUpdate }: AddInfoButtonProps)
           >
             <span>Cancel</span>
           </Button>
-          <AddCourseStep inputInfos={inputInfos} setNeedUpdate={setNeedUpdate} />
+          <AddCourseStep
+            inputInfos={inputInfos}
+            setNeedUpdate={setNeedUpdate}
+          />
         </DialogFooter>
       </Dialog>
     </>
   );
-};
+}
 
 export default AddCourseButton;

@@ -1,50 +1,50 @@
 import prisma from "@/utils/prisma";
 
 export interface CourseDetail {
-    coursename: string,
-    credit: number,
-    studentquota: number,
-    syllabusurl?: string,
-    isenglishtaught: boolean,
-    teacherid?: number,
-    departmentid?: number,
+  name: string;
+  credit: number;
+  studentQuota: number;
+  syllabus?: string;
+  isEnglishTaught: boolean;
+  teacherid?: number;
+  departmentid?: number;
 }
 
-export class UpdateCourseDetail { 
-    async UpdateCourseDetail(courseID: number, courseDetail: CourseDetail) {
-        const course = await prisma.course.update({
-            where: {
-                courseid: courseID,
-            },
-            data: {
-                coursename: courseDetail.coursename,
-                credit: courseDetail.credit,
-                studentquota: courseDetail.studentquota,
-                syllabusurl: courseDetail.syllabusurl,
-                isenglishtaught: courseDetail.isenglishtaught,
-                teacherid: courseDetail.teacherid,
-                departmentid: courseDetail.departmentid,
-            }
-        });
-        return course;
-    }
+export class UpdateCourseDetail {
+  async UpdateCourseDetail(courseID: number, courseDetail: CourseDetail) {
+    const course = await prisma.course.update({
+      where: {
+        id: courseID,
+      },
+      data: {
+        name: courseDetail.name,
+        credit: courseDetail.credit,
+        studentQuota: courseDetail.studentQuota,
+        syllabus: courseDetail.syllabus,
+        isEnglishTaught: courseDetail.isEnglishTaught,
+        teacherId: courseDetail.teacherid,
+        departmentId: courseDetail.departmentid,
+      },
+    });
+    return course;
+  }
 
-    IsCourseDetailValid(courseDetail: CourseDetail) {
-        const { coursename, credit, studentquota, isenglishtaught } = courseDetail;
-        if (!coursename) {
-            return false;
-        }
-        if (!credit) {
-            return false;
-        }
-        if (!studentquota) {
-            return false;
-        }
-        if (isenglishtaught!= true && isenglishtaught != false) {
-            return false;
-        }
-        return true;
+  IsCourseDetailValid(courseDetail: CourseDetail) {
+    const { name, credit, studentQuota, isEnglishTaught } = courseDetail;
+    if (!name) {
+      return false;
     }
+    if (!credit) {
+      return false;
+    }
+    if (!studentQuota) {
+      return false;
+    }
+    if (typeof isEnglishTaught !== "boolean") {
+      return false;
+    }
+    return true;
+  }
 }
 
 export const updateCourseDetail = new UpdateCourseDetail();
