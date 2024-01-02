@@ -1,5 +1,5 @@
 import prisma from "@/utils/prisma";
-import { PrismaClient, User as PrismaUser, Manager, Student, Teacher } from "@prisma/client";
+import { User as PrismaUser } from "@prisma/client";
 import sha256 from 'crypto-js/sha256';
 
 interface CreateMenberParams {

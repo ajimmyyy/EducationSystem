@@ -5,6 +5,7 @@ const useAlertWindows = ({
   handleConfirm,
 }: {
   message: string;
+  // eslint-disable-next-line no-unused-vars
   handleConfirm: (closeAlert: Function) => void | Promise<void>;
 }) => {
   const [isAlertOpen, setIsAlertOpen] = useState(false);

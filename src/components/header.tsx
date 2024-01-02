@@ -1,5 +1,5 @@
 "use client";
-import { useRouter, useSelectedLayoutSegments } from "next/navigation";
+import { useSelectedLayoutSegments } from "next/navigation";
 import { Breadcrumbs } from "./material-tailwind";
 import { GuideBar } from "./guide";
 

@@ -4,15 +4,10 @@ import {
   Typography,
 } from "@material-tailwind/react";
 import useUser from "@/hooks/useUser";
-import { useSearchUser } from "@/hooks/useSearchUser";
 import { Table } from "@/components/account/table";
 
 export function Collect() {
   const { data } = useUser();
-  const [open, setOpen] = React.useState(0);
-
-  const handleOpen = (value: number) => setOpen(open === value ? 0 : value);
-  const userInfo  = useSearchUser(data?.id ?? 0).data?.user;
 
   return (
     <>

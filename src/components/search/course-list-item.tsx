@@ -65,7 +65,7 @@ export default function CourseListItem({ course, index }: CourseListItemProps) {
         placeholder="null"
         key={course.id}
         className={index % 2 === 0 ? "bg-white" : "bg-[#f7f7f7]"}
-        onClick={(e) => {
+        onClick={() => {
           router.push(`/course/${course.id}`);
         }}
       >
