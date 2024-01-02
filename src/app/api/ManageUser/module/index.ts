@@ -1,5 +1,6 @@
 import prisma from "@/utils/prisma";
-import { User as PrismaUser } from "@prisma/client";
+import { PrismaClient, User as PrismaUser, Manager, Student, Teacher } from "@prisma/client";
+import sha256 from 'crypto-js/sha256';
 
 interface CreateMenberParams {
   name: string;
@@ -14,13 +15,14 @@ interface CreateMenberParams {
 }
 
 interface UpdateMenberType {
-  id: number;
-  email?: string;
-  cellphone?: string;
-  schoolClass?: string;
-  office?: string;
-  web?: string;
-  info?: string;
+  id: number
+  password?: string
+  email?: string
+  cellphone?: string
+  schoolClass?: string
+  office?: string
+  web?: string
+  info?: string
 }
 
 interface SearchMemberResult {
@@ -60,10 +62,12 @@ export class ManageUserCase {
     const departmentId = departmentData?.id;
     if (!departmentId) throw new Error("Department not found");
 
+    const hashPassword = sha256(password).toString(); 
+
     const member = await prisma.user.create({
       data: {
         name,
-        password,
+        password: hashPassword,
         email,
         cellphone,
         department: {
@@ -243,6 +247,7 @@ export class ManageUserCase {
 
   async UpdateMember({
     id,
+    password,
     email,
     cellphone,
     schoolClass,
@@ -283,15 +288,37 @@ export class ManageUserCase {
         },
       };
     }
+    
+    if (password !== undefined) {
+      const hashPassword = sha256(password).toString();
+      updateData.password = hashPassword;
+    }
+
+    if (member.student) {
+        updateData.student = {
+            update: {
+                class: schoolClass,
+            },
+        };
+    }
+    else if (member && member.teacher) {
+        updateData.teacher = {
+            update: {
+                office: office,
+                web: web,
+                info: info,
+            },
+        };
+    }
 
     return await prisma.user.update({
-      where: { id: id },
-      data: updateData,
-      include: {
-        student: Boolean(member.student),
-        teacher: Boolean(member.teacher),
-        manager: Boolean(member.manager),
-      },
+        where: { id: id },
+        data: updateData,
+        include: {
+            student: Boolean(member.student),
+            teacher: Boolean(member.teacher),
+            manager: Boolean(member.manager),
+        },
     });
   }
 }

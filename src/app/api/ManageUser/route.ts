@@ -5,7 +5,7 @@ import { NextRequest } from "next/server";
 const MenberCreateRequestBody = z.object({
   role: z.string(),
   name: z.string(),
-  password: z.string(),
+  password: z.string().min(8),
   email: z.string().email(),
   cellphone: z
     .string()
@@ -41,13 +41,11 @@ const MenberUpdateRequestBody = z.object({
   id: z.number().refine((value) => value > 0, {
     message: "Value must be a non-zero positive integer",
   }),
-  email: z.string().email(),
-  cellphone: z
-    .string()
-    .refine((value) => value.length === 10 && value.startsWith("09"), {
-      message: 'Cellphone must be 10 characters long and start with "09"',
-    })
-    .optional(),
+  password: z.string().min(8).optional(),
+  email: z.string().email().optional(),
+  cellphone: z.string().refine((value) => value.length === 10 && value.startsWith('09'), {
+    message: 'Cellphone must be 10 characters long and start with "09"',
+  }).optional(),
   schoolClass: z.string().optional(),
   office: z.string().optional(),
   web: z.string().optional(),
@@ -187,12 +185,13 @@ export async function PUT(request: Request) {
       statusText: "invalid request body",
     });
   }
-
-  const { id, email, cellphone, schoolClass, office, web, info } = parsed.data;
+  
+  const { id, password , email, cellphone, schoolClass, office, web, info } = parsed.data;
 
   await manageUserCase
     .UpdateMember({
       id,
+      password,
       email,
       cellphone,
       schoolClass,
@@ -204,4 +203,6 @@ export async function PUT(request: Request) {
       console.log(e);
       return Response.json({ success: false, e });
     });
+
+  return Response.json({ success: true, response });
 }
