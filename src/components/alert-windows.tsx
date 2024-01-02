@@ -11,6 +11,7 @@ interface ConfirmModalProps {
   isOpen: boolean;
   message: string;
   onClose: () => void;
+  // eslint-disable-next-line no-unused-vars
   onConfirm: (closeAlert: Function) => void | Promise<void>;
 }
 

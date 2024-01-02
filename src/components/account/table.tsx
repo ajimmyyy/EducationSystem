@@ -6,7 +6,7 @@ import {
     Chip,
   }
     from "@material-tailwind/react";
-  import { useState, useEffect, use } from "react";
+  import { useState, useEffect } from "react";
   import { useSearchCollectCourse } from "@/hooks/useSearchCollectCouse"
 
   interface TableRowProps {
@@ -96,13 +96,13 @@ import {
             <thead>
               <tr>
                 {tableHead.map((head) => (
-                  <TableHeader head={head} width={100 / (tableHead.length - 1)} />
+                  <TableHeader key={head} head={head} width={100 / (tableHead.length - 1)} />
                 ))}
               </tr>
             </thead>
             <tbody>
               {tableRows.map((rowData, index) => {
-                return <TableRow {...rowData} />;
+                return <TableRow key={index} {...rowData} />;
               })}
             </tbody>
           </table>

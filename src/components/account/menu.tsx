@@ -4,6 +4,7 @@ import {
   List,
   ListItem,
 } from "@material-tailwind/react";
+import React from "react";
 
 export function Menu({ addOption }: { addOption: React.Dispatch<React.SetStateAction<string>> }) {
   const INFO = "info";

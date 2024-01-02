@@ -7,8 +7,9 @@ import {
   DialogFooter,
 } from "@material-tailwind/react";
 import apiFetcher from "@/utils/api-fetcher";
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from "sonner";
+import React from "react";
 
 interface AddInfoButtonProps {
   parameter: string[];

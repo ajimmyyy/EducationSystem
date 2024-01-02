@@ -5,11 +5,6 @@ import {
   Accordion,
   AccordionHeader,
   AccordionBody,
-  Popover,
-  PopoverHandler,
-  PopoverContent,
-  Button,
-  Input,
 } from "@material-tailwind/react";
 import { UpdatePopover } from "./upate-popover";
 import useUser from "@/hooks/useUser";
