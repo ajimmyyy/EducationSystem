@@ -12,6 +12,7 @@ import {
   Input,
 } from "@material-tailwind/react";
 import { UpdatePopover } from "./upate-popover";
+import useUser from "@/hooks/useUser";
 
 const CUSTOM_ANIMATION = {
   mount: { scale: 1 },
@@ -19,6 +20,7 @@ const CUSTOM_ANIMATION = {
 };
 
 export function Setting() {
+  const { data } = useUser();
   const [open, setOpen] = React.useState(0);
 
   const handleOpen = (value: number) => setOpen(open === value ? 0 : value);
@@ -28,9 +30,9 @@ export function Setting() {
       <div className="flex items-center gap-4">
         <Avatar placeholder src="https://docs.material-tailwind.com/img/face-2.jpg" alt="avatar" />
         <div>
-          <Typography placeholder variant="h6">Tania Andrew</Typography>
+          <Typography placeholder variant="h6">{data?.name}</Typography>
           <Typography placeholder variant="small" color="gray" className="font-normal">
-            Web Developer
+            {data?.role}
           </Typography>
         </div>
       </div>
@@ -39,7 +41,7 @@ export function Setting() {
           設定密碼
         </AccordionHeader>
         <AccordionBody>
-          <UpdatePopover type={"password"}/>
+          <UpdatePopover type={"password"} id={data?.id ?? 0}/>
         </AccordionBody>
       </Accordion>
       <Accordion placeholder open={open === 2} animate={CUSTOM_ANIMATION}>
@@ -47,7 +49,7 @@ export function Setting() {
           設定信箱
         </AccordionHeader>
         <AccordionBody>
-          <UpdatePopover type={"email"}/>
+          <UpdatePopover type={"email"} id={data?.id ?? 0}/>
         </AccordionBody>
       </Accordion>
       <Accordion placeholder open={open === 3} animate={CUSTOM_ANIMATION}>
@@ -55,7 +57,7 @@ export function Setting() {
           設定電話
         </AccordionHeader>
         <AccordionBody>
-         <UpdatePopover type={"cellphone"}/>
+         <UpdatePopover type={"cellphone"} id={data?.id ?? 0}/>
         </AccordionBody>
       </Accordion>
     </>

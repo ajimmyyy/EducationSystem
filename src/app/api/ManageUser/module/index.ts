@@ -1,6 +1,7 @@
 import { Page } from 'puppeteer';
 import prisma from "@/utils/prisma";
 import { PrismaClient, User as PrismaUser, Manager, Student, Teacher } from "@prisma/client";
+import sha256 from 'crypto-js/sha256';
 
 interface CreateMenberParams {
   name: string
@@ -16,6 +17,7 @@ interface CreateMenberParams {
 
 interface UpdateMenberType {
   id: number
+  password?: string
   email?: string
   cellphone?: string
   schoolClass?: string
@@ -61,10 +63,12 @@ export class ManageUserCase {
     const departmentId = departmentData?.id;
     if (!departmentId) throw new Error('Department not found');
 
+    const hashPassword = sha256(password).toString(); 
+
     const member = await prisma.user.create({
       data: {
         name,
-        password,
+        password: hashPassword,
         email,
         cellphone,
         department: {
@@ -228,6 +232,7 @@ export class ManageUserCase {
 
   async UpdateMember({
     id,
+    password,
     email,
     cellphone,
     schoolClass,
@@ -253,6 +258,11 @@ export class ManageUserCase {
           cellphone: cellphone,
 
       };
+
+      if (password !== undefined) {
+        const hashPassword = sha256(password).toString();
+        updateData.password = hashPassword;
+      }
 
       if (member.student) {
           updateData.student = {

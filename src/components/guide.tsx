@@ -5,6 +5,32 @@ import {
   Typography,
   Button,
 } from "@material-tailwind/react";
+import { useRouter } from "next/navigation";
+import useUser from "@/hooks/useUser";
+import useLogout from "@/hooks/useLogout";
+
+function LoginButton() {
+  const { data } = useUser();
+  const router = useRouter();
+  const { logout } = useLogout();
+
+  console.log(data?.id);
+  console.log(data?.role);
+  console.log(data?.name);
+
+  if (!data?.id) {
+    return (
+      <Button placeholder={undefined} onClick={() => router.push("/login")}>
+        登入
+      </Button>
+    );
+  }
+  return (
+    <Button placeholder={undefined} onClick={() => logout()}>
+      登出
+    </Button>
+  );
+}
 
 export function GuideBar() {
   const [openNav, setOpenNav] = React.useState(false);
@@ -80,23 +106,14 @@ export function GuideBar() {
         <div className="flex items-center gap-4">
           <div className="mr-4 hidden lg:block">{navList}</div>
           <div className="flex items-center gap-x-1">
-            <Button
-              placeholder
-              variant="gradient"
-              size="sm"
-              className="hidden lg:inline-block"
-            >
-              <span>Log In</span>
-            </Button>
+            <LoginButton />
           </div>
         </div>
       </div>
       <MobileNav open={openNav}>
         {navList}
         <div className="flex items-center gap-x-1">
-          <Button placeholder fullWidth variant="gradient" size="sm" className="">
-            <span>Log In</span>
-          </Button>
+          <LoginButton />
         </div>
       </MobileNav>
     </Navbar>

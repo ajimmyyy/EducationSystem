@@ -6,6 +6,8 @@ import {
   AccordionHeader,
   AccordionBody,
 } from "@material-tailwind/react";
+import useUser from "@/hooks/useUser";
+import { useSearchUser } from "@/hooks/useSearchUser";
  
 const CUSTOM_ANIMATION = {
   mount: { scale: 1 },
@@ -13,18 +15,20 @@ const CUSTOM_ANIMATION = {
 };
  
 export function Information() {
+  const { data } = useUser();
   const [open, setOpen] = React.useState(0);
  
   const handleOpen = (value: number) => setOpen(open === value ? 0 : value);
+  const userInfo  = useSearchUser(data?.id ?? 0).data?.user;
  
   return (
     <>
       <div className="flex items-center gap-4">
         <Avatar placeholder src="https://docs.material-tailwind.com/img/face-2.jpg" alt="avatar" />
         <div>
-          <Typography placeholder variant="h6">Tania Andrew</Typography>
+          <Typography placeholder variant="h6">{data?.name}</Typography>
           <Typography placeholder variant="small" color="gray" className="font-normal">
-            Web Developer
+            {data?.role}
           </Typography>
         </div>
       </div>
@@ -33,9 +37,12 @@ export function Information() {
           使用者資料
         </AccordionHeader>
         <AccordionBody>
-          We&apos;re not always in the position that we want to be at. We&apos;re constantly
-          growing. We&apos;re constantly making mistakes. We&apos;re constantly trying to express
-          ourselves and actualize our dreams.
+          <div>
+            <p className="mb-2"><span className="font-semibold">Name:</span> {userInfo?.name}</p>
+            <p className="mb-2"><span className="font-semibold">Email:</span> {userInfo?.email}</p>
+            <p className="mb-2"><span className="font-semibold">Cellphone:</span> {userInfo?.cellphone}</p>
+            <p className="mb-2"><span className="font-semibold">Department:</span> {userInfo?.department?.name}</p>
+          </div>
         </AccordionBody>
       </Accordion>
       <Accordion placeholder open={open === 2} animate={CUSTOM_ANIMATION}>
@@ -43,9 +50,20 @@ export function Information() {
           校務資料
         </AccordionHeader>
         <AccordionBody>
-          We&apos;re not always in the position that we want to be at. We&apos;re constantly
-          growing. We&apos;re constantly making mistakes. We&apos;re constantly trying to express
-          ourselves and actualize our dreams.
+          {userInfo?.student && (
+            <div>
+              <p className="text-xl font-bold mb-2">學生資料</p>
+              <p className="mb-2"><span className="font-semibold">Class:</span> {userInfo?.student.class}</p>
+            </div>
+          )}
+          {userInfo?.teacher && (
+            <div>
+              <p className="text-xl font-bold mb-2">教師資料</p>
+              <p className="mb-2"><span className="font-semibold">Info:</span> {userInfo?.teacher.info}</p>
+              <p className="mb-2"><span className="font-semibold">Web:</span> {userInfo?.teacher.web}</p>
+              <p className="mb-2"><span className="font-semibold">Office:</span> {userInfo?.teacher.office}</p>
+            </div>
+          )}
         </AccordionBody>
       </Accordion>
       <Accordion placeholder open={open === 3} animate={CUSTOM_ANIMATION}>

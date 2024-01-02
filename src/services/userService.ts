@@ -1,6 +1,8 @@
+import { Select } from '@material-tailwind/react';
 import prisma from "@/utils/prisma";
 import sha256 from "crypto-js/sha256";
 import jwt from "jsonwebtoken";
+import { Prisma } from "@prisma/client";
 
 const secretKey = process.env.JWT_SECRET || "w53ybxytdqbylwgqs1qotuuuyn3aolc3";
 
@@ -9,6 +11,15 @@ export interface JWTToken {
   name: string;
   role: "student" | "teacher" | "manager";
 }
+
+export type FullUser = Prisma.UserGetPayload<{
+  include: {
+    student: true;
+    teacher: true;
+    manager: true;
+    department: true;
+  };
+}>;
 
 async function login(sid: number, password: string) {
   const user = await prisma.user.findUnique({
@@ -88,7 +99,25 @@ async function me(token: string) {
   };
 }
 
+async function getUserById(id: number) {
+  const user = await prisma.user.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      student: true,
+      teacher: true,
+      manager: true,
+      department: true,
+    },
+  });
+  return {
+    user,
+  };
+}
+
 export default {
   login,
   me,
+  getUserById
 };

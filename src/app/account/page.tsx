@@ -7,7 +7,7 @@ import { useState } from "react";
 
 export default function Home() {
   const [option, setOption] = useState("info");
-
+  
   const renderTableBasedOnOption = () => {
     switch (option) {
       case "info":
