@@ -17,7 +17,7 @@ import apiFetcher from "@/utils/api-fetcher";
 // }
 
 // 資料庫資料表格
-export function ClassroomTable({ type }: { type: string }) {
+export function ClassroomTable({ type, keyWord }: { type: string, keyWord: string }) {
   const tableName = "教室列表";
   const tableHead = ["id", "location", "buildingid", ""];
   const addHead = ["location", "buildingid"];
@@ -29,14 +29,14 @@ export function ClassroomTable({ type }: { type: string }) {
   useEffect(() => {
     const fetchDeparment = async () => {
       const { data } = await apiFetcher(
-        `/api/ManageClassroom?page=${page}`,
+        `/api/ManageClassroom?page=${page}&keyword=${keyWord}`,
         {},
       );
       setTableRows(data);
       setNeedUpdate(false);
     };
     fetchDeparment();
-  }, [page, type, needUpdate]);
+  }, [page, keyWord, type, needUpdate]);
 
   useEffect(() => {
     setPage(1);

@@ -62,7 +62,7 @@ export class ManageUserCase {
     const departmentId = departmentData?.id;
     if (!departmentId) throw new Error("Department not found");
 
-    const hashPassword = sha256(password).toString(); 
+    const hashPassword = sha256(password).toString();
 
     const member = await prisma.user.create({
       data: {
@@ -135,13 +135,49 @@ export class ManageUserCase {
 
   async SearchMember(
     userType: string,
+    keyword: string,
     page: number,
     perPage: number,
   ): Promise<SearchMemberResult[]> {
     let result: SearchMemberResult[] = [];
+    let whereClause = {};
+
+    if (keyword) {
+      whereClause = {
+        OR: [
+          {
+            user: {
+              id: {
+                equals: parseInt(keyword) || 0,
+              },
+            },
+          },
+          {
+            user: {
+              name: {
+                contains: keyword,
+              },
+            },
+          },
+          {
+            user: {
+              email:{
+                contains: keyword,
+              },
+            },
+          },
+          {
+            user: {
+              cellphone: keyword,
+            },
+          },
+        ],
+      }
+    }
 
     if (userType === "manager") {
       const managers = await prisma.manager.findMany({
+        where: whereClause,
         skip: (page - 1) * perPage,
         take: perPage,
         include: {
@@ -170,6 +206,7 @@ export class ManageUserCase {
       );
     } else if (userType === "teacher") {
       const teachers = await prisma.teacher.findMany({
+        where: whereClause,
         skip: (page - 1) * perPage,
         take: perPage,
         include: {
@@ -201,6 +238,7 @@ export class ManageUserCase {
       );
     } else if (userType === "student") {
       const students = await prisma.student.findMany({
+        where: whereClause,
         skip: (page - 1) * perPage,
         take: perPage,
         include: {
@@ -288,37 +326,37 @@ export class ManageUserCase {
         },
       };
     }
-    
+
     if (password !== undefined) {
       const hashPassword = sha256(password).toString();
       updateData.password = hashPassword;
     }
 
     if (member.student) {
-        updateData.student = {
-            update: {
-                class: schoolClass,
-            },
-        };
+      updateData.student = {
+        update: {
+          class: schoolClass,
+        },
+      };
     }
     else if (member && member.teacher) {
-        updateData.teacher = {
-            update: {
-                office: office,
-                web: web,
-                info: info,
-            },
-        };
+      updateData.teacher = {
+        update: {
+          office: office,
+          web: web,
+          info: info,
+        },
+      };
     }
 
     return await prisma.user.update({
-        where: { id: id },
-        data: updateData,
-        include: {
-            student: Boolean(member.student),
-            teacher: Boolean(member.teacher),
-            manager: Boolean(member.manager),
-        },
+      where: { id: id },
+      data: updateData,
+      include: {
+        student: Boolean(member.student),
+        teacher: Boolean(member.teacher),
+        manager: Boolean(member.manager),
+      },
     });
   }
 }

@@ -31,8 +31,31 @@ interface CreateCourseType {
 }
 
 export class ManageCourseCase {
-  async SearchCourse(page: number, perPage: number) {
+  async SearchCourse(page: number, keyword: string, perPage: number) {
+    let whereClause = {};
+
+    if (keyword) {
+      whereClause = {
+        OR: [
+          {
+            id: {
+              equals: parseInt(keyword) || 0,
+            },
+          },
+          {
+            code: keyword,
+          },
+          {
+            name: {
+              contains: keyword,
+            },
+          },
+        ],
+      }
+    }
+
     const course = await prisma.course.findMany({
+      where: whereClause,
       select: {
         id: true,
         code: true,

@@ -11,6 +11,7 @@ const ClassroomSearchRequest = z.object({
   page: z.number().refine(value => value > 0, {
     message: "Value must be a non-zero positive integer"
   }),
+  keyword: z.string().optional(),
 });
 
 const ClassroomDeleteRequestBody = z.object({
@@ -53,7 +54,8 @@ export async function GET(request: NextRequest) {
   const PER_PAGE = 10;
   const params = request.nextUrl.searchParams;
   const page = params.get("page") || "1";
-  const parsed = ClassroomSearchRequest.safeParse({ page: parseInt(page) });
+  const keyword = params.get("keyword") || "";
+  const parsed = ClassroomSearchRequest.safeParse({ page: parseInt(page), keyword: keyword});
   if (!parsed.success) {
     return Response.json(parsed.error, {
       status: 400,
@@ -62,7 +64,7 @@ export async function GET(request: NextRequest) {
   }
 
   const result = await manageClassroomCase
-    .SearchClassroom(parsed.data.page, PER_PAGE)
+    .SearchClassroom(parsed.data.page, parsed.data.keyword ?? "", PER_PAGE)
     .catch((e) => {
       console.log(e);
       return Response.json({ success: false, e });
