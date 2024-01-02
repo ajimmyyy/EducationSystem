@@ -22,7 +22,7 @@ const intervals: Record<string, { start: string; end: string }> = {
 };
 
 // 在等登入功能完成前，先寫死老師 ID
-const teacherID = 4;
+const teacherID = 1506;
 const defaultSemester = "112-2";
 
 // 產生老師課表的畫面
