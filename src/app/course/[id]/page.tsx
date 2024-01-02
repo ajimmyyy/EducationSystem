@@ -5,7 +5,7 @@ import { useCourse } from "@/hooks/useCourse";
 import useUser from "@/hooks/useUser";
 import { IconButton, Tooltip } from "@material-tailwind/react";
 import { useQueryClient } from "@tanstack/react-query";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import { FaPlus } from "react-icons/fa6";
 import { MdBookmarkBorder, MdBookmark } from "react-icons/md";
 import { toast } from "sonner";
