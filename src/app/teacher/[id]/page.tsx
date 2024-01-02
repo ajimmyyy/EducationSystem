@@ -10,10 +10,10 @@ const weekdayMap = ["一", "二", "三", "四", "五", "六", "日"];
 export default function Home() {
   const params = useParams();
   const courseId = params.id;
-  console.log("courseId", courseId);
+  // console.log("courseId", courseId);
   const { data: { course } = {} } = useCourse(Number(courseId as string));
   const { data: request } = useGetTeacherRequest(Number(courseId));
-  console.log("request", request);
+  // console.log("request", request);
   if (!course) return null;
   return (
     <div className="px-4">
@@ -109,7 +109,7 @@ export default function Home() {
       </div>
       <div className="p-2 flex flex-col gap-1">
         {request.length !== 0 ? request?.map((request: CourseRequest) => (
-          <TeacherCourseRequestItem key={request.courseTableId} studentProperty={request} />
+          <TeacherCourseRequestItem key={request.courseTableId} studentProperty={request} courseID={Number(courseId)}/>
         )) : <p>目前沒有學生加退選此課程</p>}
       </div>
     </div>

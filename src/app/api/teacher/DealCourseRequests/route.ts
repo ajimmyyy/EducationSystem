@@ -9,7 +9,7 @@ interface Body {
 export async function POST(request: Request) {
     const body: Body = await request.json();
     if (!body.courseID || !body.courseTableID || !body.action) {
-        return Response.json({ success: false, error: "Invalid request. Missing courseID, studentID or action" });
+        return Response.json({ success: false, error: "Invalid request. Missing courseID, courseTableID or action" });
     }
     if (await dealCourseRequestModule.IsCourseRequestExist(body.courseID, body.courseTableID) === false) {
         return Response.json({ success: false, error: "Course request does not exist" });
