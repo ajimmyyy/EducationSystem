@@ -1,4 +1,4 @@
-import { Select } from '@material-tailwind/react';
+import { Select } from "@material-tailwind/react";
 import prisma from "@/utils/prisma";
 import sha256 from "crypto-js/sha256";
 import jwt from "jsonwebtoken";
@@ -9,6 +9,7 @@ const secretKey = process.env.JWT_SECRET || "w53ybxytdqbylwgqs1qotuuuyn3aolc3";
 export interface JWTToken {
   id: number;
   name: string;
+  department: string | null;
   role: "student" | "teacher" | "manager";
 }
 
@@ -30,6 +31,7 @@ async function login(sid: number, password: string) {
       student: true,
       teacher: true,
       manager: true,
+      department: true,
     },
   });
 
@@ -55,6 +57,7 @@ async function login(sid: number, password: string) {
     {
       id: user.id,
       name: user.name,
+      department: user.department?.name,
       role,
     } as JWTToken,
     secretKey,
@@ -77,6 +80,7 @@ async function me(token: string) {
       student: true,
       teacher: true,
       manager: true,
+      department: true,
     },
   });
 
@@ -95,6 +99,7 @@ async function me(token: string) {
   return {
     id: user.id,
     name: user.name,
+    department: user.department?.name,
     role,
   };
 }
@@ -119,5 +124,5 @@ async function getUserById(id: number) {
 export default {
   login,
   me,
-  getUserById
+  getUserById,
 };
