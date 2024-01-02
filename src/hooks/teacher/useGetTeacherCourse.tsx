@@ -18,7 +18,7 @@ export default function useGetTeacherCourse(
 
   useEffect(() => {
     async function setTeacherCourseData(){
-      const res = await apiFetcher('/api/GetTeacherCourseTable?teacherID=' + teacherID + "&semester=" + semester, { method: 'GET' });
+      const res = await apiFetcher('/api/teacher/GetTeacherCourseTable?teacherID=' + teacherID + "&semester=" + semester, { method: 'GET' });
       const result: CourseTable = res?.courseTable?.reduce((acc: { [x: string]: any; }, item: { course: any[]; }) => {
         item.course.forEach(course => {
           course.schedule.forEach((schedule: { intervals: any[]; weekday: any; }) => {

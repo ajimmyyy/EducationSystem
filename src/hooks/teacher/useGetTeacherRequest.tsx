@@ -12,7 +12,7 @@ export default function useGetTeacherRequest(courseID: number) {
 
   useEffect(() => {
     async function setTeacherRequestData(){
-      const res = await apiFetcher('/api/GetCourseRequests?courseID=' + courseID, { method: 'GET' });
+      const res = await apiFetcher('/api/teacher/GetCourseRequests?courseID=' + courseID, { method: 'GET' });
       const result: CourseRequest[] = res?.courseRequests.map(
         (item: any) => {
           return {
