@@ -137,7 +137,7 @@ export function DefaultTable() {
 
         if (data.success) {
           console.log("退選成功：", data);
-          window.location.href = "/Enroll";
+          window.location.href = "/enroll";
         } else {
           console.error("退選失敗：", data.error);
         }
