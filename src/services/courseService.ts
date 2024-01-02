@@ -15,6 +15,17 @@ export type FullCourse = Prisma.CourseGetPayload<{
       };
     };
     department: true;
+    unassignedCourse: {
+      include: {
+        courseTable: true;
+      };
+    };
+    participationCourse: {
+      include: {
+        courseTable: true;
+      };
+    };
+    collectCourse: true;
   };
 }>;
 
@@ -25,6 +36,7 @@ export interface SearchCourseParams {
   departments?: string;
   page: number;
   perPage: number;
+  userId?: number;
 }
 export interface SearchCourseResult {
   courses: FullCourse[];
@@ -38,6 +50,7 @@ async function searchCourse({
   departments,
   page,
   perPage,
+  userId,
 }: SearchCourseParams): Promise<SearchCourseResult> {
   const keywords = keyword.split(" ");
   const schedules = schedule?.split(",").filter((s) => s.length > 0) ?? []; // 00,01,20 [星期幾][節次]
@@ -125,6 +138,17 @@ async function searchCourse({
         },
       },
       department: true,
+      unassignedCourse: {
+        include: {
+          courseTable: true,
+        },
+      },
+      participationCourse: {
+        include: {
+          courseTable: true,
+        },
+      },
+      collectCourse: true,
     },
     skip: page * perPage,
     take: perPage,
@@ -200,6 +224,17 @@ async function getCourseById(id: number) {
         },
       },
       department: true,
+      unassignedCourse: {
+        include: {
+          courseTable: true,
+        },
+      },
+      participationCourse: {
+        include: {
+          courseTable: true,
+        },
+      },
+      collectCourse: true,
     },
   });
 

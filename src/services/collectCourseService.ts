@@ -5,7 +5,7 @@ export type FullCollectCourse = Prisma.CollectCourseGetPayload<{
   include: {
     course: true;
   };
-}>; 
+}>;
 
 async function searchCollectCourse(id: number) {
   const result = await prisma.collectCourse.findMany({
@@ -19,6 +19,30 @@ async function searchCollectCourse(id: number) {
   return result;
 }
 
+async function addCollectCourse(studentId: number, courseId: number) {
+  const result = await prisma.collectCourse.create({
+    data: {
+      studentId: studentId,
+      courseId: courseId,
+    },
+  });
+  return result;
+}
+
+async function deleteCollectCourse(studentId: number, courseId: number) {
+  const result = await prisma.collectCourse.delete({
+    where: {
+      studentId_courseId: {
+        studentId: studentId,
+        courseId: courseId,
+      },
+    },
+  });
+  return result;
+}
+
 export default {
   searchCollectCourse,
+  addCollectCourse,
+  deleteCollectCourse,
 };
