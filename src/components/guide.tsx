@@ -32,8 +32,14 @@ function LoginButton() {
   );
 }
 
+interface NavLink {
+  title: string;
+  href: string;
+}
+
 export function GuideBar() {
   const [openNav, setOpenNav] = React.useState(false);
+  const { data: user } = useUser();
 
   React.useEffect(() => {
     window.addEventListener(
@@ -42,52 +48,45 @@ export function GuideBar() {
     );
   }, []);
 
+  const navLinks: NavLink[] = [
+    { title: "Search", href: "/search" },
+    { title: "Schedule", href: "/studentSchedule" },
+    { title: "Enroll", href: "/enroll" },
+    { title: "Class Schedule", href: "/teacher" },
+    { title: "Manage", href: "/manage" },
+    { title: "Account", href: "/account" },
+  ];
+
+  // 過濾出特定角色的連結
+  const allowedLinks: NavLink[] = navLinks.filter(link => {
+    if (["Search"].includes(link.title)) {
+      return true;
+    } else if (user?.role === "student" && ["Schedule", "Enroll", "Account"].includes(link.title)) {
+      return true;
+    } else if (user?.role === "teacher" && ["Class Schedule", "Account"].includes(link.title)) {
+      return true; 
+    } else if (user?.role === "manager" && ["Manage", "Account"].includes(link.title)) {
+      return true;
+    }
+    return false;
+  });
+  
   const navList = (
     <ul className="mt-2 mb-4 flex flex-col gap-2 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-6">
-      <Typography
-        placeholder
-        as="li"
-        variant="small"
-        color="blue-gray"
-        className="p-1 font-normal"
-      >
-        <a href="search" className="flex items-center">
-          Search
-        </a>
-      </Typography>
-      <Typography
-        placeholder
-        as="li"
-        variant="small"
-        color="blue-gray"
-        className="p-1 font-normal"
-      >
-        <a href="#" className="flex items-center">
-          Schedule
-        </a>
-      </Typography>
-      <Typography
-        placeholder
-        as="li"
-        variant="small"
-        color="blue-gray"
-        className="p-1 font-normal"
-      >
-        <a href="#" className="flex items-center">
-          Manage
-        </a>
-      </Typography>
-      <Typography
-        placeholder
-        as="li"
-        variant="small"
-        color="blue-gray"
-        className="p-1 font-normal"
-      >
-        <a href="account" className="flex items-center">
-          Account
-        </a>
-      </Typography>
+      {allowedLinks.map((link, index) => (
+        <Typography
+          key={index}
+          placeholder
+          as="li"
+          variant="small"
+          color="blue-gray"
+          className="p-1 font-normal"
+        >
+          <a href={link.href} className="flex items-center">
+            {link.title}
+          </a>
+        </Typography>
+      ))}
     </ul>
   );
 

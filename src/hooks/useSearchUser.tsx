@@ -1,7 +1,6 @@
 import apiFetcher from "@/utils/api-fetcher";
 import { useQuery } from "@tanstack/react-query";
 import { FullUser } from "@/services/userService";
-import { useState, useEffect } from "react";
 
 export const useSearchUser = (id: number) => {
   const data = useQuery<{
