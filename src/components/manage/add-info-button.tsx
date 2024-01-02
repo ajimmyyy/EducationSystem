@@ -9,6 +9,7 @@ import {
   from "@material-tailwind/react";
 import apiFetcher from "@/utils/api-fetcher";
 import { useState, useEffect, use } from 'react';
+import { toast } from "sonner";
 
 interface AddInfoButtonProps {
   parameter: string[];
@@ -61,6 +62,14 @@ function AddInfoButton({ parameter, role, setNeedUpdate }: AddInfoButtonProps) {
       });
 
       console.log(response);
+
+      if (response.success === true) {
+        toast.success("Successfully updated user");
+      }
+      else {
+        toast.error("Failed to update user");
+      }
+      
       setNeedUpdate(true);
     };
     fetch();

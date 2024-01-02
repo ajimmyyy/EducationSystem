@@ -15,6 +15,7 @@ import {
 import apiFetcher from "@/utils/api-fetcher";
 import { useState, useEffect, use } from 'react';
 import React from "react";
+import { toast } from "sonner";
 
 interface HeadProps {
   value: string,
@@ -202,6 +203,13 @@ function AddCourseStep({inputInfos, setNeedUpdate }: AddInfoButtonProps) {
       setNeedUpdate(true);
 
       console.log(response);
+
+      if (response.success === true) {
+        toast.success("Successfully updated user");
+      }
+      else {
+        toast.error("Failed to update user");
+      }
     };
     fetch();
     setDialogOpen(false);

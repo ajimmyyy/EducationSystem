@@ -38,6 +38,7 @@ export function Information() {
         </AccordionHeader>
         <AccordionBody>
           <div>
+            <p className="mb-2"><span className="font-semibold">Id:</span> {userInfo?.id}</p>
             <p className="mb-2"><span className="font-semibold">Name:</span> {userInfo?.name}</p>
             <p className="mb-2"><span className="font-semibold">Email:</span> {userInfo?.email}</p>
             <p className="mb-2"><span className="font-semibold">Cellphone:</span> {userInfo?.cellphone}</p>
