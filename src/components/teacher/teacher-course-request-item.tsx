@@ -1,6 +1,5 @@
 import { Button } from "@material-tailwind/react";
 import { CourseRequest } from "@/hooks/teacher/useGetTeacherRequest";
-// import { useState, useEffect } from "react";
 import apiFetcher from "@/utils/api-fetcher";
 
 async function clickOption(courseID: number, courseTableID: number, action: string): Promise<void> {
@@ -32,7 +31,10 @@ export default function TeacherCourseRequestItem({ studentProperty: student, cou
           } color="blue" size="sm" placeholder={undefined}>
             同意
           </Button>
-          <Button onClick={() => clickOption(id, student.courseTableId, "fail")} color="red" size="sm" placeholder={undefined}>
+          <Button onClick={async () => {
+            await clickOption(id, student.courseTableId, "success");
+            refetch();
+          }} color="red" size="sm" placeholder={undefined}>
             拒絕
           </Button>
         </div>
