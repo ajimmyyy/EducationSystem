@@ -5,7 +5,6 @@ import {
   Button,
   Typography,
 } from "@/components/material-tailwind";
-import Link from "next/link";
 import { useLogin, LoginForm } from "../../../hooks/useLogin";
 import { useForm } from "react-hook-form";
 
@@ -99,16 +98,6 @@ export default function Login() {
           >
             登入
           </Button>
-          <Typography
-            color="gray"
-            className="mt-4 text-center font-normal"
-            placeholder={undefined}
-          >
-            尚未有帳號?{" "}
-            <Link href="/register" className="font-medium text-gray-900">
-              註冊
-            </Link>
-          </Typography>
         </form>
       </Card>
     </main>

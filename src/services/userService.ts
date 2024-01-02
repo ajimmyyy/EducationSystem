@@ -1,4 +1,3 @@
-import { Select } from "@material-tailwind/react";
 import prisma from "@/utils/prisma";
 import sha256 from "crypto-js/sha256";
 import jwt from "jsonwebtoken";
@@ -52,20 +51,21 @@ async function login(sid: number, password: string) {
       : user.manager
         ? "manager"
         : "student";
-
+  const data: JWTToken = {
+    id: user.id,
+    name: user.name,
+    department: user.department?.name || null,
+    role,
+  }
   const token = jwt.sign(
-    {
-      id: user.id,
-      name: user.name,
-      department: user.department?.name,
-      role,
-    } as JWTToken,
+    data,
     secretKey,
     { expiresIn: "1h" },
   );
 
   return {
     token,
+    ...data,
   };
 }
 

@@ -1,16 +1,17 @@
+import type { PropsWithChildren } from "react";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import verifyJWT from "@/utils/verify-jwt";
 import { JWTToken } from "@/services/userService";
 
-export default async function Course() {
+const UserLayout = (props: PropsWithChildren) => {
   const cookie = cookies();
   const token = cookie.get("token")?.value;
-  if (!token) 
-    return redirect("/search");
+  if (!token) redirect("/login");
   const decoded = verifyJWT(token) as JWTToken;
-  console.log(decoded);
-  if (decoded?.role == "teacher")
-    return redirect("/teacher");
-  redirect("/search");
-}
+  if (decoded?.role !== "teacher") redirect("/login");
+
+  return props.children;
+};
+
+export default UserLayout;

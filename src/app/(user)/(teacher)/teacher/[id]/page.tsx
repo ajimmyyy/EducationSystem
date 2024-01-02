@@ -2,19 +2,19 @@
 import { useCourse } from "@/hooks/useCourse";
 import { useParams } from "next/navigation";
 import TeacherCourseRequestItem from "@/components/teacher/teacher-course-request-item";
-import useGetTeacherRequest from "@/hooks/useGetTeacherRequest";
-import { CourseRequest } from "@/hooks/useGetTeacherRequest";
+import useGetTeacherRequest from "@/hooks/teacher/useGetTeacherRequest";
+import { CourseRequest } from "@/hooks/teacher/useGetTeacherRequest";
 
 const weekdayMap = ["一", "二", "三", "四", "五", "六", "日"];
 
 export default function Home() {
   const params = useParams();
   const courseId = params.id;
-  console.log("courseId", courseId);
+  // console.log("courseId", courseId);
   const { data: { course } = {} } = useCourse(Number(courseId as string));
-  const { data: request } = useGetTeacherRequest(Number(courseId));
+  const { data: request, refetch } = useGetTeacherRequest(Number(courseId));
+  // console.log("request", request);
   if (!course) return null;
-
   return (
     <div className="px-4">
       <h1 className=" my-4 text-xl font-normal">{course.name}</h1>
@@ -107,11 +107,10 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div className="p-2">
-        {request?.map((request: CourseRequest) => (
-          <TeacherCourseRequestItem key={request.courseTableId} studentProperty={request} />
-        ))
-        }
+      <div className="p-2 flex flex-col gap-1">
+        {request.length !== 0 ? request?.map((request: CourseRequest) => (
+          <TeacherCourseRequestItem key={request.courseTableId} studentProperty={request} courseID={Number(courseId)} refetch={refetch}/>
+        )) : <p>目前沒有學生加退選此課程</p>}
       </div>
     </div>
   );
