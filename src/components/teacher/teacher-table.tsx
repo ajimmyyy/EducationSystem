@@ -26,7 +26,7 @@ const intervals: Record<string, { start: string; end: string }> = {
 const defaultSemester = "112-2";
 
 // 產生老師課表的畫面
-export default function TeacherTable({teacherID}: {teacherID: number}) {
+export default function TeacherTable({ teacherID }: { teacherID: number }) {
   const [semester, setSemester] = useState(defaultSemester);
   const { data } = useGetTeacherCourse(teacherID, semester);
 
@@ -41,8 +41,6 @@ export default function TeacherTable({teacherID}: {teacherID: number}) {
           }}
           value={defaultSemester}
         >
-          <Option value="111-1">111-1</Option>
-          <Option value="111-2">111-2</Option>
           <Option value="112-1">112-1</Option>
           <Option value="112-2">112-2</Option>
         </Select>
@@ -68,7 +66,7 @@ export default function TeacherTable({teacherID}: {teacherID: number}) {
           {"123456789ABCD".split("").map((interval) => (
             <tr key={interval}>
               <td>
-                <div className=" d-flex flex-col justify-center">
+                <div className=" flex flex-col items-center justify-center">
                   <span style={{ fontSize: "14px", color: "#888888" }}>
                     {intervals[interval].start}
                   </span>

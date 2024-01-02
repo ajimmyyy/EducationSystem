@@ -43,6 +43,9 @@ export default function Home() {
           <div className="border-b px-1 pb-2">
             開課班級：{course.department?.name || "-"}
           </div>
+          <div className="border-b px-1 pb-2">
+            修課人數：{course.participationCourse.length}
+          </div>
         </div>
       </div>
       <div className="mt-4 grid grid-cols-3 gap-4">
@@ -107,10 +110,19 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div className="p-2 flex flex-col gap-1">
-        {request.length !== 0 ? request?.map((request: CourseRequest) => (
-          <TeacherCourseRequestItem key={request.courseTableId} studentProperty={request} courseID={Number(courseId)} refetch={refetch}/>
-        )) : <p>目前沒有學生加退選此課程</p>}
+      <div className="flex flex-col gap-1 p-2">
+        {request.length !== 0 ? (
+          request?.map((request: CourseRequest) => (
+            <TeacherCourseRequestItem
+              key={request.courseTableId}
+              studentProperty={request}
+              courseID={Number(courseId)}
+              refetch={refetch}
+            />
+          ))
+        ) : (
+          <p>目前沒有學生加退選此課程</p>
+        )}
       </div>
     </div>
   );
