@@ -12,7 +12,7 @@ export default function Home() {
   const courseId = params.id;
   // console.log("courseId", courseId);
   const { data: { course } = {} } = useCourse(Number(courseId as string));
-  const { data: request } = useGetTeacherRequest(Number(courseId));
+  const { data: request, refetch } = useGetTeacherRequest(Number(courseId));
   // console.log("request", request);
   if (!course) return null;
   return (
@@ -109,7 +109,7 @@ export default function Home() {
       </div>
       <div className="p-2 flex flex-col gap-1">
         {request.length !== 0 ? request?.map((request: CourseRequest) => (
-          <TeacherCourseRequestItem key={request.courseTableId} studentProperty={request} courseID={Number(courseId)}/>
+          <TeacherCourseRequestItem key={request.courseTableId} studentProperty={request} courseID={Number(courseId)} refetch={refetch}/>
         )) : <p>目前沒有學生加退選此課程</p>}
       </div>
     </div>

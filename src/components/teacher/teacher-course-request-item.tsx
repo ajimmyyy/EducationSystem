@@ -4,17 +4,18 @@ import { CourseRequest } from "@/hooks/teacher/useGetTeacherRequest";
 import apiFetcher from "@/utils/api-fetcher";
 
 async function clickOption(courseID: number, courseTableID: number, action: string): Promise<void> {
-  apiFetcher("/api/teacher/DealCourseRequests", {
+  await apiFetcher("/api/teacher/DealCourseRequests", {
     method: "POST",
     body: {
       courseID: courseID,
       courseTableID: courseTableID,
       action: action,
-    }});
+    }
+  });
 }
-  
 
-export default function TeacherCourseRequestItem({ studentProperty: student, courseID: id}: { studentProperty: CourseRequest, courseID: number }) {
+// 各別同學在特定課程的選課請求
+export default function TeacherCourseRequestItem({ studentProperty: student, courseID: id, refetch }: { studentProperty: CourseRequest, courseID: number, refetch: () => void }) {
 
   return (
     <div className="bg-white p-4 rounded-xl">
@@ -24,10 +25,14 @@ export default function TeacherCourseRequestItem({ studentProperty: student, cou
           <span>{student.class}</span>
         </div>
         <div className=" flex gap-2">
-          <Button onClick={()=>clickOption(id, student.courseTableId, "success")} color="blue" size="sm" placeholder={undefined}>
+          <Button onClick={async () => {
+            await clickOption(id, student.courseTableId, "success");
+            refetch();
+          }
+          } color="blue" size="sm" placeholder={undefined}>
             同意
           </Button>
-          <Button color="red" size="sm" placeholder={undefined}>
+          <Button onClick={() => clickOption(id, student.courseTableId, "fail")} color="red" size="sm" placeholder={undefined}>
             拒絕
           </Button>
         </div>

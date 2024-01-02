@@ -10,6 +10,11 @@ export interface CourseRequest{
 export default function useGetTeacherRequest(courseID: number) {
   const [data, setData] = useState<CourseRequest[]>([]);
 
+  const [refetchIndex, setRefetchIndex] = useState(0);
+  function refetch() {
+    setRefetchIndex((prev) => prev + 1);
+  }
+
   useEffect(() => {
     async function setTeacherRequestData(){
       const res = await apiFetcher('/api/teacher/GetCourseRequests?courseID=' + courseID, { method: 'GET' });
@@ -25,6 +30,6 @@ export default function useGetTeacherRequest(courseID: number) {
       setData(result);
     }
     setTeacherRequestData();
-  }, [courseID]);
-  return {data};
+  }, [courseID, refetchIndex]);
+  return {data, refetch};
 }
