@@ -5,7 +5,7 @@ Files: C:\Users\Ray\Desktop\mac-draco.glb [414.63KB] > C:\Users\Ray\Desktop\mac-
 */
 
 import * as THREE from "three";
-import React, { useEffect, useRef, useState } from "react";
+import React, { JSX, useEffect, useRef, useState } from "react";
 import { Html, useGLTF } from "@react-three/drei";
 import { GLTF } from "three-stdlib";
 import { useFrame } from "@react-three/fiber";
@@ -80,7 +80,7 @@ export function Model(
       ref={group as React.Ref<THREE.Group<THREE.Object3DEventMap>>}
       {...props}
       onPointerOver={(e) => (e.stopPropagation(), setHovered(true))}
-      onPointerOut={(e) => setHovered(false)}
+      onPointerOut={() => setHovered(false)}
       dispose={null}
     >
       <three.group rotation-x={hinge} position={[0, -0.04, 0.41]}>
@@ -102,7 +102,7 @@ export function Model(
             castShadow
             receiveShadow
           >
-            <div className="pb-5 h-[116vh] w-screen">
+            <div className="h-[116vh] w-screen pb-5">
               <iframe
                 style={{ width: "100%", height: "100%" }}
                 src="/search"
