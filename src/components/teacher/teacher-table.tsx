@@ -1,5 +1,5 @@
 import TeacherTableItem from "./teacher-table-item";
-import useGetTeacherCourse from "@/hooks/useGetTeacherCourse";
+import useGetTeacherCourse from "@/hooks/teacher/useGetTeacherCourse";
 import { useState } from "react";
 import { Select, Option } from "@material-tailwind/react";
 

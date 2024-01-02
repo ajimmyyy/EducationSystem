@@ -2,8 +2,8 @@
 import { useCourse } from "@/hooks/useCourse";
 import { useParams } from "next/navigation";
 import TeacherCourseRequestItem from "@/components/teacher/teacher-course-request-item";
-import useGetTeacherRequest from "@/hooks/useGetTeacherRequest";
-import { CourseRequest } from "@/hooks/useGetTeacherRequest";
+import useGetTeacherRequest from "@/hooks/teacher/useGetTeacherRequest";
+import { CourseRequest } from "@/hooks/teacher/useGetTeacherRequest";
 
 const weekdayMap = ["一", "二", "三", "四", "五", "六", "日"];
 

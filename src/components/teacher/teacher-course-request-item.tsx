@@ -1,5 +1,5 @@
 import { Button } from "@material-tailwind/react";
-import { CourseRequest } from "@/hooks/useGetTeacherRequest";
+import { CourseRequest } from "@/hooks/teacher/useGetTeacherRequest";
 
 export default function TeacherCourseRequestItem({ studentProperty: student }: { studentProperty: CourseRequest }) {
 
