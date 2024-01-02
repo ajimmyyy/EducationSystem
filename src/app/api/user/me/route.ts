@@ -11,6 +11,7 @@ export async function GET(request: Request) {
       isLogin: false,
       id: null,
       name: null,
+      dapartment: null,
       role: null,
     });
   }
@@ -20,6 +21,7 @@ export async function GET(request: Request) {
     return Response.json({
       isLogin: true,
       id: user.id,
+      dapartment: user.department,
       name: user.name,
       role: user.role,
     });
@@ -29,6 +31,7 @@ export async function GET(request: Request) {
         isLogin: false,
         id: null,
         name: null,
+        dapartment: null,
         role: null,
       },
       { status: 500 },

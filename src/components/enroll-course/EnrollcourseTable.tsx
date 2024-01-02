@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Typography, Button } from "@material-tailwind/react";
 import { MdCreate } from "react-icons/md";
-import AlertWindows from './AlertWindowsWithDraw';
+import AlertWindows from '../alert-windows';
 
 const TABLE_HEAD = ["State", "Course Name", "Course ID", ""];
 const studentId = 748; 
