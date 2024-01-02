@@ -1,7 +1,7 @@
 "use client";
-import CourseList from "@/components/enroll-course/CourseTable";
 import ParsedParamsProvider from "@/hooks/useQueryParams";
 import FilterContainer from "@/components/search/filter";
+import CourseList from "@/components/search/course-list";
 
 export default function Home() {
   return (
