@@ -18,8 +18,33 @@ export class ManageClassroomCase {
     return classroom;
   }
 
-  async SearchClassroom(page: number, perPage: number) {
+  async SearchClassroom(page: number, keyword: string, perPage: number) {
+    let whereClause = {};
+
+    if (keyword) {
+      whereClause = {
+        OR: [
+          {
+            id: {
+              equals: parseInt(keyword) || 0,
+            },
+          },
+          {
+            location: {
+              contains: keyword,
+            },
+          },
+          {
+            buildingid: {
+              equals: parseInt(keyword) || 0,
+            },
+          },
+        ],
+      }
+    }
+
     const classroom = await prisma.classroom.findMany({
+      where: whereClause,
       skip: (page - 1) * perPage,
       take: perPage,
       orderBy: {

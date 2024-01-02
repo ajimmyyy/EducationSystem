@@ -17,7 +17,7 @@ interface TableProps {
 }
 
 // 資料庫資料表格
-export function UserTable({ type }: { type: string }) {
+export function UserTable({ type, keyWord }: { type: string, keyWord: string }) {
   const typeMappings: { [key: string]: TableProps } = {
     student: {
       tableName: "學生列表",
@@ -79,14 +79,14 @@ export function UserTable({ type }: { type: string }) {
   useEffect(() => {
     const fetchUser = async () => {
       const { data } = await apiFetcher(
-        `/api/ManageUser?type=${type}&page=${page}`,
+        `/api/ManageUser?type=${type}&keyword=${keyWord}&page=${page}`,
         {},
       );
       setTableRows(data);
       setNeedUpdate(false);
     };
     fetchUser();
-  }, [page, type, needUpdate]);
+  }, [page, keyWord , type, needUpdate]);
 
   useEffect(() => {
     setPage(1);

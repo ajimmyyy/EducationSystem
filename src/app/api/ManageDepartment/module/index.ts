@@ -15,8 +15,36 @@ export class ManageDepartmentCase {
     return newDepartment;
   }
 
-  async SearchDepartment(page: number, perPage: number) {
+  async SearchDepartment(page: number, keyword: string, perPage: number) {
+    let whereClause = {};
+
+    if (keyword) {
+      whereClause = {
+        OR: [
+          {
+            id: {
+              equals: parseInt(keyword) || 0,
+            },
+          },
+          {
+            name: {
+              contains: keyword,
+            },
+          },
+          {
+            email:{
+              contains: keyword,
+            },
+          },
+          {
+            phone: keyword,
+          },
+        ],
+      }
+    }
+
     const department = await prisma.department.findMany({
+      where: whereClause,
       skip: (page - 1) * perPage,
       take: perPage,
       orderBy: {
@@ -26,7 +54,7 @@ export class ManageDepartmentCase {
 
     return department
   }
-  
+
   async DeleteDepartment(departmentId: number) {
     const department = await prisma.department.delete({
       where: {

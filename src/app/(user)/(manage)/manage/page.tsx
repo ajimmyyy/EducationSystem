@@ -9,18 +9,19 @@ import { useState } from "react";
 
 // 管理員頁面
 export default function Home() {
+  const [keyWord, setKeyWord] = useState("");
   const [option, setOption] = useState("student");
 
   const renderTableBasedOnOption = () => {
     switch (option) {
       case "department":
-        return <DepartmentTable type={option} />;
+        return <DepartmentTable type={option} keyWord={keyWord}/>;
       case "classroom":
-        return <ClassroomTable type={option} />;
+        return <ClassroomTable type={option} keyWord={keyWord} />;
       case "course":
-        return <CourseTable type={option} />;
+        return <CourseTable type={option} keyWord={keyWord} />;
       default:
-        return <UserTable type={option} />;
+        return <UserTable type={option} keyWord={keyWord} />;
     }
   };
 
@@ -28,7 +29,7 @@ export default function Home() {
     <main className="flex gap-1">
       <Menu addOption={setOption} />
       <div>
-        <Search />
+        <Search addOption={setKeyWord} />
         {renderTableBasedOnOption()}
       </div>
     </main>

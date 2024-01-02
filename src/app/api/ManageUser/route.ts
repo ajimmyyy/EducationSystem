@@ -26,6 +26,7 @@ const MemberSearchRequest = z.object({
     .refine((value) => ["student", "teacher", "manager"].includes(value), {
       message: 'userType must be "student", "teacher", or "manager"',
     }),
+  keyword: z.string().optional(),
   page: z.number().refine((value) => value > 0, {
     message: "Value must be a non-zero positive integer",
   }),
@@ -136,9 +137,11 @@ export async function GET(request: NextRequest) {
   const PER_PAGE = 10;
   const params = request.nextUrl.searchParams;
   const usertype = params.get("type") || "student";
+  const keyWord = params.get("keyword") || "";
   const page = params.get("page") || "1";
   const parsed = MemberSearchRequest.safeParse({
     type: usertype,
+    keyword: keyWord,
     page: parseInt(page),
   });
   if (!parsed.success) {
@@ -149,7 +152,7 @@ export async function GET(request: NextRequest) {
   }
 
   const result = await manageUserCase
-    .SearchMember(parsed.data.type, parsed.data.page, PER_PAGE)
+    .SearchMember(parsed.data.type, parsed.data.keyword ?? "", parsed.data.page, PER_PAGE)
     .catch((e) => {
       console.log(e);
       return Response.json({ success: false, e });

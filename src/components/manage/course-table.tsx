@@ -22,7 +22,7 @@ export interface HeadProps {
 }
 
 // 資料庫資料表格
-export function CourseTable({ type }: { type: string }) {
+export function CourseTable({ type, keyWord }: { type: string, keyWord: string }) {
   const tableName = "課程列表";
   const tableHead = [
     "id",
@@ -57,12 +57,12 @@ export function CourseTable({ type }: { type: string }) {
 
   useEffect(() => {
     const fetchDeparment = async () => {
-      const { data } = await apiFetcher(`/api/ManageCourse?page=${page}`, {});
+      const { data } = await apiFetcher(`/api/ManageCourse?page=${page}&keyword=${keyWord}`, {});
       setTableRows(data);
       setNeedUpdate(false);
     };
     fetchDeparment();
-  }, [page, type, needUpdate]);
+  }, [page, keyWord, type, needUpdate]);
 
   useEffect(() => {
     setPage(1);

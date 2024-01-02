@@ -17,7 +17,7 @@ import apiFetcher from "@/utils/api-fetcher";
 // }
 
 // 資料庫資料表格
-export function DepartmentTable({ type }: { type: string }) {
+export function DepartmentTable({ type, keyWord }: { type: string, keyWord: string }) {
   const tableName = "系所列表";
   const tableHead = ["id", "name", "email", "phone", ""];
   const addHead = ["name", "email", "phone"];
@@ -29,14 +29,14 @@ export function DepartmentTable({ type }: { type: string }) {
   useEffect(() => {
     const fetchDeparment = async () => {
       const { data } = await apiFetcher(
-        `/api/ManageDepartment?page=${page}`,
+        `/api/ManageDepartment?page=${page}&keyword=${keyWord}`,
         {},
       );
       setTableRows(data);
-      setNeedUpdate(false);
+      setNeedUpdate(false); 
     };
     fetchDeparment();
-  }, [page, type, needUpdate]);
+  }, [page, keyWord, type, needUpdate]);
 
   useEffect(() => {
     setPage(1);
