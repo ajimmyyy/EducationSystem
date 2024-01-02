@@ -1,4 +1,5 @@
 "use client";
+import { JWTToken } from "@/services/userService";
 import apiFetcher from "@/utils/api-fetcher";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { setCookie } from "cookies-next";
@@ -24,11 +25,16 @@ export const useLogin = () => {
   const login = useMutation({
     mutationKey: ["login"],
     mutationFn: fetchLogin,
-    onSuccess: (data: { token: string }) => {
+    onSuccess: (data: { token: string } & JWTToken) => {
       toast.success("登入成功");
       setCookie("token", data.token);
-      router.push("/");
+      
       queryClient.invalidateQueries({ queryKey: ["me"] });
+      
+      if (data.role === "teacher") {
+        return router.push("/teacher");
+      }
+      router.push("/search");
     },
     onError: (error) => {
       toast.error(error.message);
