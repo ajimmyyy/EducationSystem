@@ -9,6 +9,7 @@ const CourseSearchRequestBody = z.object({
 
   page: z.number().int().default(0),
   perPage: z.number().int().positive().default(10),
+  userId: z.number().int().optional(),
 });
 
 export async function POST(request: Request) {
@@ -21,7 +22,7 @@ export async function POST(request: Request) {
     });
   }
 
-  const { keyword, semester, page, perPage, schedule, departments } =
+  const { keyword, semester, page, perPage, schedule, departments, userId } =
     parsed.data;
 
   try {
@@ -32,6 +33,7 @@ export async function POST(request: Request) {
       departments,
       page,
       perPage,
+      userId,
     });
     return Response.json({
       success: true,

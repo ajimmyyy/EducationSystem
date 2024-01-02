@@ -24,7 +24,7 @@ export default function RootLayout({
           <ReactQueryProvider>
             <Header />
             <Main>{children}</Main>
-            <Toaster position="top-right" />
+            <Toaster position="top-right" richColors closeButton />
           </ReactQueryProvider>
         </ThemeProvider>
       </body>

@@ -1,18 +1,23 @@
 //quote from search/course-list-item.tsx
 import type { SearchCourseResult } from "@/services/courseService";
 import {
-  Button,
+  IconButton,
   Chip,
   ListItem,
   ListItemPrefix,
   ListItemSuffix,
+  Tooltip,
 } from "../material-tailwind";
 import { MdOutlinePerson, MdAccessTime } from "react-icons/md";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import AlertWindows from "../alert-windows";
 import useAlertWindows from "@/hooks/useAlertWindows";
 import useUser from "@/hooks/useUser";
 import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
+import { MdBookmarkBorder } from "react-icons/md";
+import { MdBookmark } from "react-icons/md";
+import { FaPlus } from "react-icons/fa6";
 
 interface CourseListItemProps {
   course: SearchCourseResult["courses"][0];
@@ -23,7 +28,9 @@ const weekdayMap = ["一", "二", "三", "四", "五", "六", "日"];
 
 export default function CourseListItem({ course, index }: CourseListItemProps) {
   const { data: user } = useUser();
+  const searchParams = useSearchParams();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const { isAlertOpen, alertMessage, openAlert, closeAlert, handleConfirm } =
     useAlertWindows({
@@ -46,6 +53,9 @@ export default function CourseListItem({ course, index }: CourseListItemProps) {
 
           if (data.success) {
             toast.success("加選成功", data);
+            queryClient.invalidateQueries({
+              queryKey: ["search", searchParams.toString()],
+            });
           } else {
             console.error("加選失敗：", data);
             toast.error("加選失敗", data);
@@ -58,6 +68,66 @@ export default function CourseListItem({ course, index }: CourseListItemProps) {
         }
       },
     });
+
+  const isAlreadyEnroll =
+    user?.id &&
+    (course.unassignedCourse.some(
+      (unassignedCourse) => unassignedCourse.courseTable.studentId === user?.id,
+    ) ||
+      course.participationCourse.some(
+        (participationCourse) =>
+          participationCourse.courseTable.studentId === user?.id,
+      ));
+
+  const handleAddCollect = async () => {
+    try {
+      const response = await fetch(
+        `/api/collectCourse/add?studentId=${user?.id}&courseId=${course.id}`,
+      );
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast.success("收藏成功", data);
+        queryClient.invalidateQueries({
+          queryKey: ["search", searchParams.toString()],
+        });
+      } else {
+        console.error("收藏失敗：", data);
+        toast.error("收藏失敗", data);
+      }
+    } catch (error) {
+      console.error("收藏請求錯誤：", error);
+      toast.error("收藏請求錯誤，請見開發者介面");
+    }
+  };
+
+  const handleRemoveCollect = async () => {
+    try {
+      const response = await fetch(
+        `/api/collectCourse/remove?studentId=${user?.id}&courseId=${course.id}`,
+      );
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast.success("取消收藏成功", data);
+        queryClient.invalidateQueries({
+          queryKey: ["search", searchParams.toString()],
+        });
+      } else {
+        console.error("取消收藏失敗：", data);
+        toast.error("取消收藏失敗", data);
+      }
+    } catch (error) {
+      console.error("取消收藏請求錯誤：", error);
+      toast.error("取消收藏請求錯誤，請見開發者介面");
+    }
+  };
+
+  const isCollected = course.collectCourse.some(
+    (collectCourse) => collectCourse.studentId === user?.id,
+  );
 
   return (
     <>
@@ -188,22 +258,59 @@ export default function CourseListItem({ course, index }: CourseListItemProps) {
             )}
           </div>
         </div>
-        <ListItemSuffix placeholder="null">
-          {user?.id && (
-            <Button
-              size="sm"
-              variant="gradient"
-              color="blue-gray"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                openAlert();
-              }}
-              placeholder=""
-            >
-              加選
-            </Button>
+        <ListItemSuffix placeholder="null" className="flex gap-2">
+          {user?.id && !isAlreadyEnroll && (
+            <Tooltip content="加選課程" placement="top">
+              <IconButton
+                size="sm"
+                variant="gradient"
+                color="blue-gray"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  openAlert();
+                }}
+                placeholder=""
+              >
+                <FaPlus />
+              </IconButton>
+            </Tooltip>
           )}
+          {user?.id ? (
+            isCollected ? (
+              <Tooltip content="取消收藏課程" placement="top">
+                <IconButton
+                  size="sm"
+                  variant="gradient"
+                  color="blue-gray"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleRemoveCollect();
+                  }}
+                  placeholder=""
+                >
+                  <MdBookmarkBorder />
+                </IconButton>
+              </Tooltip>
+            ) : (
+              <Tooltip content="收藏課程" placement="top">
+                <IconButton
+                  size="sm"
+                  variant="gradient"
+                  color="blue-gray"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleAddCollect();
+                  }}
+                  placeholder=""
+                >
+                  <MdBookmark />
+                </IconButton>
+              </Tooltip>
+            )
+          ) : null}
         </ListItemSuffix>
       </ListItem>
       <AlertWindows
