@@ -13,8 +13,8 @@ export default function Home() {
   console.log("courseId", courseId);
   const { data: { course } = {} } = useCourse(Number(courseId as string));
   const { data: request } = useGetTeacherRequest(Number(courseId));
+  console.log("request", request);
   if (!course) return null;
-
   return (
     <div className="px-4">
       <h1 className=" my-4 text-xl font-normal">{course.name}</h1>
@@ -107,11 +107,10 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div className="p-2">
-        {request?.map((request: CourseRequest) => (
+      <div className="p-2 flex flex-col gap-1">
+        {request.length !== 0 ? request?.map((request: CourseRequest) => (
           <TeacherCourseRequestItem key={request.courseTableId} studentProperty={request} />
-        ))
-        }
+        )) : <p>目前沒有學生加退選此課程</p>}
       </div>
     </div>
   );

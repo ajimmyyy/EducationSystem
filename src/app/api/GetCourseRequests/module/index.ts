@@ -29,7 +29,7 @@ export async function GetCourseRequest(courseID: number) {
       state: true,
     },
     orderBy: {
-      requestTime: 'desc'
+      requestTime: 'asc'
     },
   });
   return courseRequests;
