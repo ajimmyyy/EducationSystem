@@ -188,7 +188,7 @@ export async function PUT(request: Request) {
   
   const { id, password , email, cellphone, schoolClass, office, web, info } = parsed.data;
 
-  await manageUserCase
+  const response = await manageUserCase
     .UpdateMember({
       id,
       password,
