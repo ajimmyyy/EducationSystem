@@ -1,16 +1,18 @@
 import apiFetcher from "@/utils/api-fetcher";
+import { useQuery } from "@tanstack/react-query";
+import { FullUser } from "@/services/userService";
 import { useState, useEffect } from "react";
 
-export const useSearchUser = (userType: string, pageNum: number) => {
-  const [users, setUsers] = useState([]);
+export const useSearchUser = (id: number) => {
+  const data = useQuery<{
+    user: FullUser;
+  }>({
+    queryKey: ["id", id],
+    queryFn: async () => {
+      const data = await apiFetcher(`/api/user/getById?id=${id}`, {});
+      return data;
+    },
+  });
 
-  useEffect(() => {
-    const fetchUsers = async (type: string, page: number) => {
-      const { data } = await apiFetcher(`/api/ManageUser?type=${type}&page=${page}`, {});
-      setUsers(data);
-    }
-    fetchUsers(userType, pageNum);
-  }, [userType]);
-
-  return { users };
+  return data;
 }
