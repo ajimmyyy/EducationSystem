@@ -18,7 +18,6 @@ export default function Home() {
   const { data: { course } = {} } = useCourse(Number(courseId as string));
 
   const { data: user } = useUser();
-  const searchParams = useSearchParams();
   const queryClient = useQueryClient();
 
   const { isAlertOpen, alertMessage, openAlert, closeAlert, handleConfirm } =

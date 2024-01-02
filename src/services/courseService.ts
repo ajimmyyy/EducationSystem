@@ -50,7 +50,6 @@ async function searchCourse({
   departments,
   page,
   perPage,
-  userId,
 }: SearchCourseParams): Promise<SearchCourseResult> {
   const keywords = keyword.split(" ");
   const schedules = schedule?.split(",").filter((s) => s.length > 0) ?? []; // 00,01,20 [星期幾][節次]
