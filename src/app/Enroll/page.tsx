@@ -4,15 +4,33 @@ import { useSearchCourses } from "../../hooks/useSearchCourses";
 import { DefaultTable } from "../../components/EnrollCourse/EnrollcourseTable";
 import { UserInform } from "../../components/EnrollCourse/UserInform";
 import { EnrollObject } from "../../components/EnrollCourse/SearchEnrollCourse";
+import useUser from "@/hooks/useUser";
+import { useSearchUser } from "@/hooks/useSearchUser";
+
+interface StudentInfoProps {
+  studentId: number;
+  name: string;
+  department: string;
+}
 
 const EnrollPage = () => {
+  const { data } = useUser();
   const searchCourses = useSearchCourses();
   const [selectedCourseId] = useState<number | null>(null);
-  const studentInfo = {
-    studentId: 8901000,
-    name: "賴清德",
-    department: "資工三",
-  };
+  const [studentInfo, setStudentInfo] = useState<StudentInfoProps>({} as StudentInfoProps);
+
+  //刷新學生資料
+  const user = useSearchUser(data?.id ?? 0).data?.user;
+  useEffect(() => {
+    if (user) {
+      const { id, name, department } = user;
+      setStudentInfo({
+        studentId: id,
+        name: name,
+        department: department?.name ?? "Not Find",
+      });
+    }
+  }, [user]);
 
   // 每當selectedCourseId改變時，刷新課程列表
   useEffect(() => {
